@@ -1,0 +1,22 @@
+{
+  // Serveur (fonctions Netlify), code partagé, tests et fichiers de configuration.
+  // « NodeNext » impose l'extension .js dans les imports relatifs, ce qu'attend
+  // l'empaqueteur de fonctions de Netlify.
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["server", "shared", "netlify", "tests", "vite.config.ts", "vitest.config.ts"],
+  "exclude": ["tests/e2e"]
+}

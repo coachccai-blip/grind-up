@@ -1,0 +1,18 @@
+# Dépendances et fichiers générés
+node_modules/
+dist/
+.netlify/
+coverage/
+playwright-report/
+test-results/
+
+# Zips de livraison (fabriqués par `npm run zip`, attachés aux versions GitHub)
+*.zip
+
+# Secrets : jamais dans le dépôt ni dans le zip
+.env
+.env.*
+
+# Divers
+.DS_Store
+*.log

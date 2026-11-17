@@ -1,0 +1,41 @@
+# Configuration Netlify de Grind up.
+# Netlify lit ce fichier quand il construit le projet (zip déposé ou dépôt GitHub relié).
+
+[build]
+  # Commande de construction : compile l'interface en fichiers statiques.
+  command = "npm run build"
+  # Dossier publié.
+  publish = "dist"
+
+[build.environment]
+  # Version de Node pour la construction ; les fonctions s'exécutent avec la même.
+  NODE_VERSION = "22"
+  # N'installer que ce qui sert à construire et à faire tourner le site,
+  # pas les outils de développement et de test.
+  NPM_FLAGS = "--omit=dev"
+
+[functions]
+  # Dossier des fonctions serveur (appelées sous /api/).
+  directory = "netlify/functions"
+
+[dev]
+  # `netlify dev` lance Vite pour l'interface et sert les fonctions sur le même port.
+  framework = "#custom"
+  command = "npm run dev"
+  targetPort = 5173
+  port = 8888
+  autoLaunch = false
+
+# Application monopage : toute adresse inconnue renvoie l'interface.
+# Les adresses /api/* sont servies par la fonction, qui passe avant cette règle.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "same-origin"

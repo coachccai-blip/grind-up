@@ -1,0 +1,72 @@
+# Tests automatiques : lancés sur chaque demande de fusion et à chaque arrivée sur main.
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifications:
+    name: Règles, API et construction
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Mise en forme
+        run: npm run format:check
+      - name: Analyse du code
+        run: npm run lint
+      - name: Types
+        run: npm run typecheck
+      - name: Tests des règles et de l'API
+        run: npm test
+      - name: Construction du site
+        run: npm run build
+      - name: Fabrication du zip
+        run: npm run zip
+      - name: Construction à partir du zip, comme le fait Netlify
+        run: |
+          mkdir "$RUNNER_TEMP/depuis-le-zip"
+          unzip -q quetes-v*.zip -d "$RUNNER_TEMP/depuis-le-zip"
+          cd "$RUNNER_TEMP/depuis-le-zip"
+          npm install --omit=dev --no-audit --no-fund
+          npm run build
+          test -f dist/index.html
+
+  navigateur:
+    name: Parcours dans le navigateur
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Installation du navigateur de test
+        run: npx playwright install --with-deps chromium
+      - name: Parcours sur téléphone et sur ordinateur
+        run: npm run test:e2e
+      - name: Rapport en cas d'échec
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-playwright
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7

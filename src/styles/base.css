@@ -1,0 +1,84 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-page);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+p,
+ul {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Une seule colonne, en respectant les zones sûres de l'écran (encoche, barre d'accueil). */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 640px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+.card {
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-target);
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.button--primary {
+  background: var(--gradient-ocean);
+}
+
+.button--secondary {
+  background: var(--color-card);
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+  color: var(--color-accent);
+}

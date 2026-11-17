@@ -1,0 +1,32 @@
+/*
+ * Palette de la section 8 du brief. Thème clair uniquement.
+ * Règle : sur un fond pastel ou un dégradé, le texte est toujours en bleu nuit ;
+ * le texte secondaire et le bleu soutenu ne s'emploient que sur le blanc et le fond de page.
+ */
+:root {
+  color-scheme: only light;
+
+  --color-page: #f5f9ff;
+  --color-card: #ffffff;
+  --color-text: #1f2a44;
+  --color-text-secondary: #5b6b8a;
+  --color-accent: #2a66d9;
+
+  --gradient-sky: linear-gradient(135deg, #cfe8ff, #a9ccff);
+  --gradient-ocean: linear-gradient(135deg, #9cc7ff, #7aa5f7);
+
+  --color-maths: #e4e1ff;
+  --color-memorisation: #d5f3ea;
+  --color-sport: #ffe5d6;
+  --color-other: #fff3c9;
+
+  --color-success: #e1f5c4;
+  --color-warning: #ffe8cc;
+  --color-urgent: #ffdde1;
+
+  --radius-card: 16px;
+  --shadow-card: 0 1px 3px rgb(31 42 68 / 8%);
+  --touch-target: 44px;
+
+  --font-family: 'Nunito', ui-rounded, 'Segoe UI', system-ui, -apple-system, sans-serif;
+}

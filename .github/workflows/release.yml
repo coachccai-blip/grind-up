@@ -1,0 +1,64 @@
+# Publication d'une version : quand la version de package.json change sur main,
+# cette action crée la version « v<version> » dans l'onglet Releases et y attache
+# le zip à déposer sur Netlify (quetes-v<version>.zip).
+name: Version
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: version
+  cancel-in-progress: false
+
+jobs:
+  publier:
+    name: Publier la version et son zip
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Lire la version
+        id: version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" > /dev/null 2>&1; then
+            echo "deja_publiee=true" >> "$GITHUB_OUTPUT"
+            echo "La version v$version est déjà publiée : rien à faire."
+          else
+            echo "deja_publiee=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Installer les dépendances
+        if: steps.version.outputs.deja_publiee == 'false'
+        run: npm ci
+
+      - name: Vérifier le projet avant de publier
+        if: steps.version.outputs.deja_publiee == 'false'
+        run: npm run check
+
+      - name: Fabriquer le zip
+        if: steps.version.outputs.deja_publiee == 'false'
+        run: npm run zip
+
+      - name: Publier la version
+        if: steps.version.outputs.deja_publiee == 'false'
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          gh release create "v$version" "quetes-v$version.zip" \
+            --target "$GITHUB_SHA" \
+            --title "Grind up v$version" \
+            --notes "Zip à déposer sur Netlify : quetes-v$version.zip. La marche à suivre est dans le README, section « Mise en ligne sur Netlify »." \
+            --generate-notes

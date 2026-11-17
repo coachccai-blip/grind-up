@@ -1,0 +1,81 @@
+.deploy-check__title {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.deploy-check__subtitle,
+.deploy-check__hint,
+.deploy-check__footer {
+  color: var(--color-text-secondary);
+}
+
+.deploy-check__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.deploy-check__result-title,
+.deploy-check__section-title {
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+/* Sur un fond pastel, le texte reste en bleu nuit. */
+.deploy-check__result.deploy-check__result--ok {
+  background: var(--color-success);
+}
+
+.deploy-check__result.deploy-check__result--ko {
+  background: var(--color-urgent);
+}
+
+.deploy-check__checks {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.deploy-check__check-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.deploy-check__check-label {
+  font-weight: 700;
+}
+
+.deploy-check__status {
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.deploy-check__status--ok {
+  background: var(--color-success);
+}
+
+.deploy-check__status--ko {
+  background: var(--color-urgent);
+}
+
+.deploy-check__check-detail {
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.deploy-check__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.deploy-check__footer {
+  font-size: 0.875rem;
+}
