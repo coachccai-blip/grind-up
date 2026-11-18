@@ -28,6 +28,7 @@ const premierDegre = defineExercise({
       '3. Divise les deux membres par le coefficient de x.',
       '4. Vérifie : remplace x par ta solution dans l’équation de départ.',
     ].join('\n'),
+    'Attention au signe moins devant une parenthèse : le nombre négatif multiplie chaque terme, avec son signe. Par exemple, −2(x − 5) = −2x + 10.',
   ),
   example: {
     statement: 'Résous l’équation 5(x − 1) = 2x + 13.',
@@ -121,7 +122,7 @@ const premierDegre = defineExercise({
     }),
     exact({
       prompt: 'Résous l’équation 2(3x − 5) = 4x + 3. Écris la valeur de x, en écriture décimale.',
-      answers: ['6,5'],
+      answers: ['6,5', '13/2'],
       correction: {
         steps: [
           [
@@ -166,29 +167,29 @@ const premierDegre = defineExercise({
       },
     }),
     exact({
-      prompt: 'Résous l’équation 10 − 3(x − 2) = x + 4. Écris la valeur de x.',
-      answers: ['3'],
+      prompt: 'Résous l’équation 10 − 3(x − 2) = x − 4. Écris la valeur de x.',
+      answers: ['5'],
       correction: {
         steps: [
           [
-            '10 − 3x + 6 = x + 4',
+            '10 − 3x + 6 = x − 4',
             'La multiplication est prioritaire : on ne calcule pas 10 − 3. On développe en distribuant −3 aux deux termes de la parenthèse : −3 × x = −3x et −3 × (−2) = 6.',
           ],
-          ['16 − 3x = x + 4', 'On réduit le membre de gauche : 10 + 6 = 16.'],
+          ['16 − 3x = x − 4', 'On réduit le membre de gauche : 10 + 6 = 16.'],
           [
-            '−3x − x = 4 − 16',
+            '−3x − x = −4 − 16',
             'On soustrait x aux deux membres, puis on soustrait 16 aux deux membres.',
           ],
-          ['−4x = −12', 'On réduit chaque membre. Le coefficient de x est négatif.'],
+          ['−4x = −20', 'On réduit chaque membre. Le coefficient de x est négatif.'],
           [
-            'x = −12 ÷ (−4) = 3',
-            'On divise les deux membres par −4. Le quotient de deux nombres négatifs est positif : la solution est 3.',
+            'x = −20 ÷ (−4) = 5',
+            'On divise les deux membres par −4. Le quotient de deux nombres négatifs est positif : la solution est 5.',
           ],
         ],
         mistake:
           'oublier que le signe moins porte sur toute la parenthèse, et écrire 10 − 3x − 6. Le produit de deux nombres négatifs est positif : −3 × (−2) = 6.',
         check:
-          'on remplace x par 3 dans l’équation de départ. À gauche : 10 − 3 × (3 − 2) = 10 − 3 × 1 = 7. À droite : 3 + 4 = 7. Les deux membres sont égaux.',
+          'on remplace x par 5 dans l’équation de départ. À gauche : 10 − 3 × (5 − 2) = 10 − 3 × 3 = 1. À droite : 5 − 4 = 1. Les deux membres sont égaux.',
       },
     }),
   ],
@@ -205,11 +206,11 @@ const produitNul = defineExercise({
     '**Équation produit nul.** Un produit est nul si, et seulement si, l’un au moins de ses facteurs est nul. Pour résoudre (ax + b)(cx + d) = 0, tu résous donc deux équations du premier degré : ax + b = 0, puis cx + d = 0. Les solutions s’écrivent avec « ou ».',
     '**Équation x² = a.** Le nombre de solutions dépend du signe de a :',
     [
-      '- si a > 0, deux solutions opposées : √a et −√a. Ainsi, x² = 9 a pour solutions 3 et −3 ;',
+      '- si a > 0, deux solutions opposées : √a et −√a. Ainsi, les solutions de x² = 9 sont 3 et −3 ;',
       '- si a = 0, une seule solution : 0 ;',
       '- si a < 0, aucune solution, car un carré n’est jamais négatif.',
     ].join('\n'),
-    '**Si le premier membre n’est pas un produit.** Il te faut d’abord un produit nul : regroupe tous les termes dans le premier membre, pour que le second soit 0, puis factorise. Par exemple, x² − 5x = x(x − 5) : x est un facteur commun aux deux termes.',
+    '**Si le membre de gauche n’est pas un produit.** Il te faut d’abord un produit nul : regroupe tous les termes dans le membre de gauche, pour que celui de droite soit 0, puis factorise. Par exemple, x² − 5x = x(x − 5) : x est un facteur commun aux deux termes.',
   ),
   example: [
     {
@@ -217,7 +218,7 @@ const produitNul = defineExercise({
       steps: [
         [
           'x − 5 = 0 ou 2x + 6 = 0',
-          'Le premier membre est un produit de deux facteurs, et le second membre est 0. On ne développe pas : un produit est nul si, et seulement si, l’un de ses facteurs est nul.',
+          'Le membre de gauche est un produit de deux facteurs, et le membre de droite est 0. On ne développe pas : un produit est nul si, et seulement si, l’un de ses facteurs est nul.',
         ],
         [
           'x = 5 ou 2x = −6',
@@ -232,20 +233,20 @@ const produitNul = defineExercise({
         'L’équation a deux solutions : 5 et −3. On vérifie : pour x = 5, le premier facteur vaut 5 − 5 = 0 ; pour x = −3, le second vaut 2 × (−3) + 6 = 0.',
     },
     {
-      statement: 'Résous l’équation x² + 7x = 0.',
+      statement: 'Résous l’équation x² + 11x = 0.',
       steps: [
         [
-          'x(x + 7) = 0',
-          'Le premier membre est une somme : pour obtenir un produit, on factorise. Le facteur commun aux deux termes est x, car x² = x × x et 7x = x × 7.',
+          'x(x + 11) = 0',
+          'Le membre de gauche est une somme : pour obtenir un produit, on factorise. Le facteur commun aux deux termes est x, car x² = x × x et 11x = x × 11.',
         ],
         [
-          'x = 0 ou x + 7 = 0',
-          'On a maintenant un produit nul : l’un des deux facteurs, x ou x + 7, est nul.',
+          'x = 0 ou x + 11 = 0',
+          'On a maintenant un produit nul : l’un des deux facteurs, x ou x + 11, est nul.',
         ],
-        ['x = 0 ou x = −7', 'On soustrait 7 aux deux membres de la seconde équation.'],
+        ['x = 0 ou x = −11', 'On soustrait 11 aux deux membres de la seconde équation.'],
       ],
       conclusion:
-        'L’équation a deux solutions : 0 et −7. Attention : diviser les deux membres par x ferait perdre la solution 0.',
+        'L’équation a deux solutions : 0 et −11. Attention : diviser les deux membres par x ferait perdre la solution 0.',
     },
   ],
   questions: [
@@ -257,7 +258,7 @@ const produitNul = defineExercise({
         steps: [
           [
             'x − 4 = 0 ou x + 7 = 0',
-            'Le premier membre est un produit, le second est 0. Un produit est nul si, et seulement si, l’un de ses facteurs est nul : on écrit une équation par facteur.',
+            'Le membre de gauche est un produit, celui de droite est 0. Un produit est nul si, et seulement si, l’un de ses facteurs est nul : on écrit une équation par facteur.',
           ],
           [
             'x = 4 ou x = −7',
@@ -360,7 +361,7 @@ const produitNul = defineExercise({
         steps: [
           [
             'x² est positif ou nul',
-            'Le premier membre est le carré d’un nombre. Que ce nombre soit positif ou négatif, son carré est positif ou nul : par exemple, 4² = 16 et (−4)² = 16.',
+            'Le membre de gauche est le carré d’un nombre. Que ce nombre soit positif ou négatif, son carré est positif ou nul : par exemple, 4² = 16 et (−4)² = 16.',
           ],
           [
             '−16 est négatif',
@@ -375,7 +376,7 @@ const produitNul = defineExercise({
           ],
           [
             'x = −4',
-            'mettre un signe moins devant la solution ne rend pas son carré négatif : (−4)² = 16.',
+            'mettre un signe moins devant la solution ne rend pas son carré négatif : (−4)² = 16. Attention à la calculatrice : sans les parenthèses, elle calcule l’opposé de 4², soit −16, et non le carré de −4.',
           ],
           [
             'x = −8',
@@ -383,7 +384,7 @@ const produitNul = defineExercise({
           ],
         ],
         check:
-          'on essaie quelques nombres : 4² = 16, (−4)² = 16 et 0² = 0. Aucun carré n’est négatif.',
+          'un carré est le produit d’un nombre par lui-même, donc de deux nombres de même signe : il est positif ou nul. Par exemple, 4² = 16, (−4)² = 16 et 0² = 0.',
       },
     }),
     qcm({
@@ -394,7 +395,7 @@ const produitNul = defineExercise({
         steps: [
           [
             'x(x − 8) = 0',
-            'Le second membre est 0, mais le premier membre est une différence : on le factorise. Le facteur commun aux deux termes est x, car x² = x × x et 8x = x × 8.',
+            'Le membre de droite est 0, mais le membre de gauche est une différence : on le factorise. Le facteur commun aux deux termes est x, car x² = x × x et 8x = x × 8.',
           ],
           [
             'x = 0 ou x − 8 = 0',
@@ -427,11 +428,11 @@ const produitNul = defineExercise({
         steps: [
           [
             '3x² − 12x = 0',
-            'L’inconnue figure dans les deux membres. On soustrait 12x aux deux membres pour obtenir un second membre nul.',
+            'L’inconnue figure dans les deux membres. On soustrait 12x aux deux membres : le membre de droite devient 0.',
           ],
           [
             '3x(x − 4) = 0',
-            'On factorise le premier membre. Le facteur commun aux deux termes est 3x, car 3x² = 3x × x et 12x = 3x × 4.',
+            'On factorise le membre de gauche. Le facteur commun aux deux termes est 3x, car 3x² = 3x × x et 12x = 3x × 4.',
           ],
           [
             '3x = 0 ou x − 4 = 0',
@@ -439,7 +440,7 @@ const produitNul = defineExercise({
           ],
           [
             'x = 0 ou x = 4',
-            'On divise par 3 les deux membres de la première équation : 0 ÷ 3 = 0. On ajoute 4 aux deux membres de la seconde. L’équation a deux solutions : 0 et 4.',
+            'On divise par 3 les deux membres de la première équation : 0 ÷ 3 = 0. On ajoute 4 aux deux membres de la seconde. L’équation a deux solutions : 0 et 4. On peut aussi factoriser par x seul, x(3x − 12) = 0, ou diviser d’abord les deux membres par 3, qui n’est pas nul ; jamais par x, qui peut l’être.',
           ],
         ],
         traps: [
@@ -449,7 +450,7 @@ const produitNul = defineExercise({
           ],
           [
             'x = 0 ou x = −4',
-            'le second facteur est x − 4, et non x + 4. L’équation x − 4 = 0 donne x = 4.',
+            '12x a changé de membre sans changer de signe : on a écrit 3x² + 12x au lieu de 3x² − 12x, d’où le facteur x + 4. On soustrait 12x aux deux membres : le second facteur est x − 4, qui s’annule pour x = 4.',
           ],
           [
             'x = 3 ou x = 4',
@@ -532,7 +533,7 @@ const problemes = defineExercise({
           ],
         ],
         mistake:
-          'noter les trois nombres x, 2x et 3x. « Consécutifs » veut dire qu’on ajoute 1 pour passer au nombre suivant, et non qu’on multiplie.',
+          'répondre 38. C’est 114 ÷ 3, le nombre du milieu : le plus petit est 38 − 1 = 37. Autre erreur : noter les trois nombres x, 2x et 3x. « Consécutifs » veut dire qu’on ajoute 1 pour passer au nombre suivant, et non qu’on multiplie.',
         check: 'les trois nombres sont 37, 38 et 39, et leur somme est 37 + 38 + 39 = 114.',
       },
     }),

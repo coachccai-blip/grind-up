@@ -37,6 +37,10 @@ describe('typographie des exercices', () => {
     )
     // Une liste de valeurs n'est pas un grand nombre.
     expect(typography('Notes : 8 ; 12 ; 15')).toBe('Notes\u00A0: 8\u00A0; 12\u00A0; 15')
+    // Une flèche ne se sépare pas de ce qu'elle relie : la ligne se coupe après le point-virgule.
+    expect(typography('g : x ↦ 5x ; 3 → -1 ; 4 → 7')).toBe(
+      'g\u00A0: x\u00A0↦\u00A05x\u00A0; 3\u00A0→\u00A0−1\u00A0; 4\u00A0→\u00A07',
+    )
   })
 
   it('écrit le signe moins des calculs et garde les tirets des mots et des listes', () => {

@@ -75,7 +75,7 @@ const notion = defineExercise({
           ],
           [
             '8 est l’image de 3 par f',
-            'Le résultat s’appelle l’image. On peut dire aussi, dans l’autre sens, que 3 est un antécédent de 8 par f.',
+            'Le résultat s’appelle l’image. On peut dire aussi, dans l’autre sens, que 3 est un antécédent de 8 par f. À retenir : f(antécédent) = image.',
           ],
         ],
         traps: [
@@ -92,7 +92,6 @@ const notion = defineExercise({
             'f(3) n’est pas un produit. Les parenthèses entourent le nombre auquel on applique la fonction f.',
           ],
         ],
-        check: 'on retient le schéma f(antécédent) = image.',
       },
     }),
     qcm({
@@ -225,7 +224,7 @@ const notion = defineExercise({
           ],
           [
             'Le nombre 9 a deux antécédents : 3 et −3',
-            'Deux nombres différents ont la même image, 9. Un nombre peut donc avoir plusieurs antécédents.',
+            'Deux nombres différents ont la même image, 9. Ce sont les seuls : l’équation x² = 9 n’a que deux solutions, 3 et −3. Un nombre peut donc avoir plusieurs antécédents.',
           ],
         ],
         traps: [
@@ -428,7 +427,7 @@ const lineaires = defineExercise({
           ],
           [
             'Une droite horizontale qui passe par le point (0 ; 2)',
-            'cette droite représente la fonction constante x ↦ 2 : tous les nombres y ont la même image, 2.',
+            'cette droite représente la fonction constante x ↦ 2 : avec cette fonction, tous les nombres ont la même image, 2.',
           ],
         ],
         check:
@@ -459,10 +458,11 @@ const lineaires = defineExercise({
           ],
           [
             'x ↦ x + 11,5',
-            'on passe bien de 2,5 à 14 en ajoutant 11,5, mais une situation de proportionnalité se traduit par une multiplication. Avec cette fonction, 0 kg de cerises coûterait 11,50 €.',
+            'on passe bien de 2,5 à 14 en ajoutant 11,5, mais une situation de proportionnalité se traduit par une multiplication. Avec cette fonction, 0 kg de cerises coûterait 11,50 €, et 5 kg coûteraient 16,50 € au lieu de 28 €.',
           ],
         ],
-        check: 'pour 2,5 kg, la fonction donne 5,6 × 2,5 = 14 : c’est bien le prix de l’énoncé.',
+        check:
+          'pour 2,5 kg, la fonction donne 5,6 × 2,5 = 14. Et le prix reste proportionnel : 0 kg coûte 0 €, et 5 kg, le double de 2,5 kg, coûtent 5,6 × 5 = 28, le double de 14.',
       },
     }),
     qcm({
@@ -517,7 +517,8 @@ const affines = defineExercise({
       '- b est l’**ordonnée à l’origine** : c’est l’image de 0, car f(0) = a × 0 + b = b.',
       '- La représentation graphique de f est une droite. Un point de coordonnées (x ; y) est sur cette droite si, et seulement si, y = f(x).',
     ].join('\n'),
-    '**Trouver a et b avec deux images.** Calcule d’abord a = différence des images ÷ différence des antécédents, en prenant les deux différences dans le même ordre. Trouve ensuite b en écrivant l’une des deux images.',
+    '**Pour aller plus loin : trouver a et b avec deux images.** Calcule d’abord a = différence des images ÷ différence des antécédents, en prenant les deux différences dans le même ordre. Trouve ensuite b en écrivant l’une des deux images.',
+    '**Comparer deux tarifs.** Cherche le nombre pour lequel ils coûtent le même prix, puis teste un nombre de chaque côté.',
     'Deux cas particuliers : si b = 0, la fonction est linéaire ; si a = 0, elle est constante.',
   ),
   example: [
@@ -588,33 +589,33 @@ const affines = defineExercise({
     }),
     qcm({
       prompt:
-        'La fonction affine g est définie par g(x) = 4x − 6. Quel est l’antécédent de 10 par g ?',
-      choices: ['34', '1', '4', '8,5'],
-      answer: '4',
+        'La fonction affine g est définie par g(x) = 4x − 6. Quel est l’antécédent de 14 par g ?',
+      choices: ['50', '2', '5', '9,5'],
+      answer: '5',
       correction: {
         steps: [
           [
-            '4x − 6 = 10',
-            'On cherche le nombre x dont l’image est 10 : on résout l’équation g(x) = 10.',
+            '4x − 6 = 14',
+            'On cherche le nombre x dont l’image est 14 : on résout l’équation g(x) = 14.',
           ],
-          ['4x = 10 + 6 = 16', 'On ajoute 6 aux deux membres.'],
-          ['x = 16 ÷ 4 = 4', 'On divise les deux membres par 4 : l’antécédent de 10 par g est 4.'],
+          ['4x = 14 + 6 = 20', 'On ajoute 6 aux deux membres.'],
+          ['x = 20 ÷ 4 = 5', 'On divise les deux membres par 4 : l’antécédent de 14 par g est 5.'],
         ],
         traps: [
           [
-            '34',
-            'c’est l’image de 10, car 4 × 10 − 6 = 34. Ici, 10 est le résultat, et non le nombre de départ.',
+            '50',
+            'c’est l’image de 14, car 4 × 14 − 6 = 50. Ici, 14 est le résultat, et non le nombre de départ.',
           ],
           [
-            '1',
-            'le nombre 6 a été soustrait au lieu d’être ajouté : (10 − 6) ÷ 4 = 1. Pour annuler une soustraction, on ajoute.',
+            '2',
+            'le nombre 6 a été soustrait au lieu d’être ajouté : (14 − 6) ÷ 4 = 2. Pour annuler une soustraction, on ajoute.',
           ],
           [
-            '8,5',
-            'la division par 4 a été faite en premier, sans diviser le 6 : 10 ÷ 4 + 6 = 8,5. On ajoute 6 d’abord, on divise ensuite.',
+            '9,5',
+            'la division par 4 a été faite en premier, sans diviser le 6 : 14 ÷ 4 + 6 = 9,5. On ajoute 6 d’abord, on divise ensuite.',
           ],
         ],
-        check: 'g(4) = 4 × 4 − 6 = 10.',
+        check: 'g(5) = 4 × 5 − 6 = 14.',
       },
     }),
     qcm({
@@ -694,19 +695,19 @@ const affines = defineExercise({
       correction: {
         steps: [
           [
-            'a = (1 − 7) ÷ (4 − 1)',
-            'On calcule d’abord le coefficient directeur : la différence des images, divisée par la différence des antécédents. Les deux différences se prennent dans le même ordre : p(4) − p(1) pour les images, 4 − 1 pour les antécédents.',
+            'p(1) = −2 × 1 + 9 = 7 et p(4) = −2 × 4 + 9 = 1',
+            'Première méthode : on teste chaque expression proposée, en calculant l’image de 1 et celle de 4. Seule p(x) = −2x + 9 redonne les deux images de l’énoncé.',
           ],
           [
-            'a = −6 ÷ 3 = −2',
-            'Quand x augmente de 3, l’image diminue de 6 : le coefficient directeur est négatif.',
+            'a = (1 − 7) ÷ (4 − 1) = −6 ÷ 3 = −2',
+            'Seconde méthode, sans regarder les choix. Quand x passe de 1 à 4, il augmente de 3, et l’image passe de 7 à 1 : elle diminue de 6. Elle diminue donc de 2 quand x augmente de 1 : le coefficient directeur est −2.',
           ],
           [
             '−2 × 1 + b = 7',
             'On sait maintenant que p(x) = −2x + b. Pour trouver b, on écrit l’une des images connues : ici, p(1) = 7.',
           ],
           ['b = 7 + 2 = 9', 'On calcule −2 × 1 = −2, puis on ajoute 2 aux deux membres.'],
-          ['p(x) = −2x + 9', 'On écrit l’expression avec les deux nombres trouvés.'],
+          ['p(x) = −2x + 9', 'Les deux méthodes donnent la même expression.'],
         ],
         traps: [
           [
@@ -715,7 +716,7 @@ const affines = defineExercise({
           ],
           [
             'p(x) = −6x + 13',
-            'la différence des images, −6, n’a pas été divisée par la différence des antécédents, 3.',
+            'la différence des images, −6, n’a pas été divisée par la différence des antécédents, 3. Avec cette expression, l’image de 4 serait −11.',
           ],
           [
             'p(x) = −2x + 7',
@@ -723,7 +724,7 @@ const affines = defineExercise({
           ],
         ],
         check:
-          'p(1) = −2 × 1 + 9 = 7 et p(4) = −2 × 4 + 9 = 1 : on retrouve les deux images de l’énoncé.',
+          'quand x augmente de 1, l’image diminue de 2 : p(2) = 5, p(3) = 3, puis p(4) = 1. On retrouve bien l’image de 4.',
       },
     }),
     qcm({
@@ -757,7 +758,7 @@ const affines = defineExercise({
           ],
           [
             'Le tarif A en dessous de 10 entrées, le tarif B au-dessus',
-            'Chaque entrée de plus coûte 9 € au tarif A, contre 3 € au tarif B : au-delà de 10 entrées, l’écart se creuse en faveur du tarif B.',
+            'À 10 entrées, les prix sont égaux. Chaque entrée de plus coûte 9 € au tarif A contre 3 € au tarif B : au-dessus de 10 entrées, le tarif A est le plus cher. Chaque entrée de moins fait économiser 9 € au tarif A contre 3 € au tarif B : en dessous de 10 entrées, le tarif A est le moins cher. Un test de chaque côté suffit donc.',
           ],
         ],
         traps: [
