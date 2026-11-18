@@ -46,6 +46,9 @@ export default defineConfig({
             use: { ...devices['iPhone 14'] },
             // Le parcours de bout en bout, et une quête de chaque format.
             grep: /parcours complet/,
+            // Sur les machines de GitHub, le moteur de Safari est deux à trois fois plus lent que
+            // Chrome : un parcours complet y dépasse parfois les 30 secondes accordées par défaut.
+            timeout: 90_000,
           },
         ]
       : []),
