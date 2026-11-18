@@ -9,12 +9,25 @@ import { CopyButton } from '../../ui/CopyButton'
 import { PasswordField } from '../../ui/Field'
 import { Identifier } from '../../ui/Identifier'
 import { Notice } from '../../ui/Notice'
+import { BadgeList } from '../progress/BadgeList'
+import { XpJournal } from '../progress/XpJournal'
+import { AvatarPicker } from './AvatarPicker'
+import { useJournal, useProgress } from './progress-api'
 import styles from './ProfilePage.module.css'
 
-/** Profil de l'élève : pseudo, identifiant à recopier, mot de passe, déconnexion. */
+/**
+ * Profil de l'élève : pseudo, identifiant à recopier, avatar, badges obtenus et à
+ * débloquer, historique d'XP, mot de passe, déconnexion.
+ */
+/** Nombre de lignes du journal montrées d'emblée ; le reste se déplie. */
+const RECENT_SHOWN = 5
+
 export function ProfilePage() {
   const user = useCurrentUser()
   const logout = useLogout()
+  const progress = useProgress()
+  const [showAll, setShowAll] = useState(false)
+  const journal = useJournal(showAll)
 
   return (
     <>
@@ -32,7 +45,39 @@ export function ProfilePage() {
           )}
         </div>
         {user.publicId && <CopyButton text={user.publicId} label="Copier mon identifiant" />}
+        <details className={styles.avatars}>
+          <summary>Changer d’avatar</summary>
+          <AvatarPicker current={user.avatar} />
+        </details>
       </Card>
+
+      {progress.isError && <Notice tone="error">{errorMessage(progress.error)}</Notice>}
+      {progress.data && (
+        <>
+          <Card>
+            <h2 className={styles.sectionTitle}>Badges</h2>
+            <BadgeList badges={progress.data.badges} />
+          </Card>
+          <Card>
+            <h2 className={styles.sectionTitle}>Historique d’XP</h2>
+            {progress.data.recentRewards.length === 0 ? (
+              <p className={styles.caption}>
+                Ton XP gagnée apparaîtra ici dès ta première quête validée.
+              </p>
+            ) : (
+              <>
+                <XpJournal entries={journal.data ?? progress.data.recentRewards} />
+                {!showAll && progress.data.recentRewards.length >= RECENT_SHOWN && (
+                  <Button variant="quiet" onClick={() => setShowAll(true)}>
+                    Voir tout l’historique
+                  </Button>
+                )}
+                {journal.isError && <Notice tone="error">{errorMessage(journal.error)}</Notice>}
+              </>
+            )}
+          </Card>
+        </>
+      )}
 
       <ChangePasswordCard />
 

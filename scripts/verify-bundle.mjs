@@ -223,6 +223,15 @@ async function runScenario(handler) {
     body: { answers: { [itemId]: 'sésame-du-paquet' } },
   })
   check('Une quête validée ne se crédite pas deux fois', replay.status === 409)
+  const progress = await call(handler, 'GET', '/api/progress', { cookie: student.cookie })
+  check(
+    'La progression suit : XP, niveau, série et premier badge',
+    progress.json?.progress?.xp === 110 &&
+      progress.json?.progress?.level?.level === 2 &&
+      progress.json?.progress?.streak?.current === 1 &&
+      progress.json?.progress?.celebration?.badges?.includes('first_step') === true,
+    JSON.stringify(progress.json?.progress?.level),
+  )
 
   // 8. Rien de ce que renvoie la fonction ne contient le code admin.
   const everything = JSON.stringify([health, student, session, refused, admin, asAdmin, wrong])

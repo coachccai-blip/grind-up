@@ -1,0 +1,97 @@
+.celebration {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* L'XP gagnée : le chiffre arrive en grossissant, en moins d'une seconde. */
+.gain {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  animation: pop 500ms ease-out both;
+}
+
+.quests {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.quests li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-3);
+  overflow-wrap: anywhere;
+}
+
+.questXp {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Écran de célébration : l'un des cinq endroits où un dégradé est permis. */
+.levelUp,
+.badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  animation: rise 500ms ease-out both;
+}
+
+.levelUp {
+  background: var(--gradient-sky);
+  animation-delay: 150ms;
+}
+
+.badge {
+  background: var(--color-other);
+  animation-delay: 300ms;
+}
+
+.levelUp > span,
+.badge > span:last-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.emoji {
+  flex: none;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.detail {
+  font-size: 0.9375rem;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

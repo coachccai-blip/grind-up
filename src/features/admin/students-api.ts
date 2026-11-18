@@ -6,7 +6,12 @@ import type {
   TemporaryPasswordResponse,
   UpdateStudentRequest,
 } from '../../../shared/schemas/admin'
+import type {
+  AdminStudentProgressResponse,
+  XpAdjustmentRequest,
+} from '../../../shared/schemas/progress'
 import { api } from '../../lib/api'
+import { LIVE } from '../../lib/freshness'
 
 /** Données des comptes élèves, pour l'espace admin. */
 const studentsKey = ['admin', 'students'] as const
@@ -16,6 +21,7 @@ export function useStudents() {
     queryKey: studentsKey,
     queryFn: async ({ signal }) =>
       (await api<AdminStudentsResponse>('/api/admin/students', { signal })).students,
+    ...LIVE,
   })
 }
 
@@ -58,5 +64,34 @@ export function useDeleteStudent(id: string) {
   return useMutation({
     mutationFn: () => api<void>(`/api/admin/students/${id}`, { method: 'DELETE' }),
     onSuccess: () => cache.remove(id),
+  })
+}
+
+export const studentProgressKey = (id: string) => ['admin', 'student-progress', id] as const
+
+/** Progression d'un élève : ses quêtes, son journal d'XP, sa série, ses badges. */
+export function useStudentProgress(id: string) {
+  return useQuery({
+    queryKey: studentProgressKey(id),
+    queryFn: async ({ signal }) =>
+      (await api<AdminStudentProgressResponse>(`/api/admin/students/${id}/progress`, { signal }))
+        .progress,
+    ...LIVE,
+  })
+}
+
+/** Ajustement manuel d'XP : une ligne de plus au journal de l'élève. */
+export function useAdjustXp(id: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (request: XpAdjustmentRequest) =>
+      api<AdminStudentProgressResponse>(`/api/admin/students/${id}/xp`, {
+        method: 'POST',
+        body: request,
+      }),
+    onSuccess: ({ progress }) => {
+      queryClient.setQueryData(studentProgressKey(id), progress)
+      void queryClient.invalidateQueries({ queryKey: studentsKey })
+    },
   })
 }

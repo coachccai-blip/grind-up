@@ -1,0 +1,63 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3) var(--space-4);
+}
+
+.facts dt {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+.facts dd {
+  font-weight: 700;
+}
+
+.note {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+.assignments {
+  display: flex;
+  flex-direction: column;
+}
+
+.assignment {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--color-divider);
+}
+
+.assignment:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.what {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Geste sur la quête : sous sa ligne, aligné à gauche. */
+.rescue {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+@media (min-width: 640px) {
+  .facts {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

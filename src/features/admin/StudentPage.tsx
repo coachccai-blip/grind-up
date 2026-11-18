@@ -13,6 +13,7 @@ import { Field } from '../../ui/Field'
 import { Identifier } from '../../ui/Identifier'
 import { Notice } from '../../ui/Notice'
 import { StatusChip } from './StatusChip'
+import { StudentProgress } from './StudentProgress'
 import styles from './StudentPage.module.css'
 import {
   useDeleteStudent,
@@ -93,6 +94,8 @@ function StudentFile({ student }: { student: AdminStudent }) {
           </div>
         </dl>
       </Card>
+
+      <StudentProgress student={student} onNotice={setNotice} />
 
       <Card>
         <h2 className={styles.sectionTitle}>Actions</h2>

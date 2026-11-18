@@ -10,21 +10,19 @@ import type {
   ValidationsResponse,
 } from '../../../../shared/schemas/quests'
 import { api, errorMessage } from '../../../lib/api'
+import { LIVE } from '../../../lib/freshness'
 
 /** Quêtes et validations, pour l'espace admin. */
 const questsKey = ['admin', 'quests'] as const
 const questKey = (id: string) => ['admin', 'quest', id] as const
 const validationsKey = ['admin', 'validations'] as const
 
-/** Les élèves font avancer ces données sans l'admin : elles sont relues à chaque retour sur l'écran. */
-const FRESHNESS = { staleTime: 10_000, refetchOnWindowFocus: true } as const
-
 export function useAdminQuests() {
   return useQuery({
     queryKey: questsKey,
     queryFn: async ({ signal }) =>
       (await api<AdminQuestsResponse>('/api/admin/quests', { signal })).quests,
-    ...FRESHNESS,
+    ...LIVE,
   })
 }
 
@@ -34,7 +32,7 @@ export function useAdminQuest(id: string | undefined) {
     queryFn: async ({ signal }) =>
       (await api<AdminQuestResponse>(`/api/admin/quests/${id}`, { signal })).quest,
     enabled: id !== undefined,
-    ...FRESHNESS,
+    ...LIVE,
   })
 }
 
@@ -43,7 +41,7 @@ export function useValidations() {
     queryKey: validationsKey,
     queryFn: async ({ signal }) =>
       (await api<ValidationsResponse>('/api/admin/validations', { signal })).validations,
-    ...FRESHNESS,
+    ...LIVE,
   })
 }
 
@@ -151,16 +149,26 @@ type AssignmentAction =
   | { action: 'reject'; body: RejectRequest }
   | { action: 'reopen'; body?: undefined }
   | { action: 'attempts'; body: { count: number } }
+  | { action: 'cancel'; body?: { comment?: string } }
 
-/** Valider ou refuser une réalisation, rouvrir une quête expirée, redonner des tentatives. */
+/**
+ * Valider ou refuser une réalisation, rouvrir une quête expirée, redonner des
+ * tentatives, annuler une validation. Tout ce qui en dépend est relu ensuite.
+ */
 export function useAssignmentAction(questId?: string) {
   const cache = useQuestCache()
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ assignmentId, ...request }: AssignmentAction & { assignmentId: string }) =>
       api<AssignmentResponse>(`/api/admin/assignments/${assignmentId}/${request.action}`, {
         method: 'POST',
         body: request.body ?? {},
       }),
-    onSettled: () => cache.refresh(questId),
+    onSettled: () => {
+      cache.refresh(questId)
+      // Les fiches et la liste des élèves montrent leur XP et leurs quêtes.
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'student-progress'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'students'] })
+    },
   })
 }

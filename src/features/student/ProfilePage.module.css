@@ -42,3 +42,21 @@
     align-self: flex-start;
   }
 }
+
+.sectionTitle {
+  margin-bottom: var(--space-3);
+}
+
+/* La galerie d'avatars se déplie sous l'identité, sur toute la largeur de la carte. */
+.avatars {
+  flex-basis: 100%;
+}
+
+.avatars summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  color: var(--color-accent);
+  font-weight: 700;
+  cursor: pointer;
+}

@@ -3,13 +3,13 @@
 Plateforme de quêtes gamifiée pour élèves : un accompagnant donne des quêtes, les élèves les
 réalisent, gagnent de l'XP, montent de niveau et se comparent sur un leaderboard.
 
-**État : étape 3 sur 6, les quêtes.** L'admin crée des quêtes (brouillon, publication,
-duplication, archivage), les donne à un élève, à plusieurs ou à tous, et valide les réalisations.
-L'élève les réalise dans cinq formats : réponses exactes, QCM, cartes de mémorisation,
-déclaratif, réponse libre. Une quête validée crédite son XP, une seule fois ; une quête non
-terminée à sa deadline expire. Les niveaux, la série, les badges, le leaderboard et les bots
-arrivent aux étapes suivantes. Les choix faits là où le brief ne tranchait pas sont consignés
-dans [docs/decisions.md](docs/decisions.md).
+**État : étape 4 sur 6, la progression.** L'admin crée des quêtes dans cinq formats, les donne à
+ses élèves et valide les réalisations. Chaque quête validée crédite de l'XP : l'élève monte de
+niveau, tient sa série de jours, débloque des badges, et retrouve le tout sur son tableau de bord
+et son profil. L'admin suit chaque élève sur sa fiche (quêtes, journal d'XP), ajuste l'XP à la
+main ou annule une validation. Le leaderboard et les bots arrivent à l'étape suivante. Les choix
+faits là où le brief ne tranchait pas sont consignés dans
+[docs/decisions.md](docs/decisions.md).
 
 ## Mise en ligne sur Netlify
 
@@ -204,15 +204,18 @@ netlify.toml               construction, dossier publié, dossier des fonctions
 index.html, src/           interface (React)
   app/                     routes, protection des pages par rôle, session
   ui/                      composants partagés : bouton, carte, champ, avatar, fenêtre
-  features/                un dossier par espace : auth, student, admin, quests, deploy-check
+  features/                un dossier par espace : auth, student, admin, quests, progress,
+                           deploy-check
   styles/                  palette et règles de la section 8
 shared/                    code commun à l'interface et au serveur
-  rules/                   pseudo, identifiant, palette, avatars, quêtes, statuts, calcul de l'XP
+  rules/                   pseudo, identifiant, palette, avatars, quêtes, statuts, calcul de
+                           l'XP, niveaux, série, badges
   schemas/                 formats des échanges avec l'API
 server/                    logique serveur
   app.ts                   assemblage des routes ; tout ce qui est sous /admin exige un admin
   auth/                    mots de passe, sessions, limitation des tentatives, comptes
   quests/                  quêtes : création, correction automatique, validation, crédit de l'XP
+  progress/                progression : XP, niveau, série, badges, journal
   routes/                  une par domaine : comptes, élèves, quêtes, test de déploiement
   db/                      base SQLite dans Netlify Blobs, migrations
 netlify/functions/api.mts  point d'entrée unique de /api/*

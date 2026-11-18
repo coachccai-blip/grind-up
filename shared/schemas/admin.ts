@@ -11,6 +11,10 @@ export interface AdminStudent {
   /** Dates en UTC (ISO 8601). */
   createdAt: string
   lastActiveAt: string | null
+  xp: number
+  level: number
+  /** Missions accomplies : les quêtes validées. */
+  missions: number
 }
 
 export interface AdminStudentsResponse {

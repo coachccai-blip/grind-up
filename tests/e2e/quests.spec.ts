@@ -1,5 +1,6 @@
 import { expect, test, type Browser, type Page } from '@playwright/test'
 import {
+  acknowledgeCelebration,
   expectNoHorizontalScroll,
   openAdminScreen,
   openStudentScreen,
@@ -84,6 +85,12 @@ test.describe('parcours complet d’une quête', () => {
     // Deuxième tentative : la quête est validée et l'XP créditée, sans recharger la page.
     await student.getByLabel('2. La moitié de 7 ?').fill('3.5')
     await student.getByRole('button', { name: 'Valider mes réponses' }).click()
+    // L'annonce fête la validation, le passage au niveau 2 et le premier badge.
+    await acknowledgeCelebration(student, [
+      '+100\u00A0XP',
+      /Niveau 2/,
+      'Nouveau badge\u00A0: Premier pas',
+    ])
     await expect(student.getByRole('heading', { name: 'Quête validée' })).toBeVisible()
     await expect(student.getByText('+100\u00A0XP')).toBeVisible()
     await expect(student.getByText('Réponses acceptées')).toBeVisible()
@@ -136,6 +143,7 @@ test.describe('parcours complet d’une quête', () => {
     await student.getByRole('checkbox', { name: 'Lille' }).check()
     await student.getByRole('button', { name: 'Valider mes réponses' }).click()
 
+    await acknowledgeCelebration(student, ['+55\u00A0XP'])
     await expect(student.getByRole('heading', { name: 'Quête validée' })).toBeVisible()
     await expect(student.getByText('+55\u00A0XP')).toBeVisible()
     await expect(student.getByText('Bonus sans faute')).toBeVisible()
@@ -183,6 +191,7 @@ test.describe('parcours complet d’une quête', () => {
     }
     await student.getByRole('button', { name: 'Valider mes réponses' }).click()
 
+    await acknowledgeCelebration(student)
     await expect(student.getByRole('heading', { name: 'Quête validée' })).toBeVisible()
     await close()
   })
@@ -205,6 +214,7 @@ test.describe('parcours complet d’une quête', () => {
     await student.getByLabel('Un commentaire').fill('22 minutes, 3 km')
     await student.getByRole('button', { name: 'C’est fait' }).click()
 
+    await acknowledgeCelebration(student)
     await expect(student.getByRole('heading', { name: 'Quête validée' })).toBeVisible()
     await expect(student.getByText('22 minutes, 3 km')).toBeVisible()
     await close()
@@ -263,7 +273,9 @@ test.describe('parcours complet d’une quête', () => {
       page.getByText(`Réalisation de ${pseudo} validée\u00A0: +100\u00A0XP.`),
     ).toBeVisible()
 
+    // À son retour, l'élève découvre la validation faite en son absence.
     await student.reload()
+    await acknowledgeCelebration(student, ['+100\u00A0XP'])
     await expect(student.getByRole('heading', { name: 'Quête validée' })).toBeVisible()
     await expect(student.getByText('+100\u00A0XP')).toBeVisible()
     await close()
@@ -507,6 +519,7 @@ test.describe('deadline et expiration', () => {
     await student.reload()
     await student.getByLabel('1. 1 + 1 ?').fill('2')
     await student.getByRole('button', { name: 'Valider mes réponses' }).click()
+    await acknowledgeCelebration(student)
     await expect(student.getByRole('heading', { name: 'Quête validée' })).toBeVisible()
     // Moitié de la récompense, plus le bonus sans faute sur cette moitié.
     await expect(student.getByText('+55\u00A0XP')).toBeVisible()

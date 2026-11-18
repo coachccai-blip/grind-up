@@ -3,6 +3,7 @@ import { useCurrentUser } from '../../app/session'
 import { Avatar } from '../../ui/Avatar'
 import { classes } from '../../ui/classes'
 import { Emoji } from '../../ui/Emoji'
+import { CelebrationDialog } from './CelebrationDialog'
 import styles from './StudentLayout.module.css'
 
 /** Les quatre destinations de l'élève (section 8 : navigation élève). */
@@ -46,6 +47,7 @@ export function StudentLayout() {
       <main className={styles.main}>
         <Outlet />
       </main>
+      <CelebrationDialog />
     </div>
   )
 }

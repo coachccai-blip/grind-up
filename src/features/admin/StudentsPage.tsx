@@ -6,6 +6,7 @@ import { Avatar } from '../../ui/Avatar'
 import { Field } from '../../ui/Field'
 import { Identifier } from '../../ui/Identifier'
 import { Notice } from '../../ui/Notice'
+import { formatXp } from '../quests/QuestChips'
 import { InviteCard } from './AdminPages'
 import { StatusChip } from './StatusChip'
 import { studentMatches } from './student-search'
@@ -55,6 +56,10 @@ export function StudentsPage() {
                   <span className={styles.pseudo}>{student.pseudo}</span>
                   <span className={styles.identifier}>
                     <Identifier value={student.publicId} />
+                  </span>
+                  <span className={styles.stats}>
+                    Niveau {student.level} · {formatXp(student.xp)} · {student.missions} mission
+                    {student.missions > 1 ? 's' : ''}
                   </span>
                   {/* Seule l'exception est signalée : un compte actif n'a pas d'étiquette. */}
                   <span className={styles.status}>

@@ -15,6 +15,7 @@
   grid-template-areas:
     'avatar pseudo status'
     'avatar identifier identifier'
+    'avatar stats stats'
     'avatar activity activity';
   align-items: center;
   column-gap: var(--space-3);
@@ -44,6 +45,11 @@
   grid-area: identifier;
 }
 
+.stats {
+  grid-area: stats;
+  font-weight: 700;
+}
+
 .status {
   display: flex;
   grid-area: status;
@@ -59,8 +65,10 @@
 /* Ordinateur : les mêmes informations sur une seule ligne. */
 @media (min-width: 1024px) {
   .row {
-    grid-template-columns: auto minmax(160px, 1.2fr) 140px minmax(200px, 1fr) 150px;
-    grid-template-areas: 'avatar pseudo identifier activity status';
+    grid-template-columns:
+      auto minmax(140px, 1fr) 130px minmax(200px, 1.1fr) minmax(170px, 1fr)
+      auto;
+    grid-template-areas: 'avatar pseudo identifier stats activity status';
     padding: var(--space-3) var(--space-4);
   }
 }

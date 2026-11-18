@@ -22,9 +22,11 @@ import {
   serveQuestImage,
 } from '../quests/images.js'
 import { findQuest } from '../quests/store.js'
+import { cancelValidationRequestSchema } from '../../shared/schemas/progress.js'
 import {
   addAssignees,
   archiveQuest,
+  cancelSubmissionValidation,
   createQuest,
   duplicateQuest,
   grantAttempts,
@@ -190,6 +192,17 @@ adminValidationRoutes.post('/assignments/:id/reject', async (c) => {
   const now = c.var.now()
   const assignment = await c.var.storage.database.write((tx) =>
     rejectSubmission(tx, id, request, now),
+  )
+  return c.json<AssignmentResponse>({ assignment })
+})
+
+// Annule une validation : l'XP est retirée par une ligne négative, l'élève peut recommencer.
+adminValidationRoutes.post('/assignments/:id/cancel', async (c) => {
+  const id = c.req.param('id')
+  const { comment } = await parseBody(c, cancelValidationRequestSchema)
+  const now = c.var.now()
+  const assignment = await c.var.storage.database.write((tx) =>
+    cancelSubmissionValidation(tx, id, comment, now),
   )
   return c.json<AssignmentResponse>({ assignment })
 })

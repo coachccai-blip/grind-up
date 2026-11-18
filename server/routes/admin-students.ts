@@ -6,11 +6,16 @@ import {
   type TemporaryPasswordResponse,
 } from '../../shared/schemas/admin.js'
 import { pseudoKey } from '../../shared/rules/pseudo.js'
+import {
+  xpAdjustmentRequestSchema,
+  type AdminStudentProgressResponse,
+} from '../../shared/schemas/progress.js'
 import { generateTemporaryPassword, hashPassword } from '../auth/passwords.js'
 import { pseudoTaken } from '../auth/service.js'
 import { findStudentById, isPseudoTaken, listStudents, toAdminStudent } from '../auth/users.js'
 import type { AppEnv } from '../context.js'
 import { notFound, parseBody } from '../http.js'
+import { adjustXp, readAdminStudentProgress, totalsByUser, totalsOf } from '../progress/service.js'
 
 /** Gestion des comptes élèves par l'admin. Monté sous /admin, donc réservé aux admins. */
 export const adminStudentRoutes = new Hono<AppEnv>()
@@ -18,15 +23,45 @@ export const adminStudentRoutes = new Hono<AppEnv>()
 const studentNotFound = () => notFound('Cet élève est introuvable.')
 
 adminStudentRoutes.get('/', async (c) => {
-  const rows = await c.var.storage.database.read(listStudents)
-  return c.json<AdminStudentsResponse>({ students: rows.map(toAdminStudent) })
+  const students = await c.var.storage.database.read((tx) => {
+    const totals = totalsByUser(tx)
+    return listStudents(tx).map((row) => toAdminStudent(row, totals.get(row.id)))
+  })
+  return c.json<AdminStudentsResponse>({ students })
 })
 
 adminStudentRoutes.get('/:id', async (c) => {
   const id = c.req.param('id')
-  const row = await c.var.storage.database.read((tx) => findStudentById(tx, id))
-  if (!row) throw studentNotFound()
-  return c.json<AdminStudentResponse>({ student: toAdminStudent(row) })
+  const student = await c.var.storage.database.read((tx) => {
+    const row = findStudentById(tx, id)
+    return row && toAdminStudent(row, totalsOf(tx, id))
+  })
+  if (!student) throw studentNotFound()
+  return c.json<AdminStudentResponse>({ student })
+})
+
+// Progression de l'élève : ses quêtes et leurs statuts, son journal d'XP, sa série, ses badges.
+adminStudentRoutes.get('/:id/progress', async (c) => {
+  const id = c.req.param('id')
+  const now = c.var.now()
+  const progress = await c.var.storage.database.read((tx) => {
+    if (!findStudentById(tx, id)) throw studentNotFound()
+    return readAdminStudentProgress(tx, id, now)
+  })
+  return c.json<AdminStudentProgressResponse>({ progress })
+})
+
+// Ajustement manuel d'XP : une ligne de plus au journal, positive ou négative, avec son motif.
+adminStudentRoutes.post('/:id/xp', async (c) => {
+  const id = c.req.param('id')
+  const { amount, reason } = await parseBody(c, xpAdjustmentRequestSchema)
+  const now = c.var.now()
+  const progress = await c.var.storage.database.write((tx) => {
+    if (!findStudentById(tx, id)) throw studentNotFound()
+    adjustXp(tx, id, amount, reason, now)
+    return readAdminStudentProgress(tx, id, now)
+  })
+  return c.json<AdminStudentProgressResponse>({ progress })
 })
 
 // Renommer un élève, désactiver ou réactiver son compte.
@@ -58,7 +93,8 @@ adminStudentRoutes.patch('/:id', async (c) => {
 
   if (outcome === 'not_found') throw studentNotFound()
   if (outcome === 'pseudo_taken') throw pseudoTaken()
-  return c.json<AdminStudentResponse>({ student: toAdminStudent(outcome) })
+  const totals = await c.var.storage.database.read((tx) => totalsOf(tx, id))
+  return c.json<AdminStudentResponse>({ student: toAdminStudent(outcome, totals) })
 })
 
 // Mot de passe oublié : l'admin génère un mot de passe temporaire, affiché une seule fois.
