@@ -1,0 +1,66 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.deadline {
+  color: var(--color-text-secondary);
+}
+
+.sectionTitle {
+  margin-bottom: var(--space-3);
+}
+
+.attempts {
+  margin-top: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+.comment {
+  margin-top: var(--space-2);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.sent {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.validated {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gain {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.breakdown li > :last-child {
+  font-weight: 700;
+  white-space: nowrap;
+}

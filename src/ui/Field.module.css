@@ -37,6 +37,27 @@
   outline: none;
 }
 
+.textarea {
+  min-height: 112px;
+  padding-block: var(--space-3);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.select {
+  padding-right: var(--space-3);
+  cursor: pointer;
+}
+
+.input:disabled {
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.control:has(.input:disabled) {
+  background: var(--color-page);
+}
+
 .input::placeholder {
   color: var(--color-text-secondary);
 }

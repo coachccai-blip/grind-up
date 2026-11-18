@@ -1,0 +1,26 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: var(--space-5);
+  max-height: 320px;
+  padding: 0 var(--space-3);
+  overflow-y: auto;
+  border-radius: var(--radius-control);
+  background: var(--color-page);
+}
+
+.note {
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 640px) {
+  .list {
+    grid-template-columns: 1fr 1fr;
+  }
+}

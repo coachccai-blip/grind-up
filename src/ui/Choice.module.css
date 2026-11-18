@@ -1,0 +1,37 @@
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: var(--touch-target);
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.input {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  accent-color: var(--color-accent);
+  cursor: inherit;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+.disabled {
+  cursor: not-allowed;
+}
+
+.disabled .text {
+  color: var(--color-text-secondary);
+}

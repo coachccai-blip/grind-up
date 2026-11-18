@@ -1,0 +1,101 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.items:empty {
+  display: none;
+}
+
+/* Chaque question ou carte : un bloc sur le blanc bleuté, dans la carte blanche de la section. */
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-page);
+}
+
+.itemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  font-weight: 700;
+}
+
+.hint {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+/* Case « bonne réponse » : 24 px visibles dans une zone tactile de 44 px. */
+.correct {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 10px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.choiceText {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: var(--color-card);
+  box-shadow: inset 0 0 0 1.5px var(--color-field-border);
+  font-size: 1rem;
+}
+
+.choiceText::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.choiceText:disabled {
+  background: var(--color-page);
+  color: var(--color-text-secondary);
+}
+
+.error {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--color-urgent);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}

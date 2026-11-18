@@ -1,0 +1,57 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+.short {
+  max-width: 320px;
+}
+
+.note {
+  color: var(--color-text-secondary);
+}
+
+.preview {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-page);
+}
+
+.preview summary {
+  min-height: var(--touch-target);
+  padding-block: 10px;
+  color: var(--color-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Téléphone : boutons empilés sur toute la largeur, l'action qui fait avancer en dernier. */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .pair {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

@@ -60,3 +60,34 @@ export async function expectNoHorizontalScroll(page: Page): Promise<void> {
   )
   expect(overflow).toBeLessThanOrEqual(0)
 }
+
+/** Ouvre un écran de l'espace élève par sa barre de navigation. */
+export async function openStudentScreen(page: Page, label: string): Promise<void> {
+  await page.getByRole('navigation').getByRole('link', { name: label }).click()
+}
+
+/**
+ * Crée et publie une quête par l'API, avec la session de l'admin connecté dans
+ * cette page. Pour préparer un parcours sans repasser par le formulaire.
+ */
+export async function publishQuest(
+  adminPage: Page,
+  quest: Record<string, unknown>,
+): Promise<{ id: string }> {
+  const response = await adminPage.request.post('/api/admin/quests', {
+    data: {
+      instructions: '',
+      category: 'maths',
+      format: 'exact',
+      difficulty: 'medium',
+      rewardXp: 100,
+      deadlineAt: null,
+      items: [],
+      assignees: 'all',
+      publish: true,
+      ...quest,
+    },
+  })
+  expect(response.status(), await response.text()).toBe(201)
+  return ((await response.json()) as { quest: { id: string } }).quest
+}

@@ -4,9 +4,11 @@ import { loadConfig, type AppConfig } from './config.js'
 import type { AppEnv, Storage } from './context.js'
 import { WriteConflictError } from './db/database.js'
 import { ApiError, notFound } from './http.js'
+import { adminQuestRoutes, adminValidationRoutes } from './routes/admin-quests.js'
 import { adminStudentRoutes } from './routes/admin-students.js'
 import { authRoutes } from './routes/auth.js'
 import { healthRoutes } from './routes/health.js'
+import { studentQuestRoutes } from './routes/student-quests.js'
 
 export type { RequestEnvironment, Storage } from './context.js'
 
@@ -31,7 +33,8 @@ function setApiHeaders(c: Context<AppEnv>): void {
  * Toutes les routes de l'API, servies sous /api/.
  *
  * Les droits tiennent à l'endroit où une route est montée : tout ce qui est
- * sous /admin exige un admin, y compris les routes ajoutées plus tard.
+ * sous /admin exige un admin et tout ce qui est sous /quests exige un élève, y
+ * compris les routes ajoutées plus tard.
  */
 export function createApp(dependencies: AppDependencies) {
   const config = dependencies.config ?? loadConfig()
@@ -57,7 +60,15 @@ export function createApp(dependencies: AppDependencies) {
   const admin = new Hono<AppEnv>()
   admin.use('*', requireRole('admin'))
   admin.route('/students', adminStudentRoutes)
+  admin.route('/quests', adminQuestRoutes)
+  admin.route('/', adminValidationRoutes)
   app.route('/admin', admin)
+
+  // Les quêtes d'un élève : réservées aux élèves, chacun n'y voit que les siennes.
+  const student = new Hono<AppEnv>()
+  student.use('*', requireRole('student'))
+  student.route('/', studentQuestRoutes)
+  app.route('/quests', student)
 
   app.notFound((c) => c.json(notFound().toBody(), 404))
 

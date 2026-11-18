@@ -1,0 +1,82 @@
+.card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    'badge body reward'
+    'badge chips chips';
+  align-items: start;
+  column-gap: var(--space-3);
+  row-gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+/* Pastille de la catégorie : son emoji sur sa couleur pastel. */
+.badge {
+  display: inline-flex;
+  grid-area: badge;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.maths {
+  background: var(--color-maths);
+}
+
+.memorisation {
+  background: var(--color-memorisation);
+}
+
+.sport {
+  background: var(--color-sport);
+}
+
+.other {
+  background: var(--color-other);
+}
+
+.body {
+  display: flex;
+  grid-area: body;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  grid-area: chips;
+  gap: var(--space-2);
+}
+
+.chips:empty {
+  display: none;
+}
+
+.reward {
+  grid-area: reward;
+  font-weight: 800;
+  white-space: nowrap;
+}

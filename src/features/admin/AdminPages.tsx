@@ -64,18 +64,6 @@ function ComingSoon({
   )
 }
 
-export const QuestsAdminPage = () => (
-  <ComingSoon title="Quêtes" emoji="🎯">
-    Vous créerez ici vos quêtes et suivrez leur avancement élève par élève.
-  </ComingSoon>
-)
-
-export const ValidationsPage = () => (
-  <ComingSoon title="Validations" emoji="✅">
-    Les réalisations soumises par vos élèves attendront ici votre validation.
-  </ComingSoon>
-)
-
 export const BotsPage = () => (
   <ComingSoon title="Bots" emoji="🤖">
     Vous créerez ici des bots pour donner du rythme au classement.

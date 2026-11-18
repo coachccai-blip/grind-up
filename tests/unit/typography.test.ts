@@ -23,7 +23,7 @@ function sourceFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = join(directory, entry.name)
     if (entry.isDirectory()) return sourceFiles(path)
-    return /\.(ts|tsx)$/.test(entry.name) ? [path] : []
+    return /\.(ts|tsx|mts|mjs)$/.test(entry.name) ? [path] : []
   })
 }
 
@@ -72,6 +72,25 @@ describe('typographie française', () => {
       displayedTexts(file)
         .filter(({ text }) => BREAKABLE_SPACE.test(text))
         .map(({ text, line }) => `${relative(projectRoot, file)}:${line} « ${text.trim()} »`),
+    )
+
+    expect(offences).toEqual([])
+  })
+
+  it('écrit les espaces insécables sous forme échappée, jamais en caractère invisible', () => {
+    // Un caractère invisible dans le code ne se distingue pas d'une espace ordinaire à la
+    // relecture : on écrit \u00A0 dans une chaîne et &nbsp; dans le JSX.
+    const invisible = /[\u00A0\u202F\u200B\u2060\uFEFF]/
+    const files = ['src', 'shared', 'server', 'dev', 'netlify', 'tests', 'scripts'].flatMap(
+      (directory) => sourceFiles(join(projectRoot, directory)),
+    )
+
+    const offences = files.flatMap((file) =>
+      readFileSync(file, 'utf8')
+        .split('\n')
+        .map((line, index) => ({ line, number: index + 1 }))
+        .filter(({ line }) => invisible.test(line))
+        .map(({ number }) => `${relative(projectRoot, file)}:${number}`),
     )
 
     expect(offences).toEqual([])

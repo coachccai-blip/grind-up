@@ -171,6 +171,43 @@ describe('base SQLite dans un stockage de fichiers', () => {
     expect(await database.read(listNotes)).toEqual(['avant'])
   })
 
+  it('garde sa copie en mémoire après un changement refusé, sans retélécharger le fichier', async () => {
+    const store = new MemoryBlobStore()
+    const database = openDatabase(store)
+    await database.write(addNote('avant'))
+    const read = vi.spyOn(store, 'read')
+
+    await expect(
+      database.write((tx) => {
+        tx.run('INSERT INTO notes (body) VALUES (?)', ['refusée'])
+        throw new Error('refus')
+      }),
+    ).rejects.toThrow('refus')
+    await database.write(addNote('après'))
+
+    // Chaque lecture du stockage a présenté l'étiquette connue : aucun téléchargement complet.
+    expect(read.mock.calls.length).toBeGreaterThan(0)
+    for (const [, knownEtag] of read.mock.calls) expect(knownEtag).toBeDefined()
+    expect(await database.read(listNotes)).toEqual(['avant', 'après'])
+  })
+
+  it('reste cohérente quand une instruction SQL échoue au milieu d’un changement', async () => {
+    const store = new MemoryBlobStore()
+    const database = openDatabase(store)
+    await database.write(addNote('avant'))
+
+    await expect(
+      database.write((tx) => {
+        tx.run('INSERT INTO notes (body) VALUES (?)', ['à moitié faite'])
+        tx.run('INSERT INTO notes (body) VALUES (NULL)')
+      }),
+    ).rejects.toThrow()
+
+    expect(await database.read(listNotes)).toEqual(['avant'])
+    await database.write(addNote('après'))
+    expect(await openDatabase(store).read(listNotes)).toEqual(['avant', 'après'])
+  })
+
   it('se remet d’une panne du stockage pendant une écriture', async () => {
     const store = new MemoryBlobStore()
     const database = openDatabase(store)

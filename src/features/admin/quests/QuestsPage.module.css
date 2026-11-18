@@ -1,0 +1,100 @@
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* Téléphone : deux filtres par ligne ; minmax(0, …) laisse les listes rétrécir sans déborder. */
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.count {
+  color: var(--color-text-secondary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Téléphone : une carte par quête. */
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: var(--touch-target);
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.title {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block: var(--space-1);
+}
+
+.meta {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+.progress {
+  font-weight: 700;
+}
+
+@media (min-width: 640px) {
+  .filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Ordinateur : titre et étiquettes à gauche, détails à droite. */
+@media (min-width: 1024px) {
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    grid-template-areas:
+      'title meta'
+      'tags deadline'
+      'tags progress';
+    column-gap: var(--space-5);
+    align-items: start;
+  }
+
+  .title {
+    grid-area: title;
+  }
+
+  .tags {
+    grid-area: tags;
+  }
+
+  .row > :nth-child(3) {
+    grid-area: meta;
+  }
+
+  .row > :nth-child(4) {
+    grid-area: deadline;
+  }
+
+  .progress {
+    grid-area: progress;
+  }
+}

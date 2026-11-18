@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import { pseudoKey } from '../../../shared/rules/pseudo'
-import type { AdminStudent } from '../../../shared/schemas/admin'
 import { formatRelative } from '../../lib/dates'
 import { errorMessage } from '../../lib/api'
 import { Avatar } from '../../ui/Avatar'
@@ -10,19 +8,9 @@ import { Identifier } from '../../ui/Identifier'
 import { Notice } from '../../ui/Notice'
 import { InviteCard } from './AdminPages'
 import { StatusChip } from './StatusChip'
+import { studentMatches } from './student-search'
 import styles from './StudentsPage.module.css'
 import { useStudents } from './students-api'
-
-/** Un élève correspond à la recherche par son pseudo ou par son identifiant. */
-function matches(student: AdminStudent, search: string): boolean {
-  const text = search.trim()
-  if (text === '') return true
-  const compactId = (value: string) => value.replace(/[\s-]/g, '').toUpperCase()
-  return (
-    pseudoKey(student.pseudo).includes(pseudoKey(text)) ||
-    compactId(student.publicId).includes(compactId(text))
-  )
-}
 
 /** Liste des élèves, avec recherche par pseudo ou identifiant. */
 export function StudentsPage() {
@@ -31,7 +19,7 @@ export function StudentsPage() {
   const notice = (useLocation().state as { notice?: string } | null)?.notice
 
   const all = students.data ?? []
-  const shown = all.filter((student) => matches(student, search))
+  const shown = all.filter((student) => studentMatches(student, search))
 
   return (
     <>

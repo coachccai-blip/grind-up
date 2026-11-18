@@ -1,0 +1,115 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3) var(--space-4);
+}
+
+.facts dt {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+.facts dd {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.sectionTitle {
+  margin-bottom: var(--space-3);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.prompt {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.answer {
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.answer strong {
+  color: var(--color-text);
+}
+
+.choices {
+  padding-left: var(--space-5);
+  list-style: disc;
+}
+
+.right {
+  font-weight: 700;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+}
+
+.assignment {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--color-divider);
+}
+
+.assignment:first-child {
+  border-top: 0;
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.details {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+/* Geste de rattrapage : sous la ligne de l'élève, aligné sur son pseudo. */
+.rescue {
+  grid-column: 2 / -1;
+  justify-self: start;
+}
+
+.note {
+  margin-top: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+@media (min-width: 640px) {
+  .facts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
