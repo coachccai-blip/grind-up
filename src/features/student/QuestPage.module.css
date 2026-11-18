@@ -64,3 +64,9 @@
   font-weight: 700;
   white-space: nowrap;
 }
+
+.instructions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

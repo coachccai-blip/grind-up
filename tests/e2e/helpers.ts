@@ -91,3 +91,13 @@ export async function publishQuest(
   expect(response.status(), await response.text()).toBe(201)
   return ((await response.json()) as { quest: { id: string } }).quest
 }
+
+/** Relève ce que le navigateur signale : erreurs de script et contenus bloqués. */
+export function watchForProblems(page: Page): string[] {
+  const problems: string[] = []
+  page.on('console', (message) => {
+    if (message.type() === 'error') problems.push(message.text())
+  })
+  page.on('pageerror', (error) => problems.push(error.message))
+  return problems
+}

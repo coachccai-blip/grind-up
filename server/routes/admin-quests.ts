@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import {
   addAssigneesRequestSchema,
   grantAttemptsRequestSchema,
+  questImageRequestSchema,
   rejectRequestSchema,
   saveQuestRequestSchema,
   validateRequestSchema,
@@ -12,7 +13,15 @@ import {
 } from '../../shared/schemas/quests.js'
 import { signedInUser } from '../auth/middleware.js'
 import type { AppEnv } from '../context.js'
-import { parseBody } from '../http.js'
+import { notFound, parseBody } from '../http.js'
+import {
+  copyQuestImage,
+  discardQuestImage,
+  removeQuestImage,
+  saveQuestImage,
+  serveQuestImage,
+} from '../quests/images.js'
+import { findQuest } from '../quests/store.js'
 import {
   addAssignees,
   archiveQuest,
@@ -69,8 +78,36 @@ adminQuestRoutes.put('/:id', async (c) => {
 
 adminQuestRoutes.delete('/:id', async (c) => {
   const id = c.req.param('id')
-  await c.var.storage.database.write((tx) => removeDraft(tx, id))
+  const imageKey = await c.var.storage.database.write((tx) => removeDraft(tx, id))
+  await discardQuestImage(c.var.storage, imageKey)
   return c.body(null, 204)
+})
+
+// Image facultative de la consigne : la lire, l'envoyer (ou la remplacer), la retirer.
+adminQuestRoutes.get('/:id/image', (c) => {
+  const id = c.req.param('id')
+  return serveQuestImage(c, (tx) => {
+    const quest = findQuest(tx, id)
+    if (!quest) throw notFound('Cette quête est introuvable.')
+    return quest
+  })
+})
+
+adminQuestRoutes.put('/:id/image', async (c) => {
+  const id = c.req.param('id')
+  const { dataUrl } = await parseBody(c, questImageRequestSchema)
+  const now = c.var.now()
+  await saveQuestImage(c.var.storage, id, dataUrl, now)
+  const quest = await c.var.storage.database.read((tx) => readAdminQuest(tx, id, now))
+  return c.json<AdminQuestResponse>({ quest })
+})
+
+adminQuestRoutes.delete('/:id/image', async (c) => {
+  const id = c.req.param('id')
+  const now = c.var.now()
+  await removeQuestImage(c.var.storage, id, now)
+  const quest = await c.var.storage.database.read((tx) => readAdminQuest(tx, id, now))
+  return c.json<AdminQuestResponse>({ quest })
 })
 
 adminQuestRoutes.post('/:id/publish', async (c) => {
@@ -87,9 +124,13 @@ adminQuestRoutes.post('/:id/duplicate', async (c) => {
   const id = c.req.param('id')
   const author = signedInUser(c)
   const now = c.var.now()
-  const quest = await c.var.storage.database.write((tx) =>
-    readAdminQuest(tx, duplicateQuest(tx, id, author.id, now), now),
-  )
+  const { copyId, imageKey } = await c.var.storage.database.write((tx) => ({
+    imageKey: findQuest(tx, id)?.image_key ?? null,
+    copyId: duplicateQuest(tx, id, author.id, now),
+  }))
+  // La copie reçoit sa propre image : modifier l'une ne touche pas l'autre.
+  await copyQuestImage(c.var.storage, imageKey, copyId, now)
+  const quest = await c.var.storage.database.read((tx) => readAdminQuest(tx, copyId, now))
   return c.json<AdminQuestResponse>({ quest }, 201)
 })
 

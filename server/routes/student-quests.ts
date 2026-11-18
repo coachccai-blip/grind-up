@@ -7,9 +7,11 @@ import {
 import { signedInUser } from '../auth/middleware.js'
 import type { AppEnv } from '../context.js'
 import { parseBody } from '../http.js'
+import { serveQuestImage } from '../quests/images.js'
 import {
   listMyQuests,
   readMyQuest,
+  requireMyQuest,
   startMyQuest,
   submitAttempt,
 } from '../quests/student-service.js'
@@ -34,6 +36,13 @@ studentQuestRoutes.get('/:questId', async (c) => {
   const now = c.var.now()
   const quest = await c.var.storage.database.read((tx) => readMyQuest(tx, student.id, questId, now))
   return c.json<StudentQuestResponse>({ quest })
+})
+
+// Image de la consigne : servie aux seuls élèves qui ont cette quête.
+studentQuestRoutes.get('/:questId/image', (c) => {
+  const student = signedInUser(c)
+  const questId = c.req.param('questId')
+  return serveQuestImage(c, (tx) => requireMyQuest(tx, student.id, questId).quest)
 })
 
 // L'élève ouvre la quête : elle passe de « À faire » à « En cours ».

@@ -9,7 +9,7 @@ import type {
   SaveQuestRequest,
   ValidationsResponse,
 } from '../../../../shared/schemas/quests'
-import { api } from '../../../lib/api'
+import { api, errorMessage } from '../../../lib/api'
 
 /** Quêtes et validations, pour l'espace admin. */
 const questsKey = ['admin', 'quests'] as const
@@ -68,14 +68,48 @@ function useQuestCache() {
   }
 }
 
-/** Crée une quête (sans identifiant) ou enregistre ses modifications. */
+/** Ce que devient l'image de la consigne à l'enregistrement. */
+export type ImageChange =
+  { kind: 'keep' } | { kind: 'remove' } | { kind: 'replace'; dataUrl: string }
+
+export interface SaveQuestResult {
+  quest: AdminQuestDetail
+  /** La quête est enregistrée, mais son image n'a pas pu l'être : le message dit pourquoi. */
+  imageError: string | null
+}
+
+/**
+ * Crée une quête (sans identifiant) ou enregistre ses modifications, puis son
+ * image si elle a changé. Un échec de l'image ne perd pas la quête.
+ */
 export function useSaveQuest(id: string | undefined) {
   const cache = useQuestCache()
   return useMutation({
-    mutationFn: (request: SaveQuestRequest) =>
-      id
-        ? api<AdminQuestResponse>(`/api/admin/quests/${id}`, { method: 'PUT', body: request })
-        : api<AdminQuestResponse>('/api/admin/quests', { method: 'POST', body: request }),
+    mutationFn: async ({
+      request,
+      image,
+    }: {
+      request: SaveQuestRequest
+      image: ImageChange
+    }): Promise<SaveQuestResult> => {
+      const saved = id
+        ? await api<AdminQuestResponse>(`/api/admin/quests/${id}`, { method: 'PUT', body: request })
+        : await api<AdminQuestResponse>('/api/admin/quests', { method: 'POST', body: request })
+      if (image.kind === 'keep') return { quest: saved.quest, imageError: null }
+      try {
+        const address = `/api/admin/quests/${saved.quest.id}/image`
+        const withImage =
+          image.kind === 'remove'
+            ? await api<AdminQuestResponse>(address, { method: 'DELETE' })
+            : await api<AdminQuestResponse>(address, {
+                method: 'PUT',
+                body: { dataUrl: image.dataUrl },
+              })
+        return { quest: withImage.quest, imageError: null }
+      } catch (error) {
+        return { quest: saved.quest, imageError: errorMessage(error) }
+      }
+    },
     onSuccess: ({ quest }) => cache.store(quest),
   })
 }

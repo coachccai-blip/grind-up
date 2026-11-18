@@ -16,6 +16,7 @@ import { EmptyState } from '../../../ui/EmptyState'
 import { Notice } from '../../../ui/Notice'
 import { RichText } from '../../../ui/RichText'
 import { CategoryChip, formatXp, QuestStateChip, StatusChip } from '../../quests/QuestChips'
+import { QuestImage } from '../../quests/QuestImage'
 import { useStudents } from '../students-api'
 import { AssigneePicker } from './AssigneePicker'
 import styles from './QuestDetailPage.module.css'
@@ -63,9 +64,8 @@ type OpenDialog = 'assign' | 'archive' | 'delete' | null
 function QuestSheet({ quest }: { quest: AdminQuestDetail }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const [notice, setNotice] = useState<string | null>(
-    (location.state as { notice?: string } | null)?.notice ?? null,
-  )
+  const arrival = location.state as { notice?: string; warning?: string } | null
+  const [notice, setNotice] = useState<string | null>(arrival?.notice ?? null)
   const [openDialog, setOpenDialog] = useState<OpenDialog>(null)
   const close = () => setOpenDialog(null)
 
@@ -176,6 +176,7 @@ function QuestSheet({ quest }: { quest: AdminQuestDetail }) {
       </Card>
 
       {notice && <Notice tone="success">{notice}</Notice>}
+      {arrival?.warning && <Notice tone="warning">{arrival.warning}</Notice>}
       {incomplete && (
         <Notice tone="error" title="La quête ne peut pas encore être publiée">
           Il lui manque des informations.{' '}
@@ -192,10 +193,11 @@ function QuestSheet({ quest }: { quest: AdminQuestDetail }) {
           ),
       )}
 
-      {quest.instructions.trim() !== '' && (
-        <Card>
-          <h2 className={styles.sectionTitle}>Consigne</h2>
-          <RichText text={quest.instructions} />
+      {(quest.instructions.trim() !== '' || quest.imageUrl) && (
+        <Card className={styles.instructions}>
+          <h2>Consigne</h2>
+          {quest.instructions.trim() !== '' && <RichText text={quest.instructions} />}
+          {quest.imageUrl && <QuestImage src={quest.imageUrl} />}
         </Card>
       )}
 

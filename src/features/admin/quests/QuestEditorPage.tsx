@@ -36,7 +36,8 @@ import {
   type QuestForm,
 } from './quest-form'
 import styles from './QuestEditorPage.module.css'
-import { useAdminQuest, useSaveQuest } from './quests-api'
+import { ImagePicker } from './ImagePicker'
+import { useAdminQuest, useSaveQuest, type ImageChange } from './quests-api'
 
 /** Création d'une quête, ou modification d'une quête existante. */
 export function QuestEditorPage() {
@@ -77,6 +78,7 @@ function QuestEditor({ quest }: { quest: AdminQuestDetail | null }) {
   // Le contenu saisi pour un format est gardé de côté : revenir à ce format le retrouve.
   const [setAside, setSetAside] = useState<Partial<Record<QuestFormat, FormItem[]>>>({})
   const [formatChosen, setFormatChosen] = useState(quest !== null)
+  const [image, setImage] = useState<ImageChange>({ kind: 'keep' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submissions, setSubmissions] = useState(0)
   const formElement = useRef<HTMLFormElement>(null)
@@ -130,19 +132,25 @@ function QuestEditor({ quest }: { quest: AdminQuestDetail | null }) {
       setSubmissions((count) => count + 1)
       return
     }
-    save.mutate(request, {
-      onSuccess: ({ quest: saved }) =>
-        void navigate(`/admin/quetes/${saved.id}`, {
-          state: {
-            notice: isPublished
-              ? 'Modifications enregistrées.'
-              : publish
-                ? 'Quête publiée.'
-                : 'Brouillon enregistré.',
-          },
-        }),
-      onError: () => setSubmissions((count) => count + 1),
-    })
+    save.mutate(
+      { request, image },
+      {
+        onSuccess: ({ quest: saved, imageError }) =>
+          void navigate(`/admin/quetes/${saved.id}`, {
+            state: {
+              notice: isPublished
+                ? 'Modifications enregistrées.'
+                : publish
+                  ? 'Quête publiée.'
+                  : 'Brouillon enregistré.',
+              warning: imageError
+                ? `L’image n’a pas pu être enregistrée. ${imageError}`
+                : undefined,
+            },
+          }),
+        onError: () => setSubmissions((count) => count + 1),
+      },
+    )
   }
 
   const onSubmit = (event: FormEvent) => {
@@ -220,6 +228,7 @@ function QuestEditor({ quest }: { quest: AdminQuestDetail | null }) {
             <RichText text={form.instructions} />
           </details>
         )}
+        <ImagePicker current={quest?.imageUrl ?? null} change={image} onChange={setImage} />
 
         {auto && (
           <>

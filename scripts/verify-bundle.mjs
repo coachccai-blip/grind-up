@@ -181,7 +181,50 @@ async function runScenario(handler) {
   check('Un mauvais mot de passe est refusé', wrong.status === 401, `statut ${wrong.status}`)
   check("La connexion par l'identifiant fonctionne", right.status === 200, `statut ${right.status}`)
 
-  // 7. Rien de ce que renvoie la fonction ne contient le code admin.
+  // 7. Une quête de bout en bout : création, lecture sans les réponses, correction, XP.
+  const created = await call(handler, 'POST', '/api/admin/quests', {
+    cookie: admin.cookie,
+    body: {
+      title: 'Quête du paquet',
+      category: 'maths',
+      format: 'exact',
+      difficulty: 'medium',
+      rewardXp: 100,
+      items: [{ prompt: 'Mot de passe ?', answers: ['sésame-du-paquet'] }],
+      assignees: 'all',
+      publish: true,
+    },
+  })
+  const questId = created.json?.quest?.id
+  check("L'admin crée et publie une quête", created.status === 201, `statut ${created.status}`)
+  const mine = await call(handler, 'GET', `/api/quests/${questId}`, { cookie: student.cookie })
+  check(
+    "L'élève lit sa quête sans la réponse attendue",
+    mine.status === 200 && !JSON.stringify(mine.json).includes('sésame-du-paquet'),
+    `statut ${mine.status}`,
+  )
+  const itemId = mine.json?.quest?.items?.[0]?.id
+  const attempt = await call(handler, 'POST', `/api/quests/${questId}/attempts`, {
+    cookie: student.cookie,
+    body: { answers: { [itemId]: ' Sésame-du-paquet ' } },
+  })
+  check(
+    'La réponse est corrigée et la quête validée',
+    attempt.json?.quest?.status === 'validated',
+    `statut ${attempt.status}`,
+  )
+  check(
+    "L'XP est créditée, bonus sans faute compris",
+    attempt.json?.quest?.xpAwarded === 110,
+    `${attempt.json?.quest?.xpAwarded} XP`,
+  )
+  const replay = await call(handler, 'POST', `/api/quests/${questId}/attempts`, {
+    cookie: student.cookie,
+    body: { answers: { [itemId]: 'sésame-du-paquet' } },
+  })
+  check('Une quête validée ne se crédite pas deux fois', replay.status === 409)
+
+  // 8. Rien de ce que renvoie la fonction ne contient le code admin.
   const everything = JSON.stringify([health, student, session, refused, admin, asAdmin, wrong])
   check('Le code admin ne figure dans aucune réponse', !everything.includes(ADMIN_CODE))
 }

@@ -110,7 +110,7 @@ export function DeployCheckPage() {
     <div className="deploy-check">
       <header>
         <h1 className="deploy-check__title">Grind up</h1>
-        <p className="deploy-check__subtitle">Test de déploiement · étape 1 sur 6</p>
+        <p className="deploy-check__subtitle">Test de déploiement</p>
       </header>
 
       <main className="deploy-check__main">

@@ -1,15 +1,11 @@
-import { expect, test, type Page } from '@playwright/test'
-import { openAdminScreen, signUpAdmin, signUpStudent, uniquePseudo } from './helpers'
-
-/** Relève ce que le navigateur signale : erreurs de script et contenus bloqués. */
-function watchForProblems(page: Page): string[] {
-  const problems: string[] = []
-  page.on('console', (message) => {
-    if (message.type() === 'error') problems.push(message.text())
-  })
-  page.on('pageerror', (error) => problems.push(error.message))
-  return problems
-}
+import { expect, test } from '@playwright/test'
+import {
+  openAdminScreen,
+  signUpAdmin,
+  signUpStudent,
+  uniquePseudo,
+  watchForProblems,
+} from './helpers'
 
 test.describe('politique de sécurité du contenu', () => {
   test('la page publiée n’autorise que les scripts, styles et appels du site', async ({ page }) => {

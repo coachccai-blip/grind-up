@@ -12,6 +12,7 @@ import { EmptyState } from '../../ui/EmptyState'
 import { Notice } from '../../ui/Notice'
 import { RichText } from '../../ui/RichText'
 import { CategoryChip, difficultyLabel, formatXp, StatusChip } from '../quests/QuestChips'
+import { QuestImage } from '../quests/QuestImage'
 import { ExactForm } from './formats/ExactForm'
 import { Flashcards } from './formats/Flashcards'
 import { DeclarativeForm, FreeTextForm } from './formats/ManualForms'
@@ -86,10 +87,11 @@ export function QuestPage() {
         )}
       </header>
 
-      {quest.instructions.trim() !== '' && (
-        <Card>
-          <h2 className={styles.sectionTitle}>Consigne</h2>
-          <RichText text={quest.instructions} />
+      {(quest.instructions.trim() !== '' || quest.imageUrl) && (
+        <Card className={styles.instructions}>
+          <h2>Consigne</h2>
+          {quest.instructions.trim() !== '' && <RichText text={quest.instructions} />}
+          {quest.imageUrl && <QuestImage src={quest.imageUrl} />}
         </Card>
       )}
 

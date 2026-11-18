@@ -16,6 +16,7 @@ import {
 import type { SqlReader, SqlWriter } from '../db/sqlite.js'
 import { ApiError, notFound } from '../http.js'
 import { creditValidation } from './credit.js'
+import { imageUrl } from './images.js'
 import {
   assignQuest,
   deleteQuest,
@@ -78,7 +79,7 @@ export function readAdminQuest(tx: SqlReader, id: string, now: Date): AdminQuest
     manualValidation: quest.manual_validation === 1,
     passThreshold: quest.pass_threshold,
     maxAttempts: quest.max_attempts,
-    hasImage: quest.image_key !== null,
+    imageUrl: imageUrl(quest, 'admin'),
     items: listItems(tx, id).map(({ id: itemId, prompt, answers, choices, correct }) => ({
       id: itemId,
       prompt,
@@ -195,13 +196,17 @@ export function restoreQuest(tx: SqlWriter, id: string, now: Date): void {
   if (stored.state === 'archived') setQuestState(tx, id, 'published', now)
 }
 
-/** Seul un brouillon se supprime : une quête publiée s'archive, pour garder l'XP gagnée. */
-export function removeDraft(tx: SqlWriter, id: string): void {
+/**
+ * Seul un brouillon se supprime : une quête publiée s'archive, pour garder l'XP gagnée.
+ * Renvoie l'emplacement de son image, à effacer du stockage.
+ */
+export function removeDraft(tx: SqlWriter, id: string): string | null {
   const stored = requireQuest(tx, id)
   if (stored.state !== 'draft') {
     throw conflict('not_a_draft', 'Une quête publiée ne se supprime pas\u00A0: archivez-la.')
   }
   deleteQuest(tx, id)
+  return stored.image_key
 }
 
 /** Ajoute des élèves à une quête publiée. Renvoie le nombre d'élèves ajoutés. */

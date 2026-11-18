@@ -3,9 +3,11 @@
 Plateforme de quêtes gamifiée pour élèves : un accompagnant donne des quêtes, les élèves les
 réalisent, gagnent de l'XP, montent de niveau et se comparent sur un leaderboard.
 
-**État : étape 2 sur 6, les fondations.** Les comptes fonctionnent : inscription et connexion des
-élèves et de l'admin, identifiant `XXXX-XXXX`, code admin, espaces séparés par rôle, gestion des
-élèves par l'admin, thème et navigation. Les quêtes, la progression, le leaderboard et les bots
+**État : étape 3 sur 6, les quêtes.** L'admin crée des quêtes (brouillon, publication,
+duplication, archivage), les donne à un élève, à plusieurs ou à tous, et valide les réalisations.
+L'élève les réalise dans cinq formats : réponses exactes, QCM, cartes de mémorisation,
+déclaratif, réponse libre. Une quête validée crédite son XP, une seule fois ; une quête non
+terminée à sa deadline expire. Les niveaux, la série, les badges, le leaderboard et les bots
 arrivent aux étapes suivantes. Les choix faits là où le brief ne tranchait pas sont consignés
 dans [docs/decisions.md](docs/decisions.md).
 
@@ -50,7 +52,12 @@ fonctionne. En cas d'échec, le bouton _Copier le détail_ de la page copie le d
 2. **Inviter les élèves.** La vue d'ensemble de l'espace admin affiche l'adresse d'inscription à
    leur transmettre. Chaque élève y choisit un pseudo et un mot de passe, puis reçoit son
    identifiant `XXXX-XXXX`, qu'il retrouve dans son profil.
-3. **Mot de passe oublié.** Dans _Élèves_, ouvrir la fiche de l'élève et choisir _Mot de passe
+3. **Créer une quête.** Dans _Quêtes_, choisir _Nouvelle quête_ : catégorie, format, titre,
+   consigne, contenu, récompense, deadline, élèves. _Enregistrer le brouillon_ la garde pour
+   plus tard ; _Publier la quête_ la donne aussitôt aux élèves choisis.
+4. **Valider.** Les quêtes à réponse libre, et les quêtes déclaratives réglées ainsi, attendent
+   dans _Validations_ : _Valider_ crédite l'XP, _Refuser_ demande à l'élève de recommencer.
+5. **Mot de passe oublié.** Dans _Élèves_, ouvrir la fiche de l'élève et choisir _Mot de passe
    temporaire_. L'élève se connecte avec, puis choisit aussitôt le sien.
 
 ### Changer le code admin
@@ -76,6 +83,8 @@ modifié entre-temps ; sinon elle recommence sur la nouvelle version.
 - **Sauvegardes :** à la première écriture de chaque jour, une copie est rangée dans
   `backups/main/AAAA-MM-JJ.sqlite`. Les sept plus récentes sont conservées. Une copie se
   télécharge depuis la même page de Netlify.
+- **Images des consignes :** rangées dans le même magasin, sous `images/`, à côté de la base
+  et non dedans. Elles ne font pas partie des copies quotidiennes.
 - **Échelle :** ce stockage est prévu pour quelques dizaines d'élèves.
 - **Structure :** elle évolue par migrations numérotées, dans `server/db/migrations/`. La
   fonction applique les nouvelles migrations à son premier appel après une mise en ligne. Une
@@ -173,7 +182,12 @@ attache le zip. L'action _Tests_ vérifie chaque demande de fusion.
 - **Session :** cookie signé, inaccessible au JavaScript de la page, valable 30 jours après la
   dernière visite.
 - **Droits :** chaque route du serveur vérifie le rôle ; tout ce qui est sous `/api/admin` exige
-  un admin, et un test le contrôle pour chaque route.
+  un admin, tout ce qui est sous `/api/quests` exige un élève, et un test le contrôle pour
+  chaque route. Un élève ne lit et ne modifie que ses propres quêtes.
+- **Réponses attendues :** elles restent sur le serveur, qui corrige ; l'élève ne reçoit le
+  corrigé qu'une fois sa quête validée.
+- **XP :** une quête est validée et créditée dans la même transaction, une seule fois, même en
+  cas de double clic ou de requête rejouée.
 - **Tentatives :** connexions, inscriptions et essais du code admin sont limités par adresse IP.
 - **Navigateur :** la page n'exécute que les scripts du site et ne contacte que le site
   (politique de sécurité du contenu) ; elle ne peut pas être affichée dans une autre page.
@@ -190,15 +204,16 @@ netlify.toml               construction, dossier publié, dossier des fonctions
 index.html, src/           interface (React)
   app/                     routes, protection des pages par rôle, session
   ui/                      composants partagés : bouton, carte, champ, avatar, fenêtre
-  features/                un dossier par espace : auth, student, admin, deploy-check
+  features/                un dossier par espace : auth, student, admin, quests, deploy-check
   styles/                  palette et règles de la section 8
 shared/                    code commun à l'interface et au serveur
-  rules/                   pseudo, identifiant, mot de passe, palette, avatars
+  rules/                   pseudo, identifiant, palette, avatars, quêtes, statuts, calcul de l'XP
   schemas/                 formats des échanges avec l'API
 server/                    logique serveur
   app.ts                   assemblage des routes ; tout ce qui est sous /admin exige un admin
   auth/                    mots de passe, sessions, limitation des tentatives, comptes
-  routes/                  une par domaine : comptes, élèves, test de déploiement
+  quests/                  quêtes : création, correction automatique, validation, crédit de l'XP
+  routes/                  une par domaine : comptes, élèves, quêtes, test de déploiement
   db/                      base SQLite dans Netlify Blobs, migrations
 netlify/functions/api.mts  point d'entrée unique de /api/*
 dev/local-netlify.ts       Netlify en local : fonction et stockage pour `npm run dev`

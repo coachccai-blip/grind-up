@@ -24,7 +24,9 @@ export interface AppDependencies {
  */
 function setApiHeaders(c: Context<AppEnv>): void {
   // Une réponse de l'API n'est jamais mise en cache, ni par le navigateur ni par Netlify.
-  c.header('Cache-Control', 'no-store')
+  // Seule exception : une route qui pose elle-même sa règle (l'image d'une quête, gardée
+  // par le navigateur de l'utilisateur, jamais par un cache partagé).
+  if (!c.res.headers.has('Cache-Control')) c.header('Cache-Control', 'no-store')
   c.header('X-Content-Type-Options', 'nosniff')
   c.header('X-Robots-Tag', 'noindex, nofollow')
 }

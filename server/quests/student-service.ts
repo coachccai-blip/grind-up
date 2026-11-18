@@ -13,6 +13,7 @@ import type { SqlReader, SqlWriter } from '../db/sqlite.js'
 import { ApiError, notFound } from '../http.js'
 import { creditValidation, readReward } from './credit.js'
 import { grade } from './grading.js'
+import { imageUrl } from './images.js'
 import {
   attemptsAllowed,
   findAssignmentOf,
@@ -108,7 +109,7 @@ export function listMyQuests(tx: SqlReader, studentId: string, now: Date): Stude
 }
 
 /** La quête et l'assignation de l'élève, s'il a le droit de la voir. */
-function requireMyQuest(
+export function requireMyQuest(
   tx: SqlReader,
   studentId: string,
   questId: string,
@@ -229,7 +230,7 @@ export function readMyQuest(
   return {
     ...toSummary(quest, assignment, attempts.length, now),
     instructions: quest.instructions,
-    hasImage: quest.image_key !== null,
+    imageUrl: imageUrl(quest, 'student'),
     manualValidation: quest.manual_validation === 1,
     passThreshold: quest.pass_threshold,
     attemptsUsed: attempts.length,

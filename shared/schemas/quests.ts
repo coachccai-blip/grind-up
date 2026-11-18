@@ -246,6 +246,11 @@ export function publishProblems(quest: QuestInput, now: Date): Record<string, st
   return problems
 }
 
+/** Envoi de l'image de la consigne, encodée en adresse « data: ». */
+export const questImageRequestSchema = z.object({
+  dataUrl: z.string().min(1).max(2_100_000, 'Cette image est trop lourde.'),
+})
+
 // --- Actions de l'admin sur une quête ou une réalisation -----------------------------------
 
 export const addAssigneesRequestSchema = z.object({ assignees: assigneesSchema })
@@ -364,7 +369,8 @@ export interface AdminQuestDetail extends AdminQuestSummary {
   manualValidation: boolean
   passThreshold: number
   maxAttempts: number
-  hasImage: boolean
+  /** Adresse de l'image de la consigne, ou null. Elle change quand l'image change. */
+  imageUrl: string | null
   items: AdminQuestItem[]
   /** Brouillon : les élèves choisis, qui recevront la quête à sa publication. */
   draftAssignees: Assignees
@@ -462,7 +468,8 @@ export interface AttemptResult {
 
 export interface StudentQuestDetail extends StudentQuestSummary {
   instructions: string
-  hasImage: boolean
+  /** Adresse de l'image de la consigne, ou null. Elle change quand l'image change. */
+  imageUrl: string | null
   manualValidation: boolean
   passThreshold: number
   attemptsUsed: number

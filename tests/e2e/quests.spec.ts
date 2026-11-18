@@ -7,6 +7,7 @@ import {
   signUpAdmin,
   signUpStudent,
   uniquePseudo,
+  watchForProblems,
 } from './helpers'
 
 /** Un élève dans son propre navigateur, et un admin dans la page du test. */
@@ -345,6 +346,56 @@ test.describe('brouillons et formulaire de quête', () => {
     await expect(secondStudent.getByRole('link', { name: new RegExp(title) })).toBeVisible()
     await firstContext.close()
     await secondContext.close()
+  })
+
+  test('une image accompagne la consigne et n’est montrée qu’aux élèves de la quête', async ({
+    browser,
+    page,
+  }) => {
+    const { student, close } = await studentAndAdmin(browser, page)
+    // L'image passe par le navigateur (lecture, réduction, aperçu) sans enfreindre la politique
+    // de sécurité du contenu.
+    const problems = [...[watchForProblems(page), watchForProblems(student)]]
+    const title = `Carte ${uniquePseudo('q')}`
+    // Un PNG d'un pixel : le navigateur le réduit et le convertit avant l'envoi.
+    const png = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+      'base64',
+    )
+
+    await startNewQuest(page, title)
+    await page.getByRole('radio', { name: 'Sport', exact: true }).check()
+    await page.getByLabel('Consigne').fill('Observe l’image, puis fais le parcours.')
+    await page
+      .getByLabel('Choisir une image')
+      .setInputFiles({ name: 'parcours.png', mimeType: 'image/png', buffer: png })
+    await expect(page.getByRole('img', { name: 'Image de la consigne' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Retirer l’image' })).toBeVisible()
+    await publish(page, title)
+
+    const loaded = (image: ReturnType<Page['getByRole']>) =>
+      image.evaluate((element) => {
+        const img = element as HTMLImageElement
+        return img.complete && img.naturalWidth > 0
+      })
+    const adminImage = page.getByRole('img', { name: 'Image de la consigne' })
+    await expect(adminImage).toBeVisible()
+    await expect.poll(() => loaded(adminImage)).toBe(true)
+
+    await openQuest(student, title)
+    const studentImage = student.getByRole('img', { name: 'Image de la consigne' })
+    await expect(studentImage).toBeVisible()
+    await expect.poll(() => loaded(studentImage)).toBe(true)
+    const address = await studentImage.getAttribute('src')
+    expect(address).toMatch(/^\/api\/quests\/[0-9a-f-]+\/image\?v=/)
+
+    // Un visiteur sans compte ne peut pas lire l'image, même en connaissant son adresse.
+    const visitor = await browser.newContext()
+    const response = await visitor.request.get(address!)
+    expect(response.status()).toBe(401)
+    expect(problems.flat()).toEqual([])
+    await visitor.close()
+    await close()
   })
 
   test('une quête se duplique en brouillon et s’archive', async ({ browser, page }) => {
