@@ -1,10 +1,12 @@
-import { defineExercise, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
- * Fonctions. Trois QCM, sans graphique : la notion de fonction (image et
- * antécédent), les fonctions linéaires, puis les fonctions affines. Une fonction
- * est donnée par une formule ou par un tableau de valeurs écrit en texte ; une
- * droite est décrite par les points où elle passe.
+ * Fonctions. Trois QCM : la notion de fonction (image et antécédent), les
+ * fonctions linéaires, puis les fonctions affines. Une fonction est donnée par
+ * une formule ou par un tableau de valeurs, écrit en texte et dessiné ; une
+ * droite est décrite par les points où elle passe. Les figures sont dans
+ * server/library/figures/fonctions.ts ; aucune ne montre une droite qu'une
+ * question demande de reconnaître.
  */
 
 /** Le tableau de valeurs de la fonction h, lu deux fois : pour une image, puis pour des antécédents. */
@@ -17,9 +19,13 @@ const notion = defineExercise({
   theme: 'fonctions',
   difficulty: 'easy',
   description:
-    'Le vocabulaire des fonctions, sans graphique : notations f(x) et x ↦ f(x), image, antécédent. Calculer une image, lire un tableau de valeurs, trouver un antécédent par une équation.',
+    'Le vocabulaire des fonctions : notations f(x) et x ↦ f(x), image, antécédent. Calculer une image, lire un tableau de valeurs, trouver un antécédent par une équation.',
   lesson: paragraphs(
     'Une **fonction** est un procédé qui, à chaque nombre x, fait correspondre un seul nombre. Si la fonction s’appelle f, ce nombre se note f(x) et se lit « f de x ».',
+    figure(
+      'fonction-machine-rappel',
+      'Une machine f, de formule x ↦ 2x + 3 : le nombre 4 entre, c’est l’antécédent ; 11 sort, c’est l’image.',
+    ),
     [
       '- **Deux notations.** f : x ↦ 2x + 3 se lit « la fonction f qui, à x, associe 2x + 3 ». On écrit aussi f(x) = 2x + 3.',
       '- **Image.** f(x) est l’image de x par f. Pour la calculer, remplace x par sa valeur : f(4) = 2 × 4 + 3 = 11. L’image de 4 par f est 11.',
@@ -31,6 +37,10 @@ const notion = defineExercise({
   example: [
     {
       statement: 'La fonction f est définie par f(x) = 3x − 5. Calcule l’image de 6 par f.',
+      figure: {
+        id: 'fonction-exemple-image',
+        alt: 'La machine f, de formule x ↦ 3x − 5 : 6 entre, l’image qui sort est cherchée.',
+      },
       steps: [
         [
           'f(6) = 3 × 6 − 5',
@@ -46,6 +56,10 @@ const notion = defineExercise({
     {
       statement:
         'La fonction f est toujours définie par f(x) = 3x − 5. Trouve l’antécédent de 10 par f.',
+      figure: {
+        id: 'fonction-exemple-antecedent',
+        alt: 'La machine f, de formule x ↦ 3x − 5 : 10 sort, le nombre qui entre est cherché.',
+      },
       steps: [
         [
           '3x − 5 = 10',
@@ -60,6 +74,7 @@ const notion = defineExercise({
   questions: [
     qcm({
       prompt: 'Pour une fonction f, on sait que f(3) = 8. Quelle phrase traduit cette égalité ?',
+      figure: { id: 'fonction-q1-machine', alt: 'Une machine f : le nombre 3 entre, 8 sort.' },
       choices: [
         '3 est l’image de 8 par f',
         '8 est l’image de 3 par f',
@@ -127,6 +142,10 @@ const notion = defineExercise({
     }),
     qcm({
       prompt: `${TABLE} Quelle est l’image de 3 par h ?`,
+      figure: {
+        id: 'fonction-tableau-h',
+        alt: 'Le tableau de valeurs de h : x vaut −2, −1, 0, 2, 3, 4 ; h(x) vaut 4, 1, 3, 4, −1, 7.',
+      },
       choices: ['0', '4', '−1', '1'],
       answer: '−1',
       correction: {
@@ -152,6 +171,10 @@ const notion = defineExercise({
     }),
     qcm({
       prompt: `${TABLE} Quels sont les antécédents de 4 par h dans ce tableau ?`,
+      figure: {
+        id: 'fonction-tableau-h',
+        alt: 'Le tableau de valeurs de h : x vaut −2, −1, 0, 2, 3, 4 ; h(x) vaut 4, 1, 3, 4, −1, 7.',
+      },
       choices: ['7', '−2 et 2', '3', '−2'],
       answer: '−2 et 2',
       correction: {
@@ -261,11 +284,23 @@ const lineaires = defineExercise({
       '- **Graphique.** Une fonction linéaire est représentée par une droite qui passe par l’origine du repère, car f(0) = 0. Cette droite passe aussi par le point (1 ; a).',
       '- **Pourcentages.** Augmenter un nombre de 20 %, c’est le multiplier par 1 + 0,20 = 1,2 : la fonction est x ↦ 1,2x. Le diminuer de 20 %, c’est le multiplier par 1 − 0,20 = 0,8.',
     ].join('\n'),
+    figure(
+      'fonction-lineaire-prix-kilo',
+      'Un tableau de proportionnalité : 1, 2 et 4 kg coûtent 3, 6 et 12 € ; une flèche « × 3 » va de la masse au prix.',
+    ),
+    figure(
+      'fonction-lineaire-droite',
+      'Dans un repère, la droite d’une fonction linéaire f passe par l’origine O et par le point (1 ; a).',
+    ),
   ),
   example: [
     {
       statement:
         'La fonction linéaire f vérifie f(6) = 9. Trouve son coefficient, puis calcule l’image de 10 et l’antécédent de 12.',
+      figure: {
+        id: 'fonction-lineaire-exemple-tableau',
+        alt: 'Tableau : x vaut 6, 10, ? ; f(x) vaut 9, ?, 12 ; une flèche « × a » va de x à f(x).',
+      },
       steps: [
         [
           'a × 6 = 9',
@@ -287,6 +322,10 @@ const lineaires = defineExercise({
     {
       statement:
         'Un magasin baisse tous ses prix de 30 %. Quelle fonction donne le nouveau prix à partir de l’ancien prix x ? Calcule le nouveau prix d’un article qui coûtait 60 €.',
+      figure: {
+        id: 'fonction-lineaire-exemple-baisse',
+        alt: 'Une bande de 10 parts pour l’ancien prix de 60 € : 3 parts pour la baisse de 30 %, 7 parts pour le nouveau prix.',
+      },
       steps: [
         [
           'x − 0,30 × x',
@@ -437,6 +476,10 @@ const lineaires = defineExercise({
     qcm({
       prompt:
         'Au marché, 2,5 kg de cerises coûtent 14 €. Le prix est proportionnel à la masse. Quelle fonction donne le prix, en euros, de x kilogrammes de cerises ?',
+      figure: {
+        id: 'fonction-lineaire-q5-cerises',
+        alt: 'Un panier de cerises sur une balance qui affiche 2,5 kg, avec une étiquette de 14 €.',
+      },
       choices: ['x ↦ 14x', 'x ↦ 5,6x', 'x ↦ 35x', 'x ↦ x + 11,5'],
       answer: 'x ↦ 5,6x',
       correction: {
@@ -468,6 +511,10 @@ const lineaires = defineExercise({
     qcm({
       prompt:
         'Pendant les soldes, un magasin baisse tous ses prix de 15 %. Quelle fonction donne le nouveau prix à partir de l’ancien prix x ?',
+      figure: {
+        id: 'fonction-lineaire-q6-soldes',
+        alt: 'Une étiquette « Soldes −15 % » ; ancien prix x, nouveau prix cherché.',
+      },
       choices: ['x ↦ 0,15x', 'x ↦ x − 15', 'x ↦ 1,15x', 'x ↦ 0,85x'],
       answer: 'x ↦ 0,85x',
       correction: {
@@ -517,6 +564,14 @@ const affines = defineExercise({
       '- b est l’**ordonnée à l’origine** : c’est l’image de 0, car f(0) = a × 0 + b = b.',
       '- La représentation graphique de f est une droite. Un point de coordonnées (x ; y) est sur cette droite si, et seulement si, y = f(x).',
     ].join('\n'),
+    figure(
+      'fonction-affine-a-et-b',
+      'La droite de f, ici avec a égal à 2 et b à 1 : elle coupe l’axe des ordonnées en b ; quand x avance de 1, elle monte de a.',
+    ),
+    figure(
+      'fonction-affine-signe-de-a',
+      'Trois droites : elle monte si a > 0, elle descend si a < 0, elle est horizontale si a est nul.',
+    ),
     '**Pour aller plus loin : trouver a et b avec deux images.** Calcule d’abord a = différence des images ÷ différence des antécédents, en prenant les deux différences dans le même ordre. Trouve ensuite b en écrivant l’une des deux images.',
     '**Comparer deux tarifs.** Cherche le nombre pour lequel ils coûtent le même prix, puis teste un nombre de chaque côté.',
     'Deux cas particuliers : si b = 0, la fonction est linéaire ; si a = 0, elle est constante.',
@@ -524,6 +579,10 @@ const affines = defineExercise({
   example: [
     {
       statement: 'La fonction affine f vérifie f(2) = 7 et f(5) = 16. Trouve l’expression de f(x).',
+      figure: {
+        id: 'fonction-affine-exemple-deux-images',
+        alt: 'Tableau : x vaut 2 puis 5, soit + 3 ; f(x) vaut 7 puis 16, soit + 9.',
+      },
       steps: [
         [
           'a = (16 − 7) ÷ (5 − 2)',
@@ -544,6 +603,10 @@ const affines = defineExercise({
     {
       statement:
         'La fonction g est définie par g(x) = 2x − 3. Le point A(4 ; 6) est-il sur la droite qui représente g ?',
+      figure: {
+        id: 'fonction-affine-exemple-point',
+        alt: 'Dans un repère, la droite de g et le point A de coordonnées (4 ; 6).',
+      },
       steps: [
         [
           'g(4) = 2 × 4 − 3 = 5',
@@ -730,6 +793,10 @@ const affines = defineExercise({
     qcm({
       prompt:
         'Une piscine propose deux tarifs. Tarif A : une carte à 15 €, puis 9 € par entrée. Tarif B : un abonnement à 75 €, puis 3 € par entrée. Pour x entrées, le tarif A coûte 9x + 15 euros et le tarif B coûte 3x + 75 euros : ce sont deux fonctions affines de x. Quel est le tarif le moins cher, selon le nombre d’entrées ?',
+      figure: {
+        id: 'fonction-affine-q6-piscine',
+        alt: 'Les deux tarifs de la piscine. A : carte de 15 €, puis 9 € par entrée. B : abonnement de 75 €, puis 3 € par entrée.',
+      },
       choices: [
         'Le tarif B, quel que soit le nombre d’entrées',
         'Le tarif A en dessous de 10 entrées, le tarif B au-dessus',

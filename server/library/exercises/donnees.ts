@@ -1,10 +1,12 @@
-import { defineExercise, exact, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, exact, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
  * Statistiques et probabilités. Les séries sont écrites en texte, leurs valeurs
  * séparées par des points-virgules ; les arbres et les tableaux à double entrée
- * sont décrits par l'énoncé. Les probabilités sont données en fraction
- * irréductible.
+ * sont décrits par l'énoncé, et dessinés seulement dans le rappel et les
+ * exemples (figures : server/library/figures/donnees.ts). Une question montre
+ * au plus son matériel : le dé, l'urne, la roue, les cartes. Les probabilités
+ * sont données en fraction irréductible.
  */
 
 const statistiques = defineExercise({
@@ -22,6 +24,10 @@ const statistiques = defineExercise({
       '- **Médiane :** une valeur qui partage la série, rangée dans l’ordre croissant, en deux groupes de même effectif. Si l’effectif est impair, c’est la valeur du milieu. S’il est pair, on prend la moyenne des deux valeurs du milieu.',
       '- **Étendue :** la différence entre la plus grande valeur et la plus petite.',
     ].join('\n'),
+    figure(
+      'stat-serie-rangee',
+      'Une série de 7 valeurs rangées sur une droite graduée : la médiane 8 laisse 3 valeurs de chaque côté ; l’étendue va de 2 à 15.',
+    ),
     'Exemple : pour la série 2 ; 5 ; 11, la moyenne est (2 + 5 + 11) ÷ 3 = 6, la médiane est 5 et l’étendue est 11 − 2 = 9.',
     'Avant de chercher une médiane, range toujours les valeurs dans l’ordre croissant.',
   ),
@@ -29,6 +35,10 @@ const statistiques = defineExercise({
     {
       statement:
         'Ce trimestre, Yanis a eu trois notes : 10 (coefficient 1), 13 (coefficient 2) et 16 (coefficient 3). Calcule sa moyenne.',
+      figure: {
+        id: 'stat-exemple-coefficients',
+        alt: 'La note 10 écrite une fois, la note 13 deux fois, la note 16 trois fois : comme 6 notes.',
+      },
       steps: [
         [
           '10 × 1 + 13 × 2 + 16 × 3 = 84',
@@ -46,6 +56,10 @@ const statistiques = defineExercise({
     {
       statement:
         'Voici le nombre de pompes réalisées par six élèves : 16 ; 8 ; 21 ; 12 ; 8 ; 19. Détermine la médiane et l’étendue de cette série.',
+      figure: {
+        id: 'stat-exemple-pompes',
+        alt: 'Les six valeurs rangées sur une droite graduée : la médiane, entre 12 et 16, laisse 3 valeurs de chaque côté.',
+      },
       steps: [
         [
           '8 ; 8 ; 12 ; 16 ; 19 ; 21',
@@ -86,6 +100,10 @@ const statistiques = defineExercise({
     exact({
       prompt:
         'Voici les tailles de six élèves, en cm : 158 ; 172 ; 149 ; 165 ; 180 ; 161. Calcule l’étendue de cette série, en cm.',
+      figure: {
+        id: 'stat-q2-tailles',
+        alt: 'Six élèves côte à côte, de tailles 158, 172, 149, 165, 180 et 161 cm.',
+      },
       answers: ['31'],
       correction: {
         steps: [
@@ -149,6 +167,10 @@ const statistiques = defineExercise({
     exact({
       prompt:
         'Une équipe de football a joué 20 matchs cette saison. Elle a marqué 0 but dans 4 matchs, 1 but dans 7 matchs, 2 buts dans 6 matchs et 3 buts dans 3 matchs. Calcule le nombre moyen de buts marqués par match.',
+      figure: {
+        id: 'stat-q5-buts',
+        alt: 'Diagramme en bâtons : 0 but dans 4 matchs, 1 but dans 7, 2 buts dans 6, 3 buts dans 3.',
+      },
       answers: ['1,4', '1,4 but', '1,4 buts'],
       correction: {
         steps: [
@@ -204,6 +226,10 @@ const probabilites = defineExercise({
     'Vocabulaire des probabilités, puis calculs en situation d’équiprobabilité : dé, urne, roue de loterie, jeu de 32 cartes. Événement certain, impossible, contraire. Réponses en fraction irréductible.',
   lesson: paragraphs(
     'Une **expérience aléatoire** est une expérience dont on connaît les résultats possibles, sans pouvoir prévoir lequel se produira : lancer un dé, tirer une carte. Ces résultats sont les **issues**. Un **événement** est un ensemble d’issues : pour un dé, « obtenir un multiple de 3 » regroupe les issues 3 et 6. Ce sont ses issues **favorables**.',
+    figure(
+      'proba-de-multiple-de-3',
+      'Les six faces d’un dé ; les faces 3 et 6 sont les issues favorables à « obtenir un multiple de 3 ».',
+    ),
     'Quand toutes les issues ont la même chance de se produire, on parle d’**équiprobabilité**. La probabilité d’un événement est alors :',
     '**nombre d’issues favorables ÷ nombre d’issues possibles**',
     [
@@ -211,11 +237,19 @@ const probabilites = defineExercise({
       '- Un événement **impossible** a pour probabilité 0. Un événement **certain** a pour probabilité 1.',
       '- L’**événement contraire** de A, noté « non A », se réalise quand A ne se réalise pas : p(non A) = 1 − p(A).',
     ].join('\n'),
+    figure(
+      'proba-echelle',
+      'L’échelle des probabilités : 0 pour l’impossible, 1/2 pour une chance sur deux, 1 pour le certain.',
+    ),
   ),
   example: [
     {
       statement:
         'Un sac contient 3 jetons rouges, 4 jetons verts et 5 jetons bleus, indiscernables au toucher. On tire un jeton au hasard. Quelle est la probabilité de tirer un jeton vert ?',
+      figure: {
+        id: 'proba-exemple-sac',
+        alt: 'Un sac de 12 jetons : 3 rouges, 4 verts et 5 bleus.',
+      },
       steps: [
         [
           '3 + 4 + 5 = 12',
@@ -236,6 +270,10 @@ const probabilites = defineExercise({
     {
       statement:
         'On lance un dé équilibré à six faces. Quelle est la probabilité de ne pas obtenir 6 ?',
+      figure: {
+        id: 'proba-exemple-de-sauf-6',
+        alt: 'Les six faces d’un dé ; les faces 1 à 5 sont favorables à « ne pas obtenir 6 ».',
+      },
       steps: [
         [
           'p(obtenir 6) = 1/6',
@@ -254,6 +292,7 @@ const probabilites = defineExercise({
     qcm({
       prompt:
         'On lance un dé équilibré à six faces et on lit le nombre obtenu. Dans cette expérience aléatoire, que désigne « obtenir un nombre pair » ?',
+      figure: { id: 'proba-de-six-faces', alt: 'Les six faces d’un dé, de 1 à 6.' },
       choices: ['une issue', 'un événement', 'une probabilité', 'une expérience aléatoire'],
       answer: 'un événement',
       correction: {
@@ -286,6 +325,10 @@ const probabilites = defineExercise({
     qcm({
       prompt:
         'Une urne contient 4 boules rouges, 6 boules bleues et 10 boules jaunes, indiscernables au toucher. On tire une boule au hasard. Quelle est la probabilité de tirer une boule bleue ?',
+      figure: {
+        id: 'proba-q2-urne',
+        alt: 'Une urne de 4 boules rouges, 6 boules bleues et 10 boules jaunes.',
+      },
       choices: ['1/3', '3/7', '3/10', '1/6'],
       answer: '3/10',
       correction: {
@@ -320,6 +363,7 @@ const probabilites = defineExercise({
     qcm({
       prompt:
         'On lance un dé équilibré à six faces. Quelle est la probabilité d’obtenir un nombre strictement supérieur à 4 ?',
+      figure: { id: 'proba-de-six-faces', alt: 'Les six faces d’un dé, de 1 à 6.' },
       choices: ['1/3', '1/2', '2/3', '1/6'],
       answer: '1/3',
       correction: {
@@ -356,6 +400,10 @@ const probabilites = defineExercise({
     qcm({
       prompt:
         'Une roue de loterie est partagée en 5 secteurs de même taille, numérotés 2, 4, 6, 8 et 10. On la fait tourner. Quelle est la probabilité qu’elle s’arrête sur un nombre pair ?',
+      figure: {
+        id: 'proba-q4-roue',
+        alt: 'Une roue partagée en 5 secteurs égaux, numérotés 2, 4, 6, 8 et 10, et sa flèche.',
+      },
       choices: ['1/2', '5', '0', '1'],
       answer: '1',
       correction: {
@@ -388,6 +436,10 @@ const probabilites = defineExercise({
     qcm({
       prompt:
         'Un jeu de 32 cartes compte quatre couleurs : pique, cœur, carreau et trèfle. Chaque couleur a huit cartes : 7, 8, 9, 10, valet, dame, roi et as. On tire une carte au hasard. Quelle est la probabilité de tirer une figure, c’est-à-dire un valet, une dame ou un roi ?',
+      figure: {
+        id: 'proba-q5-cartes',
+        alt: 'Les 8 cartes d’une couleur : 7, 8, 9, 10, valet, dame, roi, as ; et les 4 couleurs.',
+      },
       choices: ['3/32', '3/8', '3/5', '3/13'],
       answer: '3/8',
       correction: {
@@ -420,6 +472,7 @@ const probabilites = defineExercise({
     qcm({
       prompt:
         'Un sac contient 20 jetons numérotés de 1 à 20, indiscernables au toucher. On tire un jeton au hasard. Quelle est la probabilité de ne pas tirer un multiple de 5 ?',
+      figure: { id: 'proba-q6-jetons', alt: 'Vingt jetons numérotés de 1 à 20.' },
       choices: ['1/5', '1/4', '5/4', '4/5'],
       answer: '4/5',
       correction: {
@@ -469,6 +522,15 @@ const deuxEpreuves = defineExercise({
       '- dans un **arbre** : une branche par résultat de la première épreuve, puis, au bout de chacune, une branche par résultat de la seconde. Chaque chemin est une issue ;',
       '- dans un **tableau à double entrée** : une ligne par résultat de la première épreuve, une colonne par résultat de la seconde. Chaque case est une issue.',
     ].join('\n'),
+    'Par exemple, on lance une pièce (P ou F), puis on fait tourner une roue numérotée 1, 2 et 3 :',
+    figure(
+      'epreuves-arbre-rappel',
+      'Arbre : 2 branches pour la pièce, P et F, puis 3 branches pour la roue au bout de chacune ; 6 chemins, de (P ; 1) à (F ; 3).',
+    ),
+    figure(
+      'epreuves-tableau-rappel',
+      'Le même dénombrement en tableau : 2 lignes pour la pièce, 3 colonnes pour la roue, 6 cases.',
+    ),
     'Les nombres d’issues se **multiplient** : deux lancers d’une pièce donnent 2 × 2 = 4 issues, deux lancers d’un dé en donnent 6 × 6 = 36. Quand toutes les issues ont la même probabilité, on divise le nombre d’issues favorables par le nombre d’issues possibles.',
     '**Tirages dans une urne.** Chaque boule a la même chance d’être tirée : pour compter les issues, on distingue les boules d’une même couleur, par exemple en les numérotant. Avec remise, l’urne est la même aux deux tirages. Sans remise, elle contient une boule de moins au second tirage.',
     '**« Au moins une fois ».** Il est souvent plus simple de calculer la probabilité de l’événement contraire, « aucune fois », puis de la soustraire de 1.',
@@ -477,6 +539,10 @@ const deuxEpreuves = defineExercise({
     {
       statement:
         'On fait tourner deux fois de suite une roue partagée en 3 secteurs de même taille, numérotés 1, 2 et 3. Quelle est la probabilité que la somme des deux numéros obtenus soit égale à 4 ?',
+      figure: {
+        id: 'epreuves-exemple-roue-somme',
+        alt: 'Tableau à double entrée des sommes des deux tours ; les trois cases de somme 4 sont mises en valeur.',
+      },
       steps: [
         [
           '3 × 3 = 9',
@@ -496,6 +562,10 @@ const deuxEpreuves = defineExercise({
     {
       statement:
         'Un sac contient 3 jetons rouges et 1 jeton noir, indiscernables au toucher. On tire un jeton, on ne le remet pas dans le sac, puis on tire un second jeton. Quelle est la probabilité de tirer deux jetons rouges ?',
+      figure: {
+        id: 'epreuves-exemple-sac',
+        alt: 'Un sac de 4 jetons : trois rouges nommés R1, R2, R3, et un noir N.',
+      },
       steps: [
         [
           '4 × 3 = 12',
@@ -591,6 +661,10 @@ const deuxEpreuves = defineExercise({
     qcm({
       prompt:
         'On lance deux dés équilibrés à six faces, un rouge et un bleu, et on additionne les deux nombres obtenus. On range les issues dans un tableau à double entrée : une ligne par résultat du dé rouge, une colonne par résultat du dé bleu, et la somme dans chaque case. Quelle est la probabilité que la somme soit égale à 8 ?',
+      figure: {
+        id: 'epreuves-q3-deux-des',
+        alt: 'Un dé rouge et un dé bleu, dont on additionne les deux nombres.',
+      },
       choices: ['1/11', '5/12', '1/12', '5/36'],
       answer: '5/36',
       correction: {
@@ -627,6 +701,7 @@ const deuxEpreuves = defineExercise({
     qcm({
       prompt:
         'Une urne contient 2 boules rouges et 3 boules bleues, indiscernables au toucher. On tire une boule, on note sa couleur, on la remet dans l’urne, puis on tire une seconde boule. Quelle est la probabilité de tirer deux boules rouges ?',
+      figure: { id: 'epreuves-q4-urne', alt: 'Une urne de 2 boules rouges et 3 boules bleues.' },
       choices: ['4/25', '4/5', '1/10', '1/4'],
       answer: '4/25',
       correction: {
@@ -665,6 +740,7 @@ const deuxEpreuves = defineExercise({
     qcm({
       prompt:
         'Une urne contient 3 boules rouges et 2 boules vertes, indiscernables au toucher. On tire une boule, on ne la remet pas dans l’urne, puis on tire une seconde boule. Quelle est la probabilité de tirer deux boules de couleurs différentes ?',
+      figure: { id: 'epreuves-q5-urne', alt: 'Une urne de 3 boules rouges et 2 boules vertes.' },
       choices: ['12/25', '3/10', '3/5', '1/2'],
       answer: '3/5',
       correction: {
