@@ -172,6 +172,22 @@ describe('outils de rédaction', () => {
       '45 euros',
     ])
     expect(answersTo('Calcule l’angle, en degrés.', ['53'])).toEqual(['53', '53 °', '53 degrés'])
+    // Ce que l'on compte, ou l'inconnue de l'énoncé, peuvent aussi accompagner le nombre.
+    expect(answersTo('Pour combien de séances les deux tarifs sont-ils égaux ?', ['12'])).toEqual([
+      '12',
+      '12 séances',
+    ])
+    expect(answersTo('Dans combien d’années sera-t-il deux fois plus âgé ?', ['16'])).toEqual([
+      '16',
+      '16 ans',
+      '16 années',
+    ])
+    expect(answersTo('Résous l’équation 3x + 5 = 29.', ['8'])).toEqual(['8', 'x = 8'])
+    expect(answersTo('Combien de temps dure le trajet, en minutes ?', ['40'])).toEqual([
+      '40',
+      '40 min',
+      '40 minutes',
+    ])
     expect(
       answersTo('Est-il rectangle, en comptant en cm ? Réponds par oui ou par non.', ['oui']),
     ).toEqual(['oui'])

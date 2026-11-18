@@ -144,21 +144,33 @@ const ASKED_UNITS: readonly (readonly [asked: string, written: readonly string[]
 
 const MAX_ANSWERS = 5
 
+/** Ce que l'élève peut écrire après le nombre quand l'énoncé demande « combien de … ». */
+const COUNTED: Record<string, readonly string[]> = { années: ['ans', 'années'], temps: [] }
+
 /**
  * Les réponses acceptées d'une question à saisir. L'élève doit écrire le nombre
- * seul ; s'il ajoute l'unité que demande l'énoncé (« en cm »), sa réponse reste
- * juste : « 5 » et « 5 cm » sont acceptées toutes les deux.
+ * seul ; une réponse juste n'est pas refusée pour autant s'il l'habille comme
+ * l'énoncé y invite :
+ * - avec l'unité demandée (« en cm ») : « 5 cm » ;
+ * - avec ce que l'on compte (« combien de séances ») : « 12 séances » ;
+ * - avec l'inconnue, quand l'énoncé parle de x : « x = 8 ».
  */
 function acceptedAnswers(prompt: string, answers: readonly string[]): string[] {
-  const asked = [...prompt.matchAll(/\ben ([\p{L}%°€/²³]+)/gu)]
-    .map((match) => ASKED_UNITS.find(([unit]) => unit === match[1]))
-    .filter((unit) => unit !== undefined)
-    .at(-1)
   const numbers = answers.filter((answer) => /^[−-]?\d+(?:[,.]\d+)?$/.test(answer))
-  const withUnits = (asked?.[1] ?? []).flatMap((unit) =>
-    numbers.map((answer) => `${answer} ${unit}`),
-  )
-  return [...answers, ...withUnits].slice(0, MAX_ANSWERS)
+  const unit = [...prompt.matchAll(/\ben ([\p{L}%°€/²³]+)/gu)]
+    .map((match) => ASKED_UNITS.find(([asked]) => asked === match[1]))
+    .filter((found) => found !== undefined)
+    .at(-1)
+  const counted = [...prompt.matchAll(/\bcombien d(?:e |’)(\p{L}+)/giu)].at(-1)?.[1]
+  const suffixes = [...(unit?.[1] ?? []), ...(counted ? (COUNTED[counted] ?? [counted]) : [])]
+  // La lettre x d'une expression (« 3x + 5 », « x² »), pas celle d'un mot (« deux », « dix »).
+  const unknown = /(?<!\p{L})x(?!\p{L})/u.test(prompt)
+
+  return [
+    ...answers,
+    ...(unknown ? numbers.map((answer) => `x = ${answer}`) : []),
+    ...suffixes.flatMap((suffix) => numbers.map((answer) => `${answer} ${suffix}`)),
+  ].slice(0, MAX_ANSWERS)
 }
 
 function toItem(question: Question): QuestItemInput {
