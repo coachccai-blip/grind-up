@@ -61,9 +61,17 @@ export function createTestApp(
     return database
   }
 
+  // Hasard reproductible : la même suite de tirages à chaque test.
+  let seed = 12345
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296
+    return seed / 4294967296
+  }
+
   const app = createApp({
     config,
     now: () => clock.now,
+    random,
     storage: (deployContext) => ({ store, database: databaseFor(deployContext) }),
   })
 

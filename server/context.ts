@@ -26,6 +26,8 @@ export interface AppEnv {
     storage: Storage
     config: AppConfig
     now: () => Date
+    /** Hasard des tirages (planning et XP des bots) : remplaçable dans les tests. */
+    random: () => number
     /** Utilisateur connecté, ou null. Posé par le middleware d'authentification. */
     user: UserRow | null
   }

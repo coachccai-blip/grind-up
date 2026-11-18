@@ -16,10 +16,17 @@ export interface LinkTab {
  * Onglets qui changent l'adresse de la page : le bouton « Retour » du
  * navigateur revient à l'onglet précédent, et un onglet peut se partager.
  */
-export function LinkTabs({ label, tabs }: { label: string; tabs: readonly LinkTab[] }) {
+interface LinkTabsProps {
+  label: string
+  tabs: readonly LinkTab[]
+  /** Nombre d'onglets par ligne sur téléphone : deux, ou trois pour des libellés courts. */
+  columns?: 2 | 3
+}
+
+export function LinkTabs({ label, tabs, columns = 2 }: LinkTabsProps) {
   return (
     <nav aria-label={label}>
-      <ul className={styles.tabs}>
+      <ul className={classes(styles.tabs, columns === 3 && styles.three)}>
         {tabs.map((tab) => (
           <li key={tab.to}>
             <Link

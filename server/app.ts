@@ -1,13 +1,16 @@
+import { randomInt } from 'node:crypto'
 import { Hono, type Context } from 'hono'
 import { authenticate, requireRole, sameOriginOnly } from './auth/middleware.js'
 import { loadConfig, type AppConfig } from './config.js'
 import type { AppEnv, Storage } from './context.js'
 import { WriteConflictError } from './db/database.js'
 import { ApiError, notFound } from './http.js'
+import { adminBotRoutes, adminSettingsRoutes } from './routes/admin-bots.js'
 import { adminQuestRoutes, adminValidationRoutes } from './routes/admin-quests.js'
 import { adminStudentRoutes } from './routes/admin-students.js'
 import { authRoutes } from './routes/auth.js'
 import { healthRoutes } from './routes/health.js'
+import { leaderboardRoutes } from './routes/leaderboard.js'
 import { studentProgressRoutes } from './routes/student-progress.js'
 import { studentQuestRoutes } from './routes/student-quests.js'
 
@@ -17,6 +20,8 @@ export interface AppDependencies {
   storage: (deployContext: string | undefined) => Storage
   config?: AppConfig
   now?: () => Date
+  /** Hasard des tirages, dans [0, 1[. Par défaut, celui du système. */
+  random?: () => number
 }
 
 /**
@@ -42,12 +47,14 @@ function setApiHeaders(c: Context<AppEnv>): void {
 export function createApp(dependencies: AppDependencies) {
   const config = dependencies.config ?? loadConfig()
   const now = dependencies.now ?? (() => new Date())
+  const random = dependencies.random ?? (() => randomInt(2 ** 32) / 2 ** 32)
   const app = new Hono<AppEnv>().basePath('/api')
 
   app.use('*', async (c, next) => {
     c.set('storage', dependencies.storage(c.env?.deployContext))
     c.set('config', config)
     c.set('now', now)
+    c.set('random', random)
     c.set('user', null)
     await next()
     setApiHeaders(c)
@@ -59,11 +66,15 @@ export function createApp(dependencies: AppDependencies) {
 
   app.use('*', authenticate)
   app.route('/', authRoutes)
+  // Le leaderboard se lit par les élèves comme par l'admin.
+  app.route('/', leaderboardRoutes)
 
   const admin = new Hono<AppEnv>()
   admin.use('*', requireRole('admin'))
   admin.route('/students', adminStudentRoutes)
   admin.route('/quests', adminQuestRoutes)
+  admin.route('/bots', adminBotRoutes)
+  admin.route('/settings', adminSettingsRoutes)
   admin.route('/', adminValidationRoutes)
   app.route('/admin', admin)
 

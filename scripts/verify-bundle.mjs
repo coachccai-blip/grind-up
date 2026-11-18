@@ -233,7 +233,29 @@ async function runScenario(handler) {
     JSON.stringify(progress.json?.progress?.level),
   )
 
-  // 8. Rien de ce que renvoie la fonction ne contient le code admin.
+  // 8. Leaderboard et bots : un bot créé par l'admin entre au classement, l'élève y est premier.
+  const bot = await call(handler, 'POST', '/api/admin/bots', {
+    cookie: admin.cookie,
+    body: { pseudo: 'BotDuPaquet', avatar: 'fox', mode: 'regular' },
+  })
+  check("L'admin crée un bot", bot.status === 201, `statut ${bot.status}`)
+  const board = await call(handler, 'GET', '/api/leaderboard?period=week', {
+    cookie: student.cookie,
+  })
+  const entries = board.json?.entries ?? []
+  check(
+    "Le leaderboard classe l'élève premier et montre le bot",
+    entries[0]?.pseudo === 'EleveDuPaquet' &&
+      entries[0]?.rank === 1 &&
+      entries.some((entry) => entry.pseudo === 'BotDuPaquet'),
+    `statut ${board.status}`,
+  )
+  check(
+    "L'élève ne sait pas quel participant est un bot",
+    entries.every((entry) => entry.isBot === false),
+  )
+
+  // 9. Rien de ce que renvoie la fonction ne contient le code admin.
   const everything = JSON.stringify([health, student, session, refused, admin, asAdmin, wrong])
   check('Le code admin ne figure dans aucune réponse', !everything.includes(ADMIN_CODE))
 }
