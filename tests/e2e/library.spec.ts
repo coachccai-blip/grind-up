@@ -105,6 +105,11 @@ test('parcours complet d’un exercice de la bibliothèque : repris dans une qu�
 
   // Tout reste modifiable : le titre change, la quête est donnée à cet élève seulement.
   await admin.getByLabel('Titre').fill(title)
+  // Un raccourci mène au choix des élèves, tout en bas de ce long formulaire.
+  await expect(admin.getByRole('radio', { name: 'Choisir les élèves' })).not.toBeInViewport()
+  await admin.getByRole('button', { name: 'Aller au choix des élèves' }).click()
+  await expect(admin.getByRole('heading', { level: 2, name: 'Élèves' })).toBeFocused()
+  await expect(admin.getByRole('radio', { name: 'Choisir les élèves' })).toBeInViewport()
   await admin.getByRole('radio', { name: 'Choisir les élèves' }).check()
   await admin.getByLabel('Rechercher un élève').fill(identifier)
   await admin.getByRole('checkbox', { name: new RegExp(pseudo) }).check()

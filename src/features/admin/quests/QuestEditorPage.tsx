@@ -249,6 +249,11 @@ function QuestEditor({ quest, exercise, settings }: QuestEditorProps) {
           Cette quête reprend l’exercice «&nbsp;{exercise.title}&nbsp;» de la bibliothèque&nbsp;:
           rappel du cours, exemple expliqué, questions et correction détaillée de chacune. Tout
           reste modifiable. Choisissez les élèves en bas de la page, puis publiez la quête.
+          <p className={styles.shortcut}>
+            <Button variant="quiet" onClick={() => goToStudents(formElement.current)}>
+              Aller au choix des élèves
+            </Button>
+          </p>
         </Notice>
       )}
 
@@ -434,8 +439,8 @@ function QuestEditor({ quest, exercise, settings }: QuestEditorProps) {
 
       {/* Une quête publiée reçoit de nouveaux élèves depuis sa fiche, pas depuis ce formulaire. */}
       {!isPublished && (
-        <Card className={styles.section}>
-          <h2>Élèves</h2>
+        <Card className={styles.section} data-section="students">
+          <h2 tabIndex={-1}>Élèves</h2>
           {students.isError && <Notice tone="error">{errorMessage(students.error)}</Notice>}
           {students.isPending && <p>Chargement des élèves…</p>}
           {students.isSuccess && (
@@ -474,6 +479,16 @@ function QuestEditor({ quest, exercise, settings }: QuestEditorProps) {
       )}
     </form>
   )
+}
+
+/**
+ * Amène à l'écran le choix des élèves, tout en bas d'un formulaire que la
+ * bibliothèque a rempli : il ne reste souvent que cela à faire avant de publier.
+ */
+function goToStudents(form: HTMLFormElement | null): void {
+  const section = form?.querySelector<HTMLElement>('[data-section="students"]')
+  section?.scrollIntoView({ block: 'start' })
+  section?.querySelector<HTMLElement>('h2')?.focus({ preventScroll: true })
 }
 
 interface LessonFieldsProps {

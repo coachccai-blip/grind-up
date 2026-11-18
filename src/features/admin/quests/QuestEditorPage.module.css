@@ -8,6 +8,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  /* Une section amenée à l'écran par un raccourci se place sous l'en-tête du téléphone. */
+  scroll-margin-top: 88px;
 }
 
 .pair {
@@ -36,6 +38,17 @@
   color: var(--color-accent);
   font-weight: 700;
   cursor: pointer;
+}
+
+/* Raccourci vers le choix des élèves, sous le message d'une quête reprise de la bibliothèque. */
+.shortcut {
+  margin-top: var(--space-2);
+  margin-left: calc(-1 * var(--space-3));
+}
+
+/* Le titre « Élèves » reçoit le focus quand le raccourci y mène, sans s'entourer d'un contour. */
+.section h2:focus {
+  outline: none;
 }
 
 /* Rappel du cours et exemple expliqué : deux zones de texte dans une zone qui se déplie. */
