@@ -21,7 +21,7 @@ import { RICH_TEXT_MAX_LENGTH } from '../rules/rich-text.js'
  * toutes les saisies) et l'interface (qui signale les erreurs avant l'envoi).
  */
 export const QUEST_TITLE_MAX = 80
-export const ITEM_PROMPT_MAX = 500
+export const ITEM_PROMPT_MAX = 600
 export const ANSWER_MAX = 200
 export const MAX_ITEMS = 50
 /** Longueur maximale de la correction détaillée d'une question. */

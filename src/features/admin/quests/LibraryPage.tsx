@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { findDifficulty, findFormat } from '../../../../shared/rules/quests'
-import type { LibraryExerciseSummary } from '../../../../shared/schemas/library'
+import { figureSrc } from '../../../../shared/rules/figures'
+import type { LibraryExerciseSummary, LibraryTheme } from '../../../../shared/schemas/library'
 import { errorMessage } from '../../../lib/api'
 import { ButtonLink } from '../../../ui/Button'
 import { Card } from '../../../ui/Card'
 import { Chip } from '../../../ui/Chip'
+import { Emoji } from '../../../ui/Emoji'
 import { Field, Select } from '../../../ui/Field'
 import { Notice } from '../../../ui/Notice'
 import { TextLink } from '../../../ui/TextLink'
@@ -84,10 +86,12 @@ export function LibraryPage() {
             .filter((entry) => entry.exercises.length > 0)
             .map((entry) => (
               <section key={entry.id} className={styles.theme}>
-                <h2>{entry.label}</h2>
+                <h2>
+                  <Emoji symbol={entry.emoji} /> {entry.label}
+                </h2>
                 <ul className={styles.list}>
                   {entry.exercises.map((exercise) => (
-                    <ExerciseCard key={exercise.id} exercise={exercise} />
+                    <ExerciseCard key={exercise.id} exercise={exercise} theme={entry} />
                   ))}
                 </ul>
               </section>
@@ -99,15 +103,36 @@ export function LibraryPage() {
   )
 }
 
-function ExerciseCard({ exercise }: { exercise: LibraryExerciseSummary }) {
+interface ExerciseCardProps {
+  exercise: LibraryExerciseSummary
+  theme: LibraryTheme
+}
+
+function ExerciseCard({ exercise, theme }: ExerciseCardProps) {
   const count = exercise.itemCount
   return (
     <Card as="li" className={styles.exercise}>
-      <div className={styles.tags}>
-        <Chip>{exercise.level}</Chip>
-        <Chip>{findDifficulty(exercise.difficulty).label}</Chip>
+      <div className={styles.heading}>
+        <div className={styles.headingText}>
+          <div className={styles.tags}>
+            <Chip>{exercise.level}</Chip>
+            <Chip>{findDifficulty(exercise.difficulty).label}</Chip>
+          </div>
+          <h3>{exercise.title}</h3>
+        </div>
+        {/* Vignette décorative : la première illustration du rappel, sinon l'emoji du thème. */}
+        {exercise.figure ? (
+          <img
+            className={styles.thumbnail}
+            src={figureSrc(exercise.figure.id)}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <Emoji symbol={theme.emoji} className={styles.themeEmoji} />
+        )}
       </div>
-      <h3>{exercise.title}</h3>
       <p>{exercise.description}</p>
       <p className={styles.meta}>
         {findFormat(exercise.format).label} · {count} question{count > 1 ? 's' : ''}

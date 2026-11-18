@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { promptText } from '../../../../shared/rules/figures'
 import { Button } from '../../../ui/Button'
 import { Radio } from '../../../ui/Choice'
 import { Notice } from '../../../ui/Notice'
@@ -9,7 +10,8 @@ import type { FormatProps } from './types'
 /**
  * Cartes de mémorisation : l'élève parcourt les cartes (question au recto,
  * réponse au verso), puis passe un test où il retrouve la réponse de chaque
- * carte parmi celles des autres.
+ * carte parmi celles des autres. Une carte reste du texte : une illustration
+ * écrite au recto n'y est pas montrée.
  */
 export function Flashcards(props: FormatProps) {
   const { quest, readOnly = false } = props
@@ -29,7 +31,7 @@ function CardList({ quest }: Pick<FormatProps, 'quest'>) {
     <dl className={styles.cardList}>
       {quest.items.map((item) => (
         <div key={item.id}>
-          <dt>{item.prompt}</dt>
+          <dt>{promptText(item.prompt)}</dt>
           <dd>{item.back}</dd>
         </div>
       ))}
@@ -67,7 +69,7 @@ function CardDeck({ quest, onTest }: Pick<FormatProps, 'quest'> & { onTest: () =
         onClick={() => setFlipped((current) => !current)}
       >
         <span className={styles.side}>{flipped ? 'Réponse' : 'Question'}</span>
-        <span className={styles.face}>{flipped ? card.back : card.prompt}</span>
+        <span className={styles.face}>{flipped ? card.back : promptText(card.prompt)}</span>
         <span className={styles.flipHint}>
           {flipped
             ? 'Touche la carte pour revoir la question'
@@ -117,7 +119,7 @@ function CardTest({ quest, busy, onSubmit, onReview }: FormatProps & { onReview:
             <li key={item.id}>
               <fieldset className={styles.fieldset}>
                 <legend className={styles.legend}>
-                  {index + 1}. {item.prompt}
+                  {index + 1}. {promptText(item.prompt)}
                 </legend>
                 {(item.options ?? []).map((option) => (
                   <Radio

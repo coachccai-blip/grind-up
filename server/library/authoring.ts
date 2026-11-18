@@ -1,3 +1,4 @@
+import { figureLine, type FigureRef } from '../../shared/rules/figures.js'
 import type { QuestDifficulty } from '../../shared/rules/quests.js'
 import type { LibraryExercise } from '../../shared/schemas/library.js'
 import type { QuestItemInput } from '../../shared/schemas/quests.js'
@@ -15,7 +16,20 @@ import { typography } from './typography.js'
  * Écriture des calculs : le carré « ² », le signe de multiplication « × »
  * (jamais la lettre x), la virgule décimale. Un test relit chaque exercice et
  * recalcule toutes les égalités qu'il sait lire.
+ *
+ * Illustrations : `figure(id, alt)` dans un rappel, `figure: { id, alt }` dans
+ * un exemple ou une question. Le dessin lui-même se définit dans
+ * server/library/figures/ (voir docs/bibliotheque.md, « Illustrer un exercice »).
+ * Une illustration ne montre jamais une réponse attendue, et une correction n'en
+ * a jamais.
  */
+
+/**
+ * La ligne qui affiche une illustration dans un rappel du cours, à passer à
+ * `paragraphs(...)` comme un paragraphe. `alt` décrit la figure en une phrase
+ * courte, pour qui ne la voit pas.
+ */
+export const figure = (id: string, alt: string) => figureLine({ id, alt })
 
 /** Une étape d'une résolution : la ligne de calcul, puis le commentaire qui la justifie. */
 export type Step = readonly [calculation: string, comment: string]
@@ -57,6 +71,8 @@ export function correction({ steps, traps = [], mistake, check }: CorrectionPart
 export interface WorkedExample {
   /** L'énoncé de l'exemple : une question du même genre que celles de l'exercice. */
   statement: string
+  /** Une illustration, montrée juste après l'énoncé. */
+  figure?: FigureRef
   /** La méthode, étape par étape. */
   steps: readonly Step[]
   /** La réponse, en une phrase. */
@@ -70,9 +86,10 @@ export interface WorkedExample {
 export function workedExample(example: WorkedExample | readonly WorkedExample[]): string {
   const examples: readonly WorkedExample[] = Array.isArray(example) ? example : [example]
   return examples
-    .flatMap(({ statement, steps, conclusion }, index) => [
+    .flatMap(({ statement, figure, steps, conclusion }, index) => [
       ...(examples.length > 1 ? [`**Exemple ${index + 1}**`] : []),
       `**Énoncé\u00A0:** ${typography(statement)}`,
+      ...(figure ? [typography(figureLine(figure))] : []),
       ...stepBlocks(steps),
       `**Conclusion\u00A0:** ${typography(conclusion)}`,
     ])
@@ -85,6 +102,8 @@ export const paragraphs = (...blocks: readonly string[]) => blocks.join('\n\n')
 export interface QcmQuestion {
   kind: 'qcm'
   prompt: string
+  /** Une illustration, ajoutée à la fin de l'énoncé. Elle ne montre jamais la réponse. */
+  figure?: FigureRef
   choices: readonly string[]
   /** Le bon choix, désigné par son texte : aucune position à compter. */
   answer: string
@@ -94,6 +113,8 @@ export interface QcmQuestion {
 export interface ExactQuestion {
   kind: 'exact'
   prompt: string
+  /** Une illustration, ajoutée à la fin de l'énoncé. Elle ne montre jamais la réponse. */
+  figure?: FigureRef
   /** Les réponses acceptées ; la première est celle que montre le corrigé. */
   answers: readonly string[]
   correction: CorrectionParts
@@ -174,10 +195,16 @@ function acceptedAnswers(prompt: string, answers: readonly string[]): string[] {
   ].slice(0, MAX_ANSWERS)
 }
 
+/** L'énoncé tel que l'élève le lit : le texte, puis son illustration sur une ligne à part. */
+const itemPrompt = (question: Question) =>
+  typography(
+    question.figure ? `${question.prompt}\n${figureLine(question.figure)}` : question.prompt,
+  )
+
 function toItem(question: Question): QuestItemInput {
   if (question.kind === 'exact') {
     return {
-      prompt: typography(question.prompt),
+      prompt: itemPrompt(question),
       answers: acceptedAnswers(question.prompt, question.answers),
       choices: [],
       correct: [],
@@ -187,7 +214,7 @@ function toItem(question: Question): QuestItemInput {
   const position = question.choices.indexOf(question.answer)
   if (position < 0) throw new Error(`Bonne réponse absente des choix\u00A0: ${question.prompt}`)
   return {
-    prompt: typography(question.prompt),
+    prompt: itemPrompt(question),
     answers: [],
     choices: question.choices.map(typography),
     correct: [position],

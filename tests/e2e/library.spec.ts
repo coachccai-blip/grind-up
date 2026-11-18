@@ -66,6 +66,8 @@ test('parcours complet d’un exercice de la bibliothèque : repris dans une qu�
   await expect(card.getByText('QCM · 6 questions')).toBeVisible()
   await expect(card.getByText('3e', { exact: true })).toBeVisible()
   await expect(card.getByText('Facile', { exact: true })).toBeVisible()
+  // Sa vignette : la première illustration de son rappel, décorative.
+  await expect(card.locator('img[src="/figures/carre-somme.svg"]')).toHaveAttribute('alt', '')
   await expectNoHorizontalScroll(admin)
 
   // Un thème ou quelques lettres suffisent à retrouver un exercice, accents ou non.
@@ -121,6 +123,7 @@ test('parcours complet d’un exercice de la bibliothèque : repris dans une qu�
   // La fiche de la quête montre le rappel, l'exemple, chaque question, sa bonne réponse et sa correction.
   await expect(admin.getByRole('heading', { level: 2, name: 'Rappel du cours' })).toBeVisible()
   await expect(admin.getByRole('heading', { level: 2, name: 'Exemple expliqué' })).toBeVisible()
+  await expect(admin.getByRole('img', { name: /Un carré de côté a\s\+\sb/ })).toBeVisible()
   await expect(corrections(admin)).toHaveCount(6)
   await corrections(admin).first().click()
   await expect(admin.getByText('On reconnaît le carré d’une somme')).toBeVisible()
@@ -132,11 +135,23 @@ test('parcours complet d’un exercice de la bibliothèque : repris dans une qu�
   await page.getByRole('link', { name: new RegExp(title) }).click()
   await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible()
   await expect(page.getByText('50\u00A0XP')).toBeVisible()
+  // Le rappel et l'exemple ont chacun leur pictogramme, que les lecteurs d'écran passent.
   await expect(page.getByRole('heading', { level: 2 })).toHaveText([
-    'Rappel du cours',
-    'Exemple expliqué',
+    /Rappel du cours$/,
+    /Exemple expliqué$/,
     'Consigne',
   ])
+  await expect(
+    page.getByRole('heading', { level: 2, name: 'Rappel du cours', exact: true }),
+  ).toBeVisible()
+  // Le rappel est illustré : l'image est servie par le site, décrite par son texte alternatif.
+  const illustration = page.getByRole('img', { name: /Un carré de côté a\s\+\sb/ })
+  await expect(illustration).toBeVisible()
+  await expect(illustration).toHaveAttribute('src', '/figures/carre-somme.svg')
+  await expect
+    .poll(() => illustration.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBeGreaterThan(0)
+  await expect(page.getByRole('img', { name: /Un carré a² privé du carré b²/ })).toBeVisible()
   await expect(page.getByText('Le terme 2ab s’appelle le double produit.')).toBeVisible()
   await expect(page.getByText('Factorise Q = x² − 16x + 64.')).toBeVisible()
   await expect(page.getByRole('radio')).toHaveCount(24)

@@ -1,3 +1,4 @@
+import type { FigureRef } from '../rules/figures.js'
 import type { QuestCategory, QuestDifficulty, QuestFormat } from '../rules/quests.js'
 import type { QuestItemInput } from './quests.js'
 
@@ -10,6 +11,8 @@ import type { QuestItemInput } from './quests.js'
 export interface LibraryTheme {
   id: string
   label: string
+  /** Emoji décoratif, montré devant le nom du thème. */
+  emoji: string
 }
 
 export interface LibraryExerciseSummary {
@@ -26,10 +29,12 @@ export interface LibraryExerciseSummary {
   format: QuestFormat
   difficulty: QuestDifficulty
   itemCount: number
+  /** La première illustration du rappel du cours, montrée en vignette ; null s'il n'en a pas. */
+  figure: FigureRef | null
 }
 
 /** Un exercice complet, réponses attendues et corrections comprises. */
-export interface LibraryExercise extends LibraryExerciseSummary {
+export interface LibraryExercise extends Omit<LibraryExerciseSummary, 'figure'> {
   lesson: string
   example: string
   instructions: string

@@ -529,6 +529,23 @@ function LessonFields({ lesson, example, onChange, errors }: LessonFieldsProps) 
           hint="Facultatif. Une question du même genre, résolue pas à pas. Même mise en forme que la consigne."
           error={errors.example}
         />
+        {(lesson.trim() !== '' || example.trim() !== '') && (
+          <details className={styles.lessonPreview}>
+            <summary>Aperçu du rappel et de l’exemple</summary>
+            {lesson.trim() !== '' && (
+              <>
+                <h3>Rappel du cours</h3>
+                <RichText text={lesson} />
+              </>
+            )}
+            {example.trim() !== '' && (
+              <>
+                <h3>Exemple expliqué</h3>
+                <RichText text={example} />
+              </>
+            )}
+          </details>
+        )}
       </div>
     </details>
   )

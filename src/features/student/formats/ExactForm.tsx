@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
+import { splitPrompt } from '../../../../shared/rules/figures'
 import { Button } from '../../../ui/Button'
 import { Field } from '../../../ui/Field'
+import { Figures } from '../../../ui/Figure'
 import { Notice } from '../../../ui/Notice'
 import { DetailedCorrection } from './DetailedCorrection'
 import styles from './formats.module.css'
@@ -34,10 +36,12 @@ export function ExactForm({ quest, busy, onSubmit, readOnly = false }: FormatPro
           // Le verdict ne vaut que pour la réponse corrigée : il disparaît dès qu'elle change.
           const corrected = last !== null && value === lastAnswer(item.id)
           const expected = quest.corrections?.[item.id]
+          const prompt = splitPrompt(item.prompt)
           return (
             <li key={item.id} className={styles.question}>
               <Field
-                label={`${index + 1}. ${item.prompt}`}
+                label={`${index + 1}. ${prompt.text}`}
+                media={<Figures figures={prompt.figures} />}
                 value={value}
                 onChange={(event) => setAnswers({ ...answers, [item.id]: event.target.value })}
                 disabled={readOnly}

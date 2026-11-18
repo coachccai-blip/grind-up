@@ -11,7 +11,23 @@ const UNITS =
 const NBSP = '\u00A0'
 const NARROW_NBSP = '\u202F'
 
+/**
+ * Une ligne d'illustration, « ![texte alternatif](figure:identifiant) » : seul
+ * son texte alternatif reçoit la typographie, l'identifiant reste intact.
+ */
+const FIGURE_LINE = /^(\s*!\[)([^\]\n]*)(\]\(figure:[a-z0-9-]+\)\s*)$/
+
 export function typography(text: string): string {
+  return text
+    .split('\n')
+    .map((line) => {
+      const figure = FIGURE_LINE.exec(line)
+      return figure ? `${figure[1]}${typeset(figure[2] ?? '')}${figure[3]}` : typeset(line)
+    })
+    .join('\n')
+}
+
+function typeset(text: string): string {
   return (
     text
       // Apostrophe typographique.

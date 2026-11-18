@@ -8,7 +8,10 @@
  *   - élément           liste à puces
  *   1. élément          liste numérotée
  *   [texte](https://…)  lien ; une adresse https://… seule devient aussi un lien
+ *   ![texte](figure:id) seule sur sa ligne : une illustration du site (voir figures.ts)
  */
+import { parseFigureLine } from './figures.js'
+
 export type Inline =
   | { type: 'text'; text: string }
   | { type: 'bold'; children: Inline[] }
@@ -16,7 +19,9 @@ export type Inline =
   | { type: 'break' }
 
 export type Block =
-  { type: 'paragraph'; children: Inline[] } | { type: 'list'; ordered: boolean; items: Inline[][] }
+  | { type: 'paragraph'; children: Inline[] }
+  | { type: 'list'; ordered: boolean; items: Inline[][] }
+  | { type: 'figure'; id: string; alt: string }
 
 export const RICH_TEXT_MAX_LENGTH = 5000
 
@@ -81,6 +86,14 @@ export function parseRichText(source: string): Block[] {
 
   for (const rawLine of source.replace(/\r\n?/g, '\n').split('\n')) {
     const line = rawLine.trimEnd()
+    const figure = parseFigureLine(line)
+    if (figure) {
+      // Une illustration coupe le paragraphe ou la liste où elle se trouve.
+      flushParagraph()
+      flushList()
+      blocks.push({ type: 'figure', ...figure })
+      continue
+    }
     const bullet = BULLET.exec(line)
     const numbered = bullet ? null : NUMBERED.exec(line)
 
@@ -103,7 +116,7 @@ export function parseRichText(source: string): Block[] {
   return blocks
 }
 
-/** Texte brut d'un contenu mis en forme, pour un aperçu ou une recherche. */
+/** Texte brut d'un contenu mis en forme, pour un aperçu ou une recherche. Les illustrations n'y figurent pas. */
 export function richTextToPlainText(source: string): string {
   const inline = (nodes: Inline[]): string =>
     nodes
@@ -113,7 +126,11 @@ export function richTextToPlainText(source: string): string {
       .join('')
   return parseRichText(source)
     .map((block) =>
-      block.type === 'paragraph' ? inline(block.children) : block.items.map(inline).join(' '),
+      block.type === 'paragraph'
+        ? inline(block.children)
+        : block.type === 'list'
+          ? block.items.map(inline).join(' ')
+          : '',
     )
     .join(' ')
     .replace(/\s+/g, ' ')

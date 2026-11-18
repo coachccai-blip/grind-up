@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
+import { splitPrompt } from '../../../../shared/rules/figures'
 import { findDifficulty, findFormat, isAutoCorrected } from '../../../../shared/rules/quests'
 import type {
   AdminAssignment,
@@ -13,10 +14,12 @@ import { Button, ButtonLink } from '../../../ui/Button'
 import { Card } from '../../../ui/Card'
 import { Dialog, DialogActions } from '../../../ui/Dialog'
 import { EmptyState } from '../../../ui/EmptyState'
+import { Figures } from '../../../ui/Figure'
 import { Notice } from '../../../ui/Notice'
 import { RichText } from '../../../ui/RichText'
 import { TextLink } from '../../../ui/TextLink'
 import { CategoryChip, formatXp, QuestStateChip, StatusChip } from '../../quests/QuestChips'
+import { ExampleTitle, LessonTitle } from '../../quests/LessonTitles'
 import { QuestImage } from '../../quests/QuestImage'
 import { useLatePercent } from '../settings/settings-api'
 import { useStudents } from '../students-api'
@@ -199,13 +202,13 @@ function QuestSheet({ quest }: { quest: AdminQuestDetail }) {
 
       {quest.lesson.trim() !== '' && (
         <Card className={styles.instructions}>
-          <h2>Rappel du cours</h2>
+          <LessonTitle />
           <RichText text={quest.lesson} />
         </Card>
       )}
       {quest.example.trim() !== '' && (
         <Card className={styles.instructions}>
-          <h2>Exemple expliqué</h2>
+          <ExampleTitle />
           <RichText text={quest.example} />
         </Card>
       )}
@@ -245,40 +248,44 @@ function Content({ quest }: { quest: AdminQuestDetail }) {
     <Card>
       <h2 className={styles.sectionTitle}>{isCards ? 'Cartes' : 'Questions'}</h2>
       <ol className={styles.items}>
-        {quest.items.map((item, index) => (
-          <li key={item.id}>
-            <p className={styles.prompt}>
-              {index + 1}. {item.prompt}
-            </p>
-            {quest.format === 'qcm' ? (
-              <ul className={styles.choices}>
-                {item.choices.map((choice, position) => (
-                  <li key={position}>
-                    {choice}
-                    {item.correct.includes(position) && (
-                      <span className={styles.right}> — bonne réponse</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={styles.answer}>
-                {isCards
-                  ? 'Réponse'
-                  : item.answers.length > 1
-                    ? 'Réponses acceptées'
-                    : 'Réponse attendue'}
-                &nbsp;: <strong>{item.answers.join(' ou ')}</strong>
+        {quest.items.map((item, index) => {
+          const prompt = splitPrompt(item.prompt)
+          return (
+            <li key={item.id}>
+              <p className={styles.prompt}>
+                {index + 1}. {prompt.text}
               </p>
-            )}
-            {item.explanation !== '' && (
-              <details className={styles.explanation}>
-                <summary>Correction détaillée</summary>
-                <RichText text={item.explanation} />
-              </details>
-            )}
-          </li>
-        ))}
+              {!isCards && <Figures figures={prompt.figures} />}
+              {quest.format === 'qcm' ? (
+                <ul className={styles.choices}>
+                  {item.choices.map((choice, position) => (
+                    <li key={position}>
+                      {choice}
+                      {item.correct.includes(position) && (
+                        <span className={styles.right}> — bonne réponse</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className={styles.answer}>
+                  {isCards
+                    ? 'Réponse'
+                    : item.answers.length > 1
+                      ? 'Réponses acceptées'
+                      : 'Réponse attendue'}
+                  &nbsp;: <strong>{item.answers.join(' ou ')}</strong>
+                </p>
+              )}
+              {item.explanation !== '' && (
+                <details className={styles.explanation}>
+                  <summary>Correction détaillée</summary>
+                  <RichText text={item.explanation} />
+                </details>
+              )}
+            </li>
+          )
+        })}
       </ol>
     </Card>
   )

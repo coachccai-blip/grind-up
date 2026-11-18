@@ -1,4 +1,4 @@
-import { defineExercise, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
  * Identités remarquables : un exercice en deux quêtes, les cas simples puis les
@@ -391,6 +391,16 @@ export const identitesRemarquables = [
       'Une identité remarquable est une égalité vraie pour tous les nombres a et b. Elle fait gagner du temps : on passe d’une écriture à l’autre sans tout recalculer.',
       IDENTITIES,
       '**Développer**, c’est aller de gauche à droite : un produit devient une somme. **Factoriser**, c’est le chemin inverse. Le terme 2ab s’appelle le double produit.',
+      'D’où vient le double produit ? Un carré de côté a + b se découpe en quatre morceaux : le carré a², le carré b², et deux rectangles ab, pas un seul.',
+      figure(
+        'carre-somme',
+        'Un carré de côté a + b, découpé en un carré a², deux rectangles ab et un carré b².',
+      ),
+      'Et a² − b² ? On retire le carré b² du coin du carré a², puis on déplace la bande du bas contre le côté droit : on obtient un rectangle de côtés a + b et a − b.',
+      figure(
+        'difference-carres',
+        'Un carré a² privé du carré b² de son coin, puis les mêmes morceaux rangés en un rectangle de côtés a + b et a − b.',
+      ),
     ),
     example: [
       {
@@ -441,6 +451,11 @@ export const identitesRemarquables = [
       'Les trois identités remarquables restent les mêmes :',
       IDENTITIES,
       'Ce qui change, c’est que a et b ne sont plus de simples lettres : a peut valoir 3x, ou toute une parenthèse. La méthode, elle, ne change pas.',
+      'Attention au carré d’un terme comme 2x : le carré porte sur le nombre et sur la lettre. Un carré de côté 2x contient quatre carrés de côté x, donc son aire vaut 4x², pas 2x².',
+      figure(
+        'carre-de-2x',
+        'Un carré de côté 2x, partagé en quatre carrés de côté x, chacun d’aire x².',
+      ),
       [
         '1. Repère la forme : carré d’une somme, carré d’une différence, ou différence de deux carrés.',
         '2. Écris ce que valent a et b.',

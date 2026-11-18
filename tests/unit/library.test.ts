@@ -6,6 +6,7 @@ import { findLibraryExercise, listLibrary, listLibraryThemes } from '../../serve
 import { LIBRARY_THEMES } from '../../server/library/themes.js'
 import { answerKey } from '../../shared/rules/answers.js'
 import { QUEST_DIFFICULTY_IDS } from '../../shared/rules/quests.js'
+import { parseFigureLine } from '../../shared/rules/figures.js'
 import { parseRichText, richTextToPlainText, type Inline } from '../../shared/rules/rich-text.js'
 import type { LibraryExercise } from '../../shared/schemas/library.js'
 import {
@@ -78,6 +79,19 @@ function commentedTraps(explanation: string): string[] {
   )
 }
 
+/**
+ * Le texte sans ses lignes d'illustration : les longueurs mesurent ce que l'élève
+ * lit, pas les références aux figures (qui ont leur propre test, library-figures).
+ */
+const withoutFigures = (text: string) =>
+  text
+    .split('\n')
+    .filter((line) => parseFigureLine(line) === null)
+    .join('\n')
+
+/** Une ligne telle qu'elle se lit : d'une ligne d'illustration, seul compte son texte alternatif. */
+const readable = (line: string) => parseFigureLine(line)?.alt ?? line
+
 const rightChoice = (item: QuestItemInput) => item.choices[item.correct[0] ?? -1] ?? ''
 const wrongChoices = (item: QuestItemInput) =>
   item.choices.filter((_, position) => !item.correct.includes(position))
@@ -116,6 +130,7 @@ describe('bibliothèque : catalogue', () => {
         'category',
         'description',
         'difficulty',
+        'figure',
         'format',
         'id',
         'itemCount',
@@ -156,8 +171,8 @@ describe.each(exercises)('bibliothèque : « $title »', (exercise) => {
   })
 
   it('commence par un bref rappel du cours', () => {
-    expect(exercise.lesson.length).toBeGreaterThanOrEqual(150)
-    expect(exercise.lesson.length).toBeLessThanOrEqual(1600)
+    expect(withoutFigures(exercise.lesson).length).toBeGreaterThanOrEqual(150)
+    expect(withoutFigures(exercise.lesson).length).toBeLessThanOrEqual(1600)
     expect(richTextToPlainText(exercise.lesson)).not.toContain('*')
   })
 
@@ -165,8 +180,8 @@ describe.each(exercises)('bibliothèque : « $title »', (exercise) => {
     expect(exercise.example).toContain('**Énoncé\u00A0:**')
     expect(exercise.example).toContain('**Conclusion\u00A0:**')
     expect(calculationLines(exercise.example).length).toBeGreaterThanOrEqual(2)
-    expect(exercise.example.length).toBeGreaterThanOrEqual(300)
-    expect(exercise.example.length).toBeLessThanOrEqual(3200)
+    expect(withoutFigures(exercise.example).length).toBeGreaterThanOrEqual(300)
+    expect(withoutFigures(exercise.example).length).toBeLessThanOrEqual(3200)
     expect(richTextToPlainText(exercise.example)).not.toContain('*')
     for (const item of exercise.items) expect(exercise.example).not.toContain(item.prompt)
   })
@@ -221,7 +236,7 @@ describe.each(exercises)('bibliothèque : « $title »', (exercise) => {
 
   it('suit la typographie française de l’application', () => {
     for (const text of [exercise.description, ...studentTexts(exercise)]) {
-      for (const line of text.split('\n')) {
+      for (const line of text.split('\n').map(readable)) {
         // Espace insécable devant « : », « ; », « ! » et « ? ».
         expect(line, line).not.toMatch(/[\p{L}\p{N}»)’}%*] [!?;:](?=\s|\*|$)/u)
         // Apostrophe typographique.

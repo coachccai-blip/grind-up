@@ -1,3 +1,5 @@
+import type { FigureRef } from '../../shared/rules/figures.js'
+import { parseRichText } from '../../shared/rules/rich-text.js'
 import type {
   LibraryExercise,
   LibraryExerciseSummary,
@@ -54,16 +56,23 @@ const EXERCISES: readonly LibraryExercise[] = SOURCES.map((exercise, index) => (
 /** Les thèmes qui ont au moins un exercice, dans l'ordre du programme. */
 export function listLibraryThemes(): LibraryTheme[] {
   const used = new Set(EXERCISES.map((exercise) => exercise.theme))
-  return LIBRARY_THEMES.filter((theme) => used.has(theme.id)).map(({ id, label }) => ({
+  return LIBRARY_THEMES.filter((theme) => used.has(theme.id)).map(({ id, label, emoji }) => ({
     id,
     label,
+    emoji,
   }))
+}
+
+/** La première illustration d'un rappel du cours, pour la vignette de l'exercice. */
+function firstFigure(lesson: string): FigureRef | null {
+  const block = parseRichText(lesson).find((candidate) => candidate.type === 'figure')
+  return block?.type === 'figure' ? { id: block.id, alt: block.alt } : null
 }
 
 /** Les exercices, sans leur contenu : de quoi les présenter dans une liste. */
 export function listLibrary(): LibraryExerciseSummary[] {
   return EXERCISES.map(
-    ({ id, title, theme, level, description, category, format, difficulty, itemCount }) => ({
+    ({
       id,
       title,
       theme,
@@ -73,6 +82,18 @@ export function listLibrary(): LibraryExerciseSummary[] {
       format,
       difficulty,
       itemCount,
+      lesson,
+    }) => ({
+      id,
+      title,
+      theme,
+      level,
+      description,
+      category,
+      format,
+      difficulty,
+      itemCount,
+      figure: firstFigure(lesson),
     }),
   )
 }

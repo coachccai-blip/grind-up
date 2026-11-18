@@ -122,3 +122,10 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+/* Aperçu des illustrations d'un énoncé, sous son champ. */
+.figures {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}

@@ -13,6 +13,7 @@ import { Notice } from '../../ui/Notice'
 import { RichText } from '../../ui/RichText'
 import { TextLink } from '../../ui/TextLink'
 import { CategoryChip, difficultyLabel, formatXp, StatusChip } from '../quests/QuestChips'
+import { ExampleTitle, LessonTitle } from '../quests/LessonTitles'
 import { QuestImage } from '../quests/QuestImage'
 import { ExactForm } from './formats/ExactForm'
 import { Flashcards } from './formats/Flashcards'
@@ -113,13 +114,13 @@ export function QuestPage() {
 
       {quest.lesson.trim() !== '' && (
         <Card className={styles.instructions}>
-          <h2>Rappel du cours</h2>
+          <LessonTitle />
           <RichText text={quest.lesson} />
         </Card>
       )}
       {quest.example.trim() !== '' && (
         <Card className={styles.instructions}>
-          <h2>Exemple expliqué</h2>
+          <ExampleTitle />
           <RichText text={quest.example} />
         </Card>
       )}

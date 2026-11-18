@@ -124,7 +124,10 @@ tout reste modifiable : il reste à choisir les élèves (tous, ou quelques-uns)
 
 <!-- catalogue : fin -->
 
-Les figures de géométrie sont décrites par l'énoncé : l'élève commence par un schéma à main levée.
+Des illustrations accompagnent le cours et certains énoncés (un carré découpé pour comprendre le
+double produit, par exemple) ; elles ne montrent jamais une réponse attendue. Une situation de
+géométrie reste décrite entièrement par son énoncé, et l'exemple commence par un schéma à main
+levée. Les illustrations sont des fichiers SVG servis par le site lui-même (`public/figures/`).
 
 ### Rappel du cours, exemple et corrections dans vos propres quêtes
 
@@ -357,7 +360,7 @@ index.html, src/           interface (React)
   features/                un dossier par espace : auth, student, admin, quests, progress,
                            leaderboard, install, deploy-check
   styles/                  palette et règles de la section 8
-public/                    manifeste web et icônes de l'application
+public/                    manifeste web, icônes de l'application, illustrations (figures/, engendrées)
 shared/                    code commun à l'interface et au serveur
   rules/                   pseudo, identifiant, palette, avatars, quêtes, statuts, calcul de
                            l'XP, niveaux, série, badges, classement, bots, paramètres
@@ -366,7 +369,7 @@ server/                    logique serveur
   app.ts                   assemblage des routes ; tout ce qui est sous /admin exige un admin
   auth/                    mots de passe, sessions, limitation des tentatives, comptes
   quests/                  quêtes : création, correction automatique, validation, crédit de l'XP
-  library/                 bibliothèque : exercices de 3e par thème, outils de rédaction
+  library/                 bibliothèque : exercices de 3e par thème, outils de rédaction et de dessin
   progress/                progression : XP, niveau, série, badges, journal
   leaderboard/             classement par période, mouvement depuis la veille, podium
   bots/                    bots : réglages, progression calculée à la demande
@@ -381,7 +384,7 @@ dev/                       Netlify en local pour `npm run dev` ; installation de
 scripts/                   zip, vérification de la fonction empaquetée, démonstration, icônes
 tests/                     unit/, api/, e2e/
 docs/decisions.md          choix faits là où le brief ne tranchait pas
-docs/bibliotheque.md       guide de rédaction des exercices de la bibliothèque
+docs/bibliotheque.md       guide de rédaction et d'illustration des exercices de la bibliothèque
 .github/workflows/         tests et publication des versions
 ```
 

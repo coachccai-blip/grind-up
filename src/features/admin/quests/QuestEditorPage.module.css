@@ -76,3 +76,22 @@
     justify-content: flex-end;
   }
 }
+
+/* Aperçu du rappel et de l'exemple, tels que l'élève les lit, illustrations comprises. */
+.lessonPreview {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-card);
+}
+
+.lessonPreview summary {
+  min-height: var(--touch-target);
+  padding-block: 10px;
+  color: var(--color-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lessonPreview > * + * {
+  margin-top: var(--space-3);
+}

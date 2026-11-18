@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
+import { splitPrompt } from '../../../../shared/rules/figures'
 import { Button } from '../../../ui/Button'
 import { Checkbox, Radio } from '../../../ui/Choice'
+import { Figures } from '../../../ui/Figure'
 import { Notice } from '../../../ui/Notice'
 import { DetailedCorrection } from './DetailedCorrection'
 import styles from './formats.module.css'
@@ -47,12 +49,14 @@ export function QcmForm({ quest, busy, onSubmit, readOnly = false }: FormatProps
           const corrected = last !== null && sameChoices(chosen, lastAnswer(item.id))
           const expected = quest.corrections?.[item.id]
           const Option = item.multiple ? Checkbox : Radio
+          const prompt = splitPrompt(item.prompt)
           return (
             <li key={item.id}>
               <fieldset className={styles.fieldset} disabled={readOnly}>
                 <legend className={styles.legend}>
-                  {index + 1}. {item.prompt}
+                  {index + 1}. {prompt.text}
                 </legend>
+                <Figures figures={prompt.figures} />
                 {item.multiple && <p className={styles.hint}>Plusieurs réponses possibles.</p>}
                 {(item.choices ?? []).map((choice, position) => (
                   <Option

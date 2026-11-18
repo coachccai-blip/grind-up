@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { splitPrompt } from '../../../../shared/rules/figures'
 import type { QuestFormat } from '../../../../shared/rules/quests'
 import {
   ANSWER_MAX,
@@ -9,6 +10,7 @@ import {
 } from '../../../../shared/schemas/quests'
 import { Button } from '../../../ui/Button'
 import { Field, TextArea } from '../../../ui/Field'
+import { Figures } from '../../../ui/Figure'
 import styles from './ItemsEditor.module.css'
 import { newItem, type FormItem } from './quest-form'
 
@@ -58,6 +60,8 @@ export function ItemsEditor({ format, items, onChange, errors, disabled }: Items
       <ol className={styles.items}>
         {items.map((item, index) => {
           const error = (field: string) => errors[`items.${index}.${field}`]
+          // Aperçu des illustrations qui terminent l'énoncé (exercices de la bibliothèque).
+          const figures = format === 'flashcards' ? [] : splitPrompt(item.prompt).figures
           return (
             <li key={item.key} className={styles.item}>
               <div className={styles.itemHeader}>
@@ -82,6 +86,12 @@ export function ItemsEditor({ format, items, onChange, errors, disabled }: Items
                 error={error('prompt')}
                 disabled={disabled}
               />
+              {figures.length > 0 && (
+                <div className={styles.figures}>
+                  <p className={styles.hint}>Ce que l’élève voit sous l’énoncé&nbsp;:</p>
+                  <Figures figures={figures} />
+                </div>
+              )}
               {format === 'exact' && (
                 <Field
                   label="Réponses acceptées"

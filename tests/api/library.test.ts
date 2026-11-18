@@ -391,9 +391,15 @@ describe('bibliothèque d’exercices', () => {
       format: 'qcm',
       difficulty: 'easy',
       itemCount: 6,
+      // La vignette : la première illustration du rappel du cours.
+      figure: { id: 'carre-somme', alt: expect.any(String) as string },
     })
     // Les thèmes arrivent dans l'ordre du programme, chacun avec au moins un exercice.
-    expect(library.body.themes).toContainEqual({ id: 'calcul-litteral', label: 'Calcul littéral' })
+    expect(library.body.themes).toContainEqual({
+      id: 'calcul-litteral',
+      label: 'Calcul littéral',
+      emoji: '🔤',
+    })
     for (const theme of library.body.themes) {
       expect(library.body.exercises.some((exercise) => exercise.theme === theme.id)).toBe(true)
     }
