@@ -12,7 +12,7 @@ function renderInline(nodes: readonly Inline[]) {
         return <strong key={index}>{renderInline(node.children)}</strong>
       case 'link':
         return (
-          <a key={index} href={node.href} target="_blank" rel="noopener noreferrer">
+          <a key={index} href={node.href} target="_blank" rel="noopener noreferrer" data-inline>
             {renderInline(node.children)}
           </a>
         )

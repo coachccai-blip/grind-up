@@ -156,13 +156,15 @@ function ChoicesEditor({ item, number, onChange, error, disabled }: ChoicesEdito
       <p className={styles.hint}>Cochez la ou les bonnes réponses.</p>
       {item.choices.map((choice, position) => (
         <div key={position} className={styles.choice}>
-          <input
-            type="checkbox"
-            className={styles.correct}
-            checked={item.correct.includes(position)}
-            onChange={() => toggleCorrect(position)}
-            aria-label={`Question ${number}, le choix ${position + 1} est une bonne réponse`}
-          />
+          <label className={styles.correctZone}>
+            <input
+              type="checkbox"
+              className={styles.correct}
+              checked={item.correct.includes(position)}
+              onChange={() => toggleCorrect(position)}
+              aria-label={`Question ${number}, le choix ${position + 1} est une bonne réponse`}
+            />
+          </label>
           <input
             type="text"
             className={styles.choiceText}

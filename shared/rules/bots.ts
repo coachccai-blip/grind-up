@@ -1,5 +1,6 @@
 import { parisLocalToInstant } from '../time.js'
 import { QUEST_DIFFICULTIES, type QuestDifficulty } from './quests.js'
+import { DEFAULT_REWARDS, type RewardTable } from './settings.js'
 import { shiftDay } from './streak.js'
 
 /**
@@ -41,19 +42,17 @@ export type DifficultyMix = Record<QuestDifficulty, number>
 
 export const DEFAULT_DIFFICULTY_MIX: DifficultyMix = { easy: 40, medium: 40, hard: 15, epic: 5 }
 
-/** Récompense de chaque difficulté, d'après le barème par défaut. */
-export const DEFAULT_REWARDS = Object.fromEntries(
-  QUEST_DIFFICULTIES.map((difficulty) => [difficulty.id, difficulty.defaultReward]),
-) as Record<QuestDifficulty, number>
-
 /** Un nombre au hasard dans [0, 1[, comme Math.random : remplaçable dans les tests. */
 export type Random = () => number
 
-/** Tire l'XP d'une mission dans le barème des difficultés, selon la répartition du bot. */
+/**
+ * Tire l'XP d'une mission dans le barème des difficultés, selon la répartition du
+ * bot. Le barème est celui des paramètres de l'admin ; à défaut, celui du brief.
+ */
 export function drawMissionXp(
   mix: DifficultyMix,
   random: Random,
-  rewards: Record<QuestDifficulty, number> = DEFAULT_REWARDS,
+  rewards: RewardTable = DEFAULT_REWARDS,
 ): number {
   const entries = QUEST_DIFFICULTIES.map(
     (difficulty) => [difficulty.id, Math.max(0, mix[difficulty.id] ?? 0)] as const,

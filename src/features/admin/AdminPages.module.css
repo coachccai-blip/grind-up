@@ -14,19 +14,118 @@
   overflow-wrap: anywhere;
 }
 
+/* Téléphone : un chiffre par ligne, son libellé à gauche. */
+.figures {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
 .figure {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--touch-target);
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* Un chiffre qui attend l'admin : fond « attention », toujours avec son libellé. */
+.attention {
+  background: var(--color-warning);
 }
 
 .figureLabel {
-  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-weight: 700;
 }
 
 .figureValue {
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   font-weight: 800;
   line-height: 1.1;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.note {
+  color: var(--color-text-secondary);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: var(--touch-target);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--color-divider);
+  color: var(--color-text);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.row:last-child {
+  padding-bottom: 0;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.rowTitle {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.rowMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+/* Ordinateur : les trois chiffres côte à côte, le chiffre sous son libellé. */
+@media (min-width: 640px) {
+  .figures {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .figure {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 100%;
+  }
+
+  .figureValue {
+    font-size: 2.5rem;
+  }
+
+  .row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
 }

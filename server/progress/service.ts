@@ -13,9 +13,13 @@ import type {
   StudentProgress,
   XpEntry,
 } from '../../shared/schemas/progress.js'
-import { parisDay } from '../../shared/time.js'
+import { mondayOf, parisDay } from '../../shared/time.js'
 import type { SqlReader, SqlRow, SqlWriter } from '../db/sqlite.js'
+import { weeklyPodiumRank } from '../leaderboard/service.js'
 import type { AssignmentRow, QuestRow } from '../quests/store.js'
+import { totalsOf } from './totals.js'
+
+export { totalsByUser, totalsOf, type Totals } from './totals.js'
 
 /**
  * Progression d'un élève : XP, niveau, missions, série, badges. Tout se calcule
@@ -23,32 +27,6 @@ import type { AssignmentRow, QuestRow } from '../quests/store.js'
  */
 const RECENT_REWARDS = 5
 const JOURNAL_LIMIT = 300
-
-// --- XP et missions ----------------------------------------------------------------------------
-
-export interface Totals {
-  xp: number
-  missions: number
-}
-
-/** XP totale et missions accomplies : les sommes du journal d'XP. */
-export function totalsOf(tx: SqlReader, userId: string): Totals {
-  const row = tx.get<{ xp: number; missions: number }>(
-    `SELECT COALESCE(SUM(amount), 0) AS xp, COALESCE(SUM(mission_delta), 0) AS missions
-     FROM xp_entries WHERE user_id = ?`,
-    [userId],
-  )
-  return { xp: row?.xp ?? 0, missions: row?.missions ?? 0 }
-}
-
-/** Les mêmes sommes pour tous les utilisateurs, en une seule requête. */
-export function totalsByUser(tx: SqlReader): Map<string, Totals> {
-  const rows = tx.all<{ user_id: string; xp: number; missions: number }>(
-    `SELECT user_id, SUM(amount) AS xp, SUM(mission_delta) AS missions
-     FROM xp_entries GROUP BY user_id`,
-  )
-  return new Map(rows.map((row) => [row.user_id, { xp: row.xp, missions: row.missions }]))
-}
 
 // --- Journal -----------------------------------------------------------------------------------
 
@@ -244,7 +222,26 @@ function badgeProgress(tx: SqlReader, userId: string, now: Date): BadgeProgress[
 
 // --- Annonces à fêter --------------------------------------------------------------------------
 
-function pendingCelebration(tx: SqlReader, userId: string, xp: number): Celebration | null {
+/**
+ * Entrée sur le podium de la semaine, à annoncer à l'élève : sa place, de 1 à 3.
+ * Elle n'est annoncée qu'une fois par semaine ; null s'il n'y a rien à annoncer.
+ */
+function podiumToAnnounce(tx: SqlReader, userId: string, now: Date): { rank: number } | null {
+  const rank = weeklyPodiumRank(tx, userId, now)
+  if (rank === null) return null
+  const seen = tx.get<{ week: string | null }>(
+    'SELECT podium_seen_week AS week FROM users WHERE id = ?',
+    [userId],
+  )
+  return seen?.week === mondayOf(parisDay(now)) ? null : { rank }
+}
+
+function pendingCelebration(
+  tx: SqlReader,
+  userId: string,
+  xp: number,
+  now: Date,
+): Celebration | null {
   const validations = tx.all<{ quest_id: string; title: string; xp_awarded: number | null }>(
     `SELECT assignments.quest_id, quests.title, assignments.xp_awarded
      FROM assignments JOIN quests ON quests.id = assignments.quest_id
@@ -270,6 +267,8 @@ function pendingCelebration(tx: SqlReader, userId: string, xp: number): Celebrat
     })),
     xpGained,
     levelUp: after > before ? { from: before, to: after } : null,
+    // Le podium s'annonce avec la quête qui y a mené l'élève, jamais seul.
+    podium: validations.length > 0 ? podiumToAnnounce(tx, userId, now) : null,
     badges: badges.map((row) => row.code),
   }
 }
@@ -277,6 +276,15 @@ function pendingCelebration(tx: SqlReader, userId: string, xp: number): Celebrat
 /** L'élève a vu ses annonces : elles ne lui seront plus montrées. */
 export function markCelebrated(tx: SqlWriter, userId: string, now: Date): void {
   const at = now.toISOString()
+  const announced = tx.get(
+    `SELECT 1 AS pending FROM assignments
+     WHERE student_id = ? AND status = 'validated' AND celebrated_at IS NULL LIMIT 1`,
+    [userId],
+  )
+  // L'entrée sur le podium vient d'être annoncée : elle ne le sera plus cette semaine.
+  if (announced && podiumToAnnounce(tx, userId, now)) {
+    tx.run('UPDATE users SET podium_seen_week = ? WHERE id = ?', [mondayOf(parisDay(now)), userId])
+  }
   tx.run(
     `UPDATE assignments SET celebrated_at = ?
      WHERE student_id = ? AND status = 'validated' AND celebrated_at IS NULL`,
@@ -296,7 +304,7 @@ export function readProgress(tx: SqlReader, userId: string, now: Date): StudentP
     streak: streakOf(tx, userId, now),
     badges: badgeProgress(tx, userId, now),
     recentRewards: readJournal(tx, userId, RECENT_REWARDS),
-    celebration: pendingCelebration(tx, userId, xp),
+    celebration: pendingCelebration(tx, userId, xp, now),
   }
 }
 

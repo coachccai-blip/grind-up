@@ -30,7 +30,8 @@ export function databaseLocation(deployContext: string | undefined): {
 
 const storages = new Map<string, Storage>()
 
-function getStorage(deployContext: string | undefined): Storage {
+/** Le stockage d'un contexte de déploiement, créé à la première demande puis réutilisé. */
+export function getStorage(deployContext: string | undefined): Storage {
   const { key, backupPrefix } = databaseLocation(deployContext)
   let storage = storages.get(key)
   if (!storage) {

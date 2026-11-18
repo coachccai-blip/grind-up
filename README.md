@@ -3,13 +3,13 @@
 Plateforme de quêtes gamifiée pour élèves : un accompagnant donne des quêtes, les élèves les
 réalisent, gagnent de l'XP, montent de niveau et se comparent sur un leaderboard.
 
-**État : étape 5 sur 6, le leaderboard et les bots.** L'admin crée des quêtes dans cinq formats,
-les donne à ses élèves et valide les réalisations. Chaque quête validée crédite de l'XP : niveau,
-série, badges. Le leaderboard classe les élèves par missions accomplies, puis par XP, sur la
-semaine, le mois ou depuis toujours, avec un podium. L'admin peut l'animer avec des bots, qui
-progressent seuls selon leur mode. Il reste les finitions : vue d'ensemble, paramètres, export,
-données de démonstration, installation sur l'écran d'accueil. Les choix faits là où le brief ne
-tranchait pas sont consignés dans [docs/decisions.md](docs/decisions.md).
+**État : version 1.0.0, les six étapes du brief sont livrées.** L'admin crée des quêtes dans
+cinq formats, les donne à ses élèves et valide les réalisations. Chaque quête validée crédite de
+l'XP : niveau, série, badges. Le leaderboard classe les élèves par missions accomplies, puis par
+XP, sur la semaine, le mois ou depuis toujours ; l'admin peut l'animer avec des bots. Une vue
+d'ensemble lui montre ce qui demande son attention, et ses paramètres règlent le barème, les
+bonus et l'export des données. Le site s'installe sur l'écran d'accueil d'un téléphone. Les choix
+faits là où le brief ne tranchait pas sont consignés dans [docs/decisions.md](docs/decisions.md).
 
 ## Mise en ligne sur Netlify
 
@@ -57,8 +57,46 @@ fonctionne. En cas d'échec, le bouton _Copier le détail_ de la page copie le d
    plus tard ; _Publier la quête_ la donne aussitôt aux élèves choisis.
 4. **Valider.** Les quêtes à réponse libre, et les quêtes déclaratives réglées ainsi, attendent
    dans _Validations_ : _Valider_ crédite l'XP, _Refuser_ demande à l'élève de recommencer.
-5. **Mot de passe oublié.** Dans _Élèves_, ouvrir la fiche de l'élève et choisir _Mot de passe
+5. **Suivre.** La _Vue d'ensemble_ montre les élèves actifs, les quêtes en cours, les
+   réalisations à valider, les quêtes qui expirent dans les 48 h et les élèves inactifs depuis
+   7 jours.
+6. **Animer le classement.** Dans _Bots_, créer de faux participants qui progressent seuls. Les
+   élèves ne savent pas qui est un bot, sauf si l'étiquette « Bot » est activée dans les
+   _Paramètres_.
+7. **Mot de passe oublié.** Dans _Élèves_, ouvrir la fiche de l'élève et choisir _Mot de passe
    temporaire_. L'élève se connecte avec, puis choisit aussitôt le sien.
+
+### Paramètres et export
+
+L'écran _Paramètres_ de l'espace admin règle :
+
+- **le barème d'XP** : la récompense proposée pour une nouvelle quête selon sa difficulté (50,
+  100, 200 et 400 XP à l'origine). Les bots y tirent l'XP de leurs missions ; les quêtes déjà
+  créées gardent leur récompense ;
+- **les bonus** : bonus d'avance et bonus sans faute (+10 % chacun à l'origine), et la part que
+  garde une quête rendue en retard (50 %). Un changement vaut pour les validations suivantes :
+  l'XP déjà gagnée ne bouge pas ;
+- **les valeurs proposées pour une nouvelle quête** : seuil de réussite (80 %) et nombre de
+  tentatives (3) ;
+- **l'étiquette « Bot »** montrée ou non aux élèves.
+
+Le même écran exporte les données en quatre fichiers CSV : élèves, quêtes, réalisations et
+journal d'XP. Ils s'ouvrent d'un double clic dans Excel, LibreOffice ou Numbers (séparateur
+point-virgule, accents reconnus, dates à l'heure de Paris). Ils ne contiennent ni mot de passe
+ni identifiant interne.
+
+### Installer Grind up sur l'écran d'accueil
+
+Le site s'installe comme une application, sans passer par un magasin d'applications. Il lui
+faut toujours une connexion : il ne fonctionne pas hors ligne.
+
+- **iPhone ou iPad :** bouton _Partager_ du navigateur, puis _Sur l'écran d'accueil_.
+- **Android :** menu du navigateur, puis _Ajouter à l'écran d'accueil_ ou _Installer
+  l'application_.
+- **Ordinateur :** dans Chrome ou Edge, icône d'installation à droite de la barre d'adresse.
+
+Le profil de l'élève et les paramètres de l'admin rappellent la marche à suivre pour l'appareil
+utilisé ; là où le navigateur le permet, un bouton _Installer l'application_ s'en charge.
 
 ### Changer le code admin
 
@@ -124,6 +162,7 @@ utilisable, mais ce mode n'est pas couvert par les tests.
 | `npm run dev`      | Lance le site, la fonction et la base en local                     |
 | `npm run build`    | Compile l'interface dans `dist/`                                   |
 | `npm run preview`  | Sert le site compilé sur le port 4173, avec la fonction et la base |
+| `npm run demo`     | Remplit la base locale avec des données de démonstration           |
 | `npm test`         | Tests des règles et de l'API                                       |
 | `npm run test:e2e` | Parcours dans un navigateur, sur téléphone et sur ordinateur       |
 | `npm run check`    | Mise en forme, analyse, types, tests et construction               |
@@ -137,14 +176,46 @@ npx playwright install chromium
 
 Les parcours dans le navigateur compilent le site et lancent leur propre serveur, sur le port
 5180, avec une base neuve à chaque série : ils ne touchent pas aux données de `npm run dev`.
+Chaque parcours est joué sur un téléphone de 360 px de large et sur un ordinateur. Chaque écran
+y est aussi soumis à un contrôle d'accessibilité (axe, règles WCAG 2.2 de niveau A et AA), de
+largeur, de taille des zones tactiles (44 px) et des champs (16 px).
+
+Le parcours complet et une quête de chaque format sont aussi joués sur iPhone, avec le moteur
+de Safari. Ce moteur s'installe à part ; l'action _Tests_ de GitHub le fait à chaque demande de
+fusion :
+
+```bash
+npx playwright install --with-deps webkit
+```
+
+```bash
+GRIND_UP_WEBKIT=1 npm run test:e2e
+```
+
+### Données de démonstration
+
+```bash
+npm run demo
+```
+
+Cette commande remplit la base locale, celle de `npm run dev`, avec 1 admin (`Coach`), 6 élèves,
+3 bots et 10 quêtes couvrant les cinq formats, et trois semaines d'activité : XP, niveaux,
+séries, badges, classement, réalisations à valider, quête refusée, quête qui expire bientôt.
+Rien n'y est écrit à la main : chaque quête est créée, réalisée et validée par les règles de
+l'application, à une date simulée.
+
+Elle affiche le mot de passe commun à tous ces comptes, tiré au sort à chaque installation.
+Elle ne s'exécute que sur une base vide. Pour repartir de zéro : arrêter `npm run dev`,
+supprimer le dossier `.netlify/blobs-local`, relancer `npm run demo`. Elle n'agit jamais sur
+le site publié.
 
 ### La fonction telle que Netlify l'empaquette
 
 Sur Netlify, la fonction ne tourne pas à partir du code source mais d'un paquet fabriqué à la
 mise en ligne. À chaque demande de fusion, l'action _Tests_ construit le zip avec l'outil de
 Netlify, puis `scripts/verify-bundle.mjs` charge ce paquet seul et lui fait jouer un parcours
-complet : test de déploiement, inscriptions, session, droits de l'admin. Pour le lancer à la
-main, depuis un dossier où le zip a été décompressé et ses dépendances installées :
+complet : test de déploiement, inscriptions, session, droits, quête, classement, paramètres,
+export. Pour le lancer à la main, depuis un dossier où le zip a été décompressé et ses dépendances installées :
 
 ```bash
 npx netlify-cli@27.20.0 build --offline
@@ -182,8 +253,10 @@ attache le zip. L'action _Tests_ vérifie chaque demande de fusion.
 - **Session :** cookie signé, inaccessible au JavaScript de la page, valable 30 jours après la
   dernière visite.
 - **Droits :** chaque route du serveur vérifie le rôle ; tout ce qui est sous `/api/admin` exige
-  un admin, tout ce qui est sous `/api/quests` exige un élève, et un test le contrôle pour
-  chaque route. Un élève ne lit et ne modifie que ses propres quêtes.
+  un admin, tout ce qui est sous `/api/quests` ou `/api/progress` exige un élève, et un test le
+  contrôle pour chaque route. Un élève ne lit et ne modifie que ses propres quêtes.
+- **Export :** réservé à l'admin. Les fichiers ne contiennent ni mot de passe ni identifiant
+  interne, et un texte saisi par un utilisateur ne peut pas y devenir une formule de tableur.
 - **Réponses attendues :** elles restent sur le serveur, qui corrige ; l'élève ne reçoit le
   corrigé qu'une fois sa quête validée.
 - **XP :** une quête est validée et créditée dans la même transaction, une seule fois, même en
@@ -202,27 +275,32 @@ fichier `.env`.
 ```
 netlify.toml               construction, dossier publié, dossier des fonctions
 index.html, src/           interface (React)
-  app/                     routes, protection des pages par rôle, session
-  ui/                      composants partagés : bouton, carte, champ, avatar, fenêtre
+  app/                     routes, protection des pages par rôle, session, titre de l'onglet
+  ui/                      composants partagés : bouton, carte, champ, avatar, fenêtre, lien
   features/                un dossier par espace : auth, student, admin, quests, progress,
-                           leaderboard, deploy-check
+                           leaderboard, install, deploy-check
   styles/                  palette et règles de la section 8
+public/                    manifeste web et icônes de l'application
 shared/                    code commun à l'interface et au serveur
   rules/                   pseudo, identifiant, palette, avatars, quêtes, statuts, calcul de
-                           l'XP, niveaux, série, badges, classement, bots
+                           l'XP, niveaux, série, badges, classement, bots, paramètres
   schemas/                 formats des échanges avec l'API
 server/                    logique serveur
   app.ts                   assemblage des routes ; tout ce qui est sous /admin exige un admin
   auth/                    mots de passe, sessions, limitation des tentatives, comptes
   quests/                  quêtes : création, correction automatique, validation, crédit de l'XP
   progress/                progression : XP, niveau, série, badges, journal
-  leaderboard/             classement par période, mouvement depuis la veille, badge Podium
+  leaderboard/             classement par période, mouvement depuis la veille, podium
   bots/                    bots : réglages, progression calculée à la demande
-  routes/                  une par domaine : comptes, élèves, quêtes, test de déploiement
+  settings/                paramètres : barème, bonus, valeurs des nouvelles quêtes
+  overview/                vue d'ensemble de l'admin
+  export/                  fichiers CSV
+  demo/                    données de démonstration
+  routes/                  une par domaine : comptes, élèves, quêtes, classement, paramètres…
   db/                      base SQLite dans Netlify Blobs, migrations
 netlify/functions/api.mts  point d'entrée unique de /api/*
-dev/local-netlify.ts       Netlify en local : fonction et stockage pour `npm run dev`
-scripts/                   fabrication du zip, vérification de la fonction empaquetée
+dev/                       Netlify en local pour `npm run dev` ; installation de la démonstration
+scripts/                   zip, vérification de la fonction empaquetée, démonstration, icônes
 tests/                     unit/, api/, e2e/
 docs/decisions.md          choix faits là où le brief ne tranchait pas
 .github/workflows/         tests et publication des versions

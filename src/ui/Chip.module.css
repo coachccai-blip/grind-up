@@ -6,6 +6,8 @@
   max-width: 100%;
   padding: 2px var(--space-3);
   border-radius: var(--radius-pill);
+  /* Sur un fond pastel, le texte est toujours en bleu nuit : il n'hérite jamais d'une autre couleur. */
+  color: var(--color-text);
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 1.5;

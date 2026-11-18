@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router'
 import { findBadge } from '../../../shared/rules/badges'
 import type { Celebration } from '../../../shared/schemas/progress'
 import { errorMessage } from '../../lib/api'
@@ -9,6 +10,12 @@ import { Notice } from '../../ui/Notice'
 import { formatXp } from '../quests/QuestChips'
 import styles from './CelebrationDialog.module.css'
 import { useMarkCelebrated, useProgress } from './progress-api'
+
+/** Médailles du podium, de la première à la troisième place. */
+const MEDALS = ['🥇', '🥈', '🥉']
+
+/** « 1re », « 2e », « 3e ». */
+const place = (rank: number) => (rank === 1 ? '1re' : `${rank}e`)
 
 /** Durée du décompte de l'XP gagnée : moins d'une seconde, comme toutes les animations. */
 const COUNT_UP_MS = 700
@@ -40,12 +47,24 @@ function titleOf(celebration: Celebration): string {
 
 /**
  * Annonce de ce que l'élève n'a pas encore vu : quêtes validées, XP gagnée,
- * passage de niveau, nouveaux badges. Elle s'affiche où qu'il soit dans son
- * espace, y compris quand l'admin a validé une quête en son absence.
+ * passage de niveau, entrée sur le podium, nouveaux badges. Elle s'affiche où
+ * qu'il soit dans son espace, y compris quand l'admin a validé une quête en son
+ * absence.
  */
 export function CelebrationDialog() {
   const progress = useProgress()
   const celebration = progress.data?.celebration ?? null
+
+  // À chaque changement d'écran, la progression est relue : une quête validée par l'admin
+  // entre-temps est fêtée tout de suite, où que soit l'élève.
+  const { pathname } = useLocation()
+  const shownPath = useRef(pathname)
+  const refetch = progress.refetch
+  useEffect(() => {
+    if (shownPath.current === pathname) return
+    shownPath.current = pathname
+    void refetch()
+  }, [pathname, refetch])
   if (!celebration) return null
   // Une nouvelle annonce repart d'un décompte neuf.
   return <Announcement key={JSON.stringify(celebration)} celebration={celebration} />
@@ -61,8 +80,10 @@ function Announcement({ celebration }: { celebration: Celebration }) {
       <div className={styles.celebration}>
         {celebration.validations.length > 0 && (
           <>
-            <p className={styles.gain} aria-label={`+${formatXp(celebration.xpGained)}`}>
+            <p className={styles.gain}>
+              {/* Le décompte est pour l'œil ; les lecteurs d'écran lisent le total. */}
               <span aria-hidden="true">+{formatXp(gained)}</span>
+              <span className="visually-hidden">+{formatXp(celebration.xpGained)}</span>
             </p>
             <ul className={styles.quests}>
               {celebration.validations.map((validation) => (
@@ -83,6 +104,17 @@ function Announcement({ celebration }: { celebration: Celebration }) {
               <strong>Niveau {celebration.levelUp.to}&nbsp;!</strong>
               <span className={styles.detail}>
                 Tu passes du niveau {celebration.levelUp.from} au niveau {celebration.levelUp.to}.
+              </span>
+            </span>
+          </p>
+        )}
+        {celebration.podium && (
+          <p className={styles.podium}>
+            <Emoji symbol={MEDALS[celebration.podium.rank - 1] ?? '🏆'} className={styles.emoji} />
+            <span>
+              <strong>Tu entres sur le podium&nbsp;!</strong>
+              <span className={styles.detail}>
+                Tu prends la {place(celebration.podium.rank)} place du classement de la semaine.
               </span>
             </span>
           </p>

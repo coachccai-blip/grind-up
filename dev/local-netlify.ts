@@ -28,7 +28,7 @@ type FunctionHandler = (
 ) => Promise<Response>
 
 /** Démarre le stockage local et indique son adresse au client Netlify Blobs. */
-async function startLocalBlobs(root: string): Promise<BlobsServer> {
+export async function startLocalBlobs(root: string): Promise<BlobsServer> {
   const directory = join(root, '.netlify', 'blobs-local')
   mkdirSync(directory, { recursive: true })
   const server = new BlobsServer({ directory, token: BLOBS_TOKEN })

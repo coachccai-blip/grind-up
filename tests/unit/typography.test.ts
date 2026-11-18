@@ -9,12 +9,19 @@ import { describe, expect, it } from 'vitest'
  * - devant « ! », « ? », « : » et « ; », l'espace est insécable (&nbsp; dans le JSX, le
  *   caractère U+00A0 dans une chaîne), pour que le signe ne se retrouve jamais seul en début
  *   de ligne sur un petit écran ;
+ * - un nombre et son unité ne se séparent pas non plus : « 24 h », « 80 % », « 50 XP » ;
  * - l'apostrophe est typographique (’), jamais droite (').
  */
 const projectRoot = fileURLToPath(new URL('../..', import.meta.url))
 
 /** Une lettre, un chiffre ou une fermeture, suivi d'une espace ordinaire puis d'un signe double. */
 const BREAKABLE_SPACE = /[\p{L}\p{N}»)’'}%] [!?;:](?=[\s"'`<]|$)/u
+
+/** Un nombre, une espace ordinaire, puis son unité. */
+const BREAKABLE_UNIT = /\d (?:h|%|XP|min)(?![\p{L}\p{N}])/u
+
+/** La même chose après une valeur calculée : « ${count} XP », « {percent} % ». */
+const BREAKABLE_UNIT_AFTER_VALUE = /^ (?:h|%|XP|min)(?![\p{L}\p{N}])/u
 
 /** Une apostrophe droite entre deux lettres : « l'élève » au lieu de « l’élève ». */
 const STRAIGHT_APOSTROPHE = /\p{L}'\p{L}/u
@@ -27,8 +34,15 @@ function sourceFiles(directory: string): string[] {
   })
 }
 
+interface DisplayedText {
+  text: string
+  line: number
+  /** Vrai si le texte suit une valeur calculée : la suite d'un gabarit, ou du texte JSX. */
+  afterValue: boolean
+}
+
 /** Textes affichables d'un fichier : texte JSX, chaînes et morceaux de gabarits. */
-function displayedTexts(path: string): { text: string; line: number }[] {
+function displayedTexts(path: string): DisplayedText[] {
   const source = ts.createSourceFile(
     path,
     readFileSync(path, 'utf8'),
@@ -36,7 +50,7 @@ function displayedTexts(path: string): { text: string; line: number }[] {
     true,
     path.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
   )
-  const texts: { text: string; line: number }[] = []
+  const texts: DisplayedText[] = []
   const visit = (node: ts.Node) => {
     if (
       ts.isJsxText(node) ||
@@ -49,6 +63,7 @@ function displayedTexts(path: string): { text: string; line: number }[] {
       texts.push({
         text: node.text,
         line: source.getLineAndCharacterOfPosition(node.getStart()).line + 1,
+        afterValue: ts.isJsxText(node) || ts.isTemplateMiddle(node) || ts.isTemplateTail(node),
       })
     }
     ts.forEachChild(node, visit)
@@ -71,6 +86,25 @@ describe('typographie française', () => {
     const offences = files.flatMap((file) =>
       displayedTexts(file)
         .filter(({ text }) => BREAKABLE_SPACE.test(text))
+        .map(({ text, line }) => `${relative(projectRoot, file)}:${line} « ${text.trim()} »`),
+    )
+
+    expect(offences).toEqual([])
+  })
+
+  it('ne sépare jamais un nombre de son unité', () => {
+    const files = [
+      ...sourceFiles(join(projectRoot, 'src')),
+      ...sourceFiles(join(projectRoot, 'shared')),
+      ...sourceFiles(join(projectRoot, 'server')),
+    ]
+
+    const offences = files.flatMap((file) =>
+      displayedTexts(file)
+        .filter(
+          ({ text, afterValue }) =>
+            BREAKABLE_UNIT.test(text) || (afterValue && BREAKABLE_UNIT_AFTER_VALUE.test(text)),
+        )
         .map(({ text, line }) => `${relative(projectRoot, file)}:${line} « ${text.trim()} »`),
     )
 

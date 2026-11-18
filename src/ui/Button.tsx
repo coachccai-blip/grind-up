@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from 'react'
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from 'react'
 import { Link, type LinkProps } from 'react-router'
 import styles from './Button.module.css'
 import { classes } from './classes'
@@ -56,4 +56,19 @@ export function ButtonLink({
   ...rest
 }: LinkProps & ButtonStyleProps) {
   return <Link className={buttonClasses({ variant, fullWidth }, className)} {...rest} />
+}
+
+/** Lien ordinaire qui a l'apparence d'un bouton : pour télécharger un fichier. */
+export function ButtonAnchor({
+  variant,
+  fullWidth,
+  className,
+  children,
+  ...rest
+}: AnchorHTMLAttributes<HTMLAnchorElement> & ButtonStyleProps) {
+  return (
+    <a className={buttonClasses({ variant, fullWidth }, className)} {...rest}>
+      {children}
+    </a>
+  )
 }

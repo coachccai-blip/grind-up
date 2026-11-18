@@ -517,6 +517,13 @@ test.describe('deadline et expiration', () => {
     await expect(page.getByText(`Quête rouverte pour ${pseudo}.`)).toBeVisible()
 
     await student.reload()
+    // L'élève sait que la quête est rouverte, et ce qu'elle rapporte désormais.
+    await expect(student.getByText('Rouverte', { exact: true })).toBeVisible()
+    await expect(
+      student.getByText('Elle rapporte maintenant 50\u00A0XP au lieu de 100\u00A0XP.', {
+        exact: false,
+      }),
+    ).toBeVisible()
     await student.getByLabel('1. 1 + 1 ?').fill('2')
     await student.getByRole('button', { name: 'Valider mes réponses' }).click()
     await acknowledgeCelebration(student)

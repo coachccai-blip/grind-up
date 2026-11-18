@@ -1,0 +1,10 @@
+/*
+ * La zone tactile fait 44 px de haut ; les marges négatives lui rendent la
+ * hauteur d'une ligne de texte, pour que la mise en page ne bouge pas.
+ */
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  margin-block: calc((1.5em - var(--touch-target)) / 2);
+}

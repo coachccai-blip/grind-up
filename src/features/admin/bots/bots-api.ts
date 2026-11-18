@@ -4,16 +4,14 @@ import type {
   AdminBot,
   AdminBotResponse,
   AdminBotsResponse,
-  AdminSettingsResponse,
   CreateBotRequest,
   UpdateBotRequest,
 } from '../../../../shared/schemas/leaderboard'
 import { api } from '../../../lib/api'
 import { LIVE } from '../../../lib/freshness'
 
-/** Bots et paramètres, pour l'espace admin. */
+/** Bots, pour l'espace admin. */
 const botsKey = ['admin', 'bots'] as const
-const settingsKey = ['admin', 'settings'] as const
 
 export function useBots() {
   return useQuery({
@@ -65,26 +63,6 @@ export function useDeleteBot(id: string) {
   return useMutation({
     mutationFn: () => api<void>(`/api/admin/bots/${id}`, { method: 'DELETE' }),
     onSuccess: refresh,
-  })
-}
-
-export function useSettings() {
-  return useQuery({
-    queryKey: settingsKey,
-    queryFn: async ({ signal }) =>
-      (await api<AdminSettingsResponse>('/api/admin/settings', { signal })).settings,
-  })
-}
-
-export function useUpdateSettings() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (changes: { showBotLabel?: boolean }) =>
-      api<AdminSettingsResponse>('/api/admin/settings', { method: 'PATCH', body: changes }),
-    onSuccess: ({ settings }) => {
-      queryClient.setQueryData(settingsKey, settings)
-      void queryClient.invalidateQueries({ queryKey: ['leaderboard'] })
-    },
   })
 }
 

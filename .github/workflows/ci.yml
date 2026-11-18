@@ -61,10 +61,12 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Installation du navigateur de test
-        run: npx playwright install --with-deps chromium
-      - name: Parcours sur téléphone et sur ordinateur
+      - name: Installation des navigateurs de test
+        run: npx playwright install --with-deps chromium webkit
+      - name: Parcours sur téléphone, sur ordinateur et sur iPhone (moteur de Safari)
         run: npm run test:e2e
+        env:
+          GRIND_UP_WEBKIT: '1'
       - name: Rapport en cas d'échec
         if: failure()
         uses: actions/upload-artifact@v4

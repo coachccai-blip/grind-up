@@ -72,6 +72,18 @@ export const assigneesSchema = z.union([
 ])
 export type Assignees = z.infer<typeof assigneesSchema>
 
+const passThresholdSchema = z
+  .number()
+  .int()
+  .min(1, 'Le seuil va de 1 à 100\u00A0%.')
+  .max(100, 'Le seuil va de 1 à 100\u00A0%.')
+
+const maxAttemptsSchema = z
+  .number()
+  .int()
+  .min(1, 'Au moins une tentative.')
+  .max(MAX_ATTEMPTS_LIMIT, `${MAX_ATTEMPTS_LIMIT} tentatives au maximum.`)
+
 export const questInputSchema = z.object({
   title: z
     .string()
@@ -86,25 +98,15 @@ export const questInputSchema = z.object({
     .number('Indiquez une récompense en XP.')
     .int('La récompense est un nombre entier.')
     .min(0, 'La récompense ne peut pas être négative.')
-    .max(MAX_REWARD, `${MAX_REWARD} XP au maximum.`),
+    .max(MAX_REWARD, `${MAX_REWARD}\u00A0XP au maximum.`),
   /** Deadline en UTC (ISO 8601), ou null pour une quête sans deadline. */
   deadlineAt: z.iso.datetime().nullable().default(null),
   /** Déclaratif seulement : vrai si l'admin valide lui-même, faux pour une validation immédiate. */
   manualValidation: z.boolean().default(true),
   /** Formats corrigés automatiquement : pourcentage de bonnes réponses à atteindre. */
-  passThreshold: z
-    .number()
-    .int()
-    .min(1, 'Le seuil va de 1 à 100\u00A0%.')
-    .max(100, 'Le seuil va de 1 à 100\u00A0%.')
-    .default(DEFAULT_PASS_THRESHOLD),
+  passThreshold: passThresholdSchema.default(DEFAULT_PASS_THRESHOLD),
   /** Formats corrigés automatiquement : nombre d'essais permis. */
-  maxAttempts: z
-    .number()
-    .int()
-    .min(1, 'Au moins une tentative.')
-    .max(MAX_ATTEMPTS_LIMIT, `${MAX_ATTEMPTS_LIMIT} tentatives au maximum.`)
-    .default(DEFAULT_MAX_ATTEMPTS),
+  maxAttempts: maxAttemptsSchema.default(DEFAULT_MAX_ATTEMPTS),
   items: z
     .array(questItemInputSchema)
     .max(MAX_ITEMS, `${MAX_ITEMS} éléments au maximum.`)
@@ -118,6 +120,23 @@ export const saveQuestRequestSchema = questInputSchema.extend({
   publish: z.boolean().default(false),
 })
 export type SaveQuestRequest = z.infer<typeof saveQuestRequestSchema>
+
+/** Valeurs proposées par l'admin, dans ses paramètres, pour une quête corrigée automatiquement. */
+export interface QuestDefaults {
+  passThreshold: number
+  maxAttempts: number
+}
+
+/**
+ * La même requête, pour le serveur : un seuil de réussite ou un nombre de
+ * tentatives qui n'est pas envoyé prend la valeur des paramètres de l'admin.
+ */
+export function saveQuestRequestSchemaWith(defaults: QuestDefaults) {
+  return saveQuestRequestSchema.extend({
+    passThreshold: passThresholdSchema.default(defaults.passThreshold),
+    maxAttempts: maxAttemptsSchema.default(defaults.maxAttempts),
+  })
+}
 
 /** Réponses distinctes au sens de la correction : « 3,50 » et « 3.5 » n'en font qu'une. */
 function distinctAnswers(answers: readonly string[]): string[] {
@@ -430,6 +449,11 @@ export interface StudentQuestSummary {
   status: AssignmentStatus
   /** Tentatives épuisées : l'élève ne peut plus répondre tant que l'admin n'en redonne pas. */
   blocked: boolean
+  /**
+   * Quête rouverte après sa deadline et encore à faire : l'XP qu'elle rapporte
+   * désormais, soit une part de sa récompense. Null dans tous les autres cas.
+   */
+  lateRewardXp: number | null
   assignedAt: string
   submittedAt: string | null
   validatedAt: string | null

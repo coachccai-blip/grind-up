@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router'
+import { MAIN_CONTENT_ID, SkipLink } from '../../app/RootLayout'
 import { useCurrentUser } from '../../app/session'
 import { Avatar } from '../../ui/Avatar'
 import { classes } from '../../ui/classes'
@@ -23,6 +24,7 @@ export function StudentLayout() {
 
   return (
     <div className={styles.shell}>
+      <SkipLink />
       <nav className={styles.bar} aria-label="Navigation principale">
         <p className={styles.wordmark}>Grind up</p>
         <ul className={styles.destinations}>
@@ -44,7 +46,7 @@ export function StudentLayout() {
           <span>{user.pseudo}</span>
         </p>
       </nav>
-      <main className={styles.main}>
+      <main id={MAIN_CONTENT_ID} tabIndex={-1} className={styles.main}>
         <Outlet />
       </main>
       <CelebrationDialog />

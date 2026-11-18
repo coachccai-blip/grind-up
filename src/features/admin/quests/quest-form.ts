@@ -1,7 +1,4 @@
 import {
-  DEFAULT_MAX_ATTEMPTS,
-  DEFAULT_PASS_THRESHOLD,
-  findDifficulty,
   isAutoCorrected,
   SUGGESTED_FORMAT,
   type QuestCategory,
@@ -15,6 +12,7 @@ import {
   type AdminQuestDetail,
   type SaveQuestRequest,
 } from '../../../../shared/schemas/quests'
+import type { GameSettings } from '../../../../shared/rules/settings'
 import { instantToParisLocal, parisLocalToInstant } from '../../../../shared/time'
 
 /**
@@ -69,7 +67,11 @@ export function initialItems(format: QuestFormat): FormItem[] {
   return format === 'flashcards' ? [newItem(format), newItem(format)] : [newItem(format)]
 }
 
-export function emptyForm(): QuestForm {
+/**
+ * Une quête neuve. La récompense, le seuil de réussite et les tentatives sont
+ * pré-remplis d'après les paramètres de l'admin.
+ */
+export function emptyForm(settings: GameSettings): QuestForm {
   const category: QuestCategory = 'maths'
   const format = SUGGESTED_FORMAT[category]
   const difficulty: QuestDifficulty = 'medium'
@@ -79,18 +81,21 @@ export function emptyForm(): QuestForm {
     category,
     format,
     difficulty,
-    rewardXp: String(findDifficulty(difficulty).defaultReward),
+    rewardXp: String(settings.rewards[difficulty]),
     deadlineLocal: '',
     manualValidation: false,
-    passThreshold: String(DEFAULT_PASS_THRESHOLD),
-    maxAttempts: String(DEFAULT_MAX_ATTEMPTS),
+    passThreshold: String(settings.defaultPassThreshold),
+    maxAttempts: String(settings.defaultMaxAttempts),
     items: initialItems(format),
     assignAll: true,
     assignees: [],
   }
 }
 
-export function formFromQuest(quest: AdminQuestDetail): QuestForm {
+export function formFromQuest(quest: AdminQuestDetail, settings: GameSettings): QuestForm {
+  // Un format validé par l'admin n'a ni seuil ni tentatives : si la quête change de
+  // format, ce sont les valeurs des paramètres qui sont proposées.
+  const auto = isAutoCorrected(quest.format)
   return {
     title: quest.title,
     instructions: quest.instructions,
@@ -100,8 +105,8 @@ export function formFromQuest(quest: AdminQuestDetail): QuestForm {
     rewardXp: String(quest.rewardXp),
     deadlineLocal: quest.deadlineAt ? instantToParisLocal(new Date(quest.deadlineAt)) : '',
     manualValidation: quest.manualValidation,
-    passThreshold: String(quest.passThreshold),
-    maxAttempts: String(quest.maxAttempts),
+    passThreshold: String(auto ? quest.passThreshold : settings.defaultPassThreshold),
+    maxAttempts: String(auto ? quest.maxAttempts : settings.defaultMaxAttempts),
     items: quest.items.map((item) => ({
       key: item.id,
       prompt: item.prompt,

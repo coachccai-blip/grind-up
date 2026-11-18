@@ -10,6 +10,7 @@ import {
   type DifficultyMix,
   type Random,
 } from '../../shared/rules/bots.js'
+import type { RewardTable } from '../../shared/rules/settings.js'
 import { levelFromXp } from '../../shared/rules/levels.js'
 import { periodStart, type LeaderboardPeriod } from '../../shared/rules/leaderboard.js'
 import { pseudoKey } from '../../shared/rules/pseudo.js'
@@ -26,7 +27,8 @@ import { isPseudoTaken } from '../auth/users.js'
 import type { SqlReader, SqlRow, SqlWriter } from '../db/sqlite.js'
 import { notFound } from '../http.js'
 import { standingsBetween } from '../leaderboard/service.js'
-import { totalsOf } from '../progress/service.js'
+import { totalsOf } from '../progress/totals.js'
+import { readGameSettings } from '../settings/service.js'
 
 /**
  * Bots : de faux participants créés par l'admin. Ils ne peuvent pas se
@@ -252,28 +254,26 @@ function staysBehindStudents(
   })
 }
 
+/** Ce qui vaut pour tous les bots d'un même passage. */
+interface Round {
+  /** Les élèves réels, par rapport à qui un bot se place. */
+  students: readonly string[]
+  now: Date
+  random: Random
+  /** Le barème d'XP des paramètres, où est tirée l'XP de chaque mission. */
+  rewards: RewardTable
+}
+
 /** Crédite une mission au bot, sauf si son plafond l'interdit. */
-function creditMission(
-  tx: SqlWriter,
-  bot: BotRow,
-  students: readonly string[],
-  at: string,
-  now: Date,
-  random: Random,
-): void {
-  const xp = drawMissionXp(mixOf(bot), random)
-  if (bot.capped === 1 && !staysBehindStudents(tx, bot.id, students, xp, now)) return
+function creditMission(tx: SqlWriter, bot: BotRow, at: string, round: Round): void {
+  const xp = drawMissionXp(mixOf(bot), round.random, round.rewards)
+  if (bot.capped === 1 && !staysBehindStudents(tx, bot.id, round.students, xp, round.now)) return
   addEntry(tx, bot.id, { amount: xp, mission: 1, reason: 'bot', at })
 }
 
 /** Bot régulier : crédite les missions de son planning dont l'heure est passée. */
-function advanceRegular(
-  tx: SqlWriter,
-  bot: BotRow,
-  students: readonly string[],
-  now: Date,
-  random: Random,
-): void {
+function advanceRegular(tx: SqlWriter, bot: BotRow, round: Round): void {
+  const { now, random } = round
   const thisWeek = mondayOf(parisDay(now))
   const oldest = shiftDay(thisWeek, -7 * (CATCH_UP_WEEKS - 1))
   const startWeek = mondayOf(parisDay(new Date(bot.progressed_at)))
@@ -292,7 +292,7 @@ function advanceRegular(
     for (const instant of schedule) {
       // Une mission compte dès que son heure est passée ; elle est datée de cette heure.
       if (instant > bot.progressed_at && instant <= now.toISOString()) {
-        creditMission(tx, bot, students, instant, now, random)
+        creditMission(tx, bot, instant, round)
       }
     }
   }
@@ -311,20 +311,15 @@ const isDaytime = (now: Date) => {
  * Bot adaptatif : sa position est réévaluée au plus une fois par heure, et il
  * avance d'une mission à la fois, entre 8 h et 21 h, pour éviter les sauts brutaux.
  */
-function advanceAdaptive(
-  tx: SqlWriter,
-  bot: BotRow,
-  students: readonly string[],
-  now: Date,
-  random: Random,
-): void {
+function advanceAdaptive(tx: SqlWriter, bot: BotRow, round: Round): void {
+  const { now, students } = round
   const week = standingsBetween(tx, periodStart('week', now), null)
   const goal = adaptiveTarget(
     bot.target,
     students.map((id) => week.get(id)?.missions ?? 0),
   )
   if ((week.get(bot.id)?.missions ?? 0) < goal) {
-    creditMission(tx, bot, students, now.toISOString(), now, random)
+    creditMission(tx, bot, now.toISOString(), round)
   }
   tx.run('UPDATE bot_settings SET progressed_at = ? WHERE user_id = ?', [now.toISOString(), bot.id])
 }
@@ -358,10 +353,15 @@ export function botsAreDue(tx: SqlReader, now: Date): boolean {
  * demandé : aucune tâche planifiée ne tourne entre deux visites.
  */
 export function advanceBots(tx: SqlWriter, now: Date, random: Random): void {
-  const students = realStudentIds(tx)
+  const round: Round = {
+    students: realStudentIds(tx),
+    now,
+    random,
+    rewards: readGameSettings(tx).rewards,
+  }
   for (const bot of activeBots(tx)) {
     if (!isDue(bot, now)) continue
-    if (bot.mode === 'regular') advanceRegular(tx, bot, students, now, random)
-    else advanceAdaptive(tx, bot, students, now, random)
+    if (bot.mode === 'regular') advanceRegular(tx, bot, round)
+    else advanceAdaptive(tx, bot, round)
   }
 }

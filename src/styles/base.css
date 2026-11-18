@@ -97,6 +97,31 @@ textarea {
   border: 0;
 }
 
+/* Lien d'évitement : hors de l'écran tant qu'il n'a pas le focus du clavier. */
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: max(var(--space-2), env(safe-area-inset-top));
+  left: max(var(--space-2), env(safe-area-inset-left));
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--color-card);
+  box-shadow: var(--shadow-bar);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Le contenu principal reçoit le focus après le lien d'évitement, sans s'entourer d'un contour. */
+main:focus {
+  outline: none;
+}
+
 /* Attente du chargement d'un espace. */
 .page-loading {
   padding: var(--space-8) var(--space-4);

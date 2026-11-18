@@ -19,6 +19,8 @@ export function QuestCard({ quest }: { quest: StudentQuestSummary }) {
   const open =
     quest.status === 'todo' || quest.status === 'in_progress' || quest.status === 'rejected'
   const validated = quest.status === 'validated'
+  // Rouverte après sa deadline : elle ne rapporte plus qu'une part de sa récompense.
+  const reopened = quest.lateRewardXp !== null
   const showStatus = !validated && (quest.status !== 'todo' || quest.blocked)
 
   return (
@@ -35,11 +37,12 @@ export function QuestCard({ quest }: { quest: StudentQuestSummary }) {
       <span className={styles.reward}>
         {validated && quest.xpAwarded !== null
           ? `+${formatXp(quest.xpAwarded)}`
-          : formatXp(quest.rewardXp)}
+          : formatXp(quest.lateRewardXp ?? quest.rewardXp)}
       </span>
       <span className={styles.chips}>
         {showStatus && <StatusChip status={quest.status} blocked={quest.blocked} />}
-        {open && quest.deadlineAt && <Countdown deadlineAt={quest.deadlineAt} />}
+        {reopened && <Chip tone="warning">Rouverte</Chip>}
+        {open && !reopened && quest.deadlineAt && <Countdown deadlineAt={quest.deadlineAt} />}
         {validated && (
           <Chip tone="success">
             {quest.validatedAt ? `Validée le ${formatDayMonth(quest.validatedAt)}` : 'Validée'}

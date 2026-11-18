@@ -9,6 +9,7 @@ import { CopyButton } from '../../ui/CopyButton'
 import { PasswordField } from '../../ui/Field'
 import { Identifier } from '../../ui/Identifier'
 import { Notice } from '../../ui/Notice'
+import { InstallCard } from '../install/InstallCard'
 import { BadgeList } from '../progress/BadgeList'
 import { XpJournal } from '../progress/XpJournal'
 import { AvatarPicker } from './AvatarPicker'
@@ -17,7 +18,8 @@ import styles from './ProfilePage.module.css'
 
 /**
  * Profil de l'élève : pseudo, identifiant à recopier, avatar, badges obtenus et à
- * débloquer, historique d'XP, mot de passe, déconnexion.
+ * débloquer, historique d'XP, mot de passe, installation sur l'écran d'accueil,
+ * déconnexion.
  */
 /** Nombre de lignes du journal montrées d'emblée ; le reste se déplie. */
 const RECENT_SHOWN = 5
@@ -80,6 +82,7 @@ export function ProfilePage() {
       )}
 
       <ChangePasswordCard />
+      <InstallCard audience="student" />
 
       <Button
         variant="secondary"

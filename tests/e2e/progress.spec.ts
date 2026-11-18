@@ -103,7 +103,7 @@ test.describe('progression de l’élève', () => {
     // Le gain est affiché d'emblée à sa valeur, sans décompte.
     const announcement = student.getByRole('dialog', { name: 'Quête validée' })
     await expect(announcement).toBeVisible()
-    await expect(announcement.getByText('+110\u00A0XP')).toBeVisible()
+    await expect(announcement.getByText('+110\u00A0XP').first()).toBeVisible()
     await acknowledgeCelebration(student)
     await close()
   })

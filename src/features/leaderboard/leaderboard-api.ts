@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import type { LeaderboardPeriod, LeaderboardSort } from '../../../shared/rules/leaderboard'
 import type { LeaderboardResponse } from '../../../shared/schemas/leaderboard'
 import { api } from '../../lib/api'
@@ -14,6 +14,9 @@ export function useLeaderboard(period: LeaderboardPeriod, sort: LeaderboardSort)
           signal,
         })
       ).entries,
+    // Changer de période ou de tri garde l'ancien classement à l'écran le temps de charger le
+    // nouveau : la page ne se vide pas, et ne remonte pas.
+    placeholderData: keepPreviousData,
     ...LIVE,
   })
 }

@@ -14,7 +14,8 @@ import type { LeaderboardEntry, LeaderboardResponse } from '../../shared/schemas
 import { mondayOf, parisDay, parisMidnight } from '../../shared/time.js'
 import type { UserRow } from '../auth/users.js'
 import type { SqlReader, SqlRow, SqlWriter } from '../db/sqlite.js'
-import { totalsByUser } from '../progress/service.js'
+import { totalsByUser } from '../progress/totals.js'
+import { readGameSettings } from '../settings/service.js'
 
 /**
  * Leaderboard : il se calcule à partir du journal d'XP, de la même façon pour
@@ -100,20 +101,6 @@ export function rankBetween(
   )
 }
 
-export interface Settings extends SqlRow {
-  show_bot_label: number
-  podium_awarded_week: string | null
-}
-
-export function readSettings(tx: SqlReader): Settings {
-  return (
-    tx.get<Settings>('SELECT show_bot_label, podium_awarded_week FROM settings WHERE id = 1') ?? {
-      show_bot_label: 0,
-      podium_awarded_week: null,
-    }
-  )
-}
-
 export interface LeaderboardRequest {
   period: LeaderboardPeriod
   sort: LeaderboardSort
@@ -137,7 +124,7 @@ export function readLeaderboard(tx: SqlReader, request: LeaderboardRequest): Lea
 
   const byId = new Map(everyone.map((participant) => [participant.id, participant]))
   const totals = totalsByUser(tx)
-  const showBots = viewer.role === 'admin' || readSettings(tx).show_bot_label === 1
+  const showBots = viewer.role === 'admin' || readGameSettings(tx).showBotLabel
 
   const entries = current.map((standing): LeaderboardEntry => {
     const participant = byId.get(standing.id)!
@@ -157,6 +144,18 @@ export function readLeaderboard(tx: SqlReader, request: LeaderboardRequest): Lea
   return { period, sort, entries }
 }
 
+/**
+ * Place de l'élève sur le podium de la semaine en cours, de 1 à 3 ; null s'il
+ * n'y est pas. Les bots comptent : un élève quatrième derrière un bot n'y est pas.
+ */
+export function weeklyPodiumRank(tx: SqlReader, userId: string, now: Date): number | null {
+  const standing = rankBetween(tx, participants(tx), periodStart('week', now), null).find(
+    (entry) => entry.id === userId,
+  )
+  const rank = standing?.rank ?? null
+  return rank !== null && rank <= 3 ? rank : null
+}
+
 // --- Badge Podium ------------------------------------------------------------------------------
 
 /** Nombre de semaines passées reprises au plus, si personne n'a ouvert le classement depuis longtemps. */
@@ -165,9 +164,17 @@ const PODIUM_WEEKS_BACK = 8
 /** Lundi de la dernière semaine terminée. */
 const lastCompletedWeek = (now: Date) => shiftDay(mondayOf(parisDay(now)), -7)
 
+/** Lundi de la dernière semaine dont le badge Podium a été attribué. */
+function podiumAwardedWeek(tx: SqlReader): string | null {
+  return (
+    tx.get<{ week: string | null }>('SELECT podium_awarded_week AS week FROM settings WHERE id = 1')
+      ?.week ?? null
+  )
+}
+
 /** Vrai si une semaine terminée attend encore l'attribution de son podium. */
 export function podiumIsDue(tx: SqlReader, now: Date): boolean {
-  const awarded = readSettings(tx).podium_awarded_week
+  const awarded = podiumAwardedWeek(tx)
   return awarded === null || awarded < lastCompletedWeek(now)
 }
 
@@ -178,7 +185,7 @@ export function podiumIsDue(tx: SqlReader, now: Date): boolean {
  */
 export function awardPodiums(tx: SqlWriter, now: Date): void {
   const last = lastCompletedWeek(now)
-  const awarded = readSettings(tx).podium_awarded_week
+  const awarded = podiumAwardedWeek(tx)
   const oldest = shiftDay(last, -7 * (PODIUM_WEEKS_BACK - 1))
   const first = awarded === null || awarded < shiftDay(oldest, -7) ? oldest : shiftDay(awarded, 7)
   const everyone = participants(tx)
