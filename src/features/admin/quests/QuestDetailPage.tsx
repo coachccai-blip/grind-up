@@ -226,7 +226,7 @@ function QuestSheet({ quest }: { quest: AdminQuestDetail }) {
   )
 }
 
-/** Contenu d'une quête corrigée automatiquement, réponses attendues comprises. */
+/** Contenu d'une quête corrigée automatiquement, réponses attendues et corrections comprises. */
 function Content({ quest }: { quest: AdminQuestDetail }) {
   const isCards = quest.format === 'flashcards'
   return (
@@ -258,6 +258,12 @@ function Content({ quest }: { quest: AdminQuestDetail }) {
                     : 'Réponse attendue'}
                 &nbsp;: <strong>{item.answers.join(' ou ')}</strong>
               </p>
+            )}
+            {item.explanation !== '' && (
+              <details className={styles.explanation}>
+                <summary>Correction détaillée</summary>
+                <RichText text={item.explanation} />
+              </details>
             )}
           </li>
         ))}

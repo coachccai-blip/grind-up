@@ -48,6 +48,7 @@ export interface QuestItemRow extends SqlRow {
   prompt: string
   expected_answers: string
   choices: string
+  explanation: string
 }
 
 export interface AssignmentRow extends SqlRow {
@@ -119,6 +120,7 @@ export function listItems(tx: SqlReader, questId: string): QuestItem[] {
       answers: row.kind === 'choice' ? [] : expected.map(String),
       choices: parseJson<string[]>(row.choices, []),
       correct: row.kind === 'choice' ? expected.map(Number) : [],
+      explanation: row.explanation,
     }
   })
 }
@@ -129,8 +131,9 @@ function replaceItems(tx: SqlWriter, questId: string, quest: QuestInput): void {
   if (!kind) return
   quest.items.forEach((item, position) => {
     tx.run(
-      `INSERT INTO quest_items (id, quest_id, position, kind, prompt, expected_answers, choices)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO quest_items
+         (id, quest_id, position, kind, prompt, expected_answers, choices, explanation)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         randomUUID(),
         questId,
@@ -139,6 +142,7 @@ function replaceItems(tx: SqlWriter, questId: string, quest: QuestInput): void {
         item.prompt,
         JSON.stringify(kind === 'choice' ? item.correct : item.answers),
         JSON.stringify(item.choices),
+        item.explanation,
       ],
     )
   })
@@ -265,11 +269,12 @@ export function toQuestInput(row: QuestRow, items: readonly QuestItem[]): QuestI
     manualValidation: row.manual_validation === 1,
     passThreshold: row.pass_threshold,
     maxAttempts: row.max_attempts,
-    items: items.map(({ prompt, answers, choices, correct }) => ({
+    items: items.map(({ prompt, answers, choices, correct, explanation }) => ({
       prompt,
       answers,
       choices,
       correct,
+      explanation,
     })),
     assignees: draftAssignees(row),
   }

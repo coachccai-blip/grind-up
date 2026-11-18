@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
 import {
   isAutoCorrected,
   QUEST_CATEGORIES,
@@ -11,6 +11,7 @@ import {
   type QuestFormat,
 } from '../../../../shared/rules/quests'
 import type { GameSettings } from '../../../../shared/rules/settings'
+import type { LibraryExercise } from '../../../../shared/schemas/library'
 import { QUEST_TITLE_MAX, type AdminQuestDetail } from '../../../../shared/schemas/quests'
 import { RICH_TEXT_MAX_LENGTH } from '../../../../shared/rules/rich-text'
 import { ApiError, errorFields, errorMessage } from '../../../lib/api'
@@ -31,6 +32,7 @@ import { ItemsEditor } from './ItemsEditor'
 import {
   checkForm,
   emptyForm,
+  formFromExercise,
   formFromQuest,
   initialItems,
   toRequest,
@@ -39,18 +41,50 @@ import {
 } from './quest-form'
 import styles from './QuestEditorPage.module.css'
 import { ImagePicker } from './ImagePicker'
+import { useLibraryExercise } from './library-api'
 import { useAdminQuest, useSaveQuest, type ImageChange } from './quests-api'
 
-/** Création d'une quête, ou modification d'une quête existante. */
+/**
+ * Création d'une quête, ou modification d'une quête existante. Une quête neuve
+ * peut partir d'un exercice de la bibliothèque : /admin/quetes/nouvelle?modele=…
+ */
 export function QuestEditorPage() {
   const { id } = useParams()
+  const [search] = useSearchParams()
+  const exerciseId = id === undefined ? search.get('modele') : null
   const existing = useAdminQuest(id)
+  const exercise = useLibraryExercise(exerciseId)
   // Le barème et les valeurs proposées pour une quête viennent des paramètres.
   const settings = useSettings()
 
   if (settings.isError) return <Notice tone="error">{errorMessage(settings.error)}</Notice>
   if (!settings.data) return <p>Chargement de la quête…</p>
-  if (id === undefined) return <QuestEditor key="new" quest={null} settings={settings.data} />
+  if (id === undefined && exerciseId === null) {
+    return <QuestEditor key="new" quest={null} exercise={null} settings={settings.data} />
+  }
+  if (id === undefined) {
+    if (exercise.isPending) return <p>Chargement de l’exercice…</p>
+    if (!exercise.data) {
+      const missing = exercise.error instanceof ApiError && exercise.error.status === 404
+      return missing ? (
+        <EmptyState emoji="🧩" title="Exercice introuvable" pageTitle>
+          <p>
+            <TextLink to="/admin/quetes/bibliotheque">Retour à la bibliothèque</TextLink>
+          </p>
+        </EmptyState>
+      ) : (
+        <Notice tone="error">{errorMessage(exercise.error)}</Notice>
+      )
+    }
+    return (
+      <QuestEditor
+        key={`modele-${exercise.data.id}`}
+        quest={null}
+        exercise={exercise.data}
+        settings={settings.data}
+      />
+    )
+  }
   if (existing.isPending) return <p>Chargement de la quête…</p>
   if (!existing.data) {
     const missing = existing.error instanceof ApiError && existing.error.status === 404
@@ -64,7 +98,14 @@ export function QuestEditorPage() {
       <Notice tone="error">{errorMessage(existing.error)}</Notice>
     )
   }
-  return <QuestEditor key={existing.data.id} quest={existing.data} settings={settings.data} />
+  return (
+    <QuestEditor
+      key={existing.data.id}
+      quest={existing.data}
+      exercise={null}
+      settings={settings.data}
+    />
+  )
 }
 
 const hasContent = (items: readonly FormItem[]) =>
@@ -72,25 +113,33 @@ const hasContent = (items: readonly FormItem[]) =>
     (item) =>
       item.prompt.trim() !== '' ||
       item.answersText.trim() !== '' ||
+      item.explanation.trim() !== '' ||
       item.choices.some((choice) => choice.trim() !== ''),
   )
 
 interface QuestEditorProps {
   quest: AdminQuestDetail | null
+  /** Exercice de la bibliothèque dont une quête neuve reprend le contenu. */
+  exercise: LibraryExercise | null
   settings: GameSettings
 }
 
-function QuestEditor({ quest, settings }: QuestEditorProps) {
+function QuestEditor({ quest, exercise, settings }: QuestEditorProps) {
   const navigate = useNavigate()
   const students = useStudents()
   const save = useSaveQuest(quest?.id)
 
   const [form, setForm] = useState<QuestForm>(() =>
-    quest ? formFromQuest(quest, settings) : emptyForm(settings),
+    quest
+      ? formFromQuest(quest, settings)
+      : exercise
+        ? formFromExercise(exercise, settings)
+        : emptyForm(settings),
   )
   // Le contenu saisi pour un format est gardé de côté : revenir à ce format le retrouve.
   const [setAside, setSetAside] = useState<Partial<Record<QuestFormat, FormItem[]>>>({})
-  const [formatChosen, setFormatChosen] = useState(quest !== null)
+  // Le format d'une quête existante ou d'un exercice est déjà choisi : il ne suit plus la catégorie.
+  const [formatChosen, setFormatChosen] = useState(quest !== null || exercise !== null)
   const [image, setImage] = useState<ImageChange>({ kind: 'keep' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submissions, setSubmissions] = useState(0)
@@ -177,11 +226,31 @@ function QuestEditor({ quest, settings }: QuestEditorProps) {
   return (
     <form ref={formElement} className={styles.form} onSubmit={onSubmit} noValidate>
       <p>
-        <TextLink to={quest ? `/admin/quetes/${quest.id}` : '/admin/quetes'}>
-          {quest ? 'Retour à la quête' : 'Retour aux quêtes'}
+        <TextLink
+          to={
+            quest
+              ? `/admin/quetes/${quest.id}`
+              : exercise
+                ? '/admin/quetes/bibliotheque'
+                : '/admin/quetes'
+          }
+        >
+          {quest
+            ? 'Retour à la quête'
+            : exercise
+              ? 'Retour à la bibliothèque'
+              : 'Retour aux quêtes'}
         </TextLink>
       </p>
       <h1>{quest ? 'Modifier la quête' : 'Nouvelle quête'}</h1>
+
+      {exercise && (
+        <Notice tone="info">
+          Cette quête reprend l’exercice «&nbsp;{exercise.title}&nbsp;» de la bibliothèque, avec la
+          correction détaillée de chaque question. Tout reste modifiable. Choisissez les élèves en
+          bas de la page, puis publiez la quête.
+        </Notice>
+      )}
 
       {isArchived && (
         <Notice tone="warning">Cette quête est archivée. Restaurez-la pour la modifier.</Notice>

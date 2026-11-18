@@ -80,13 +80,16 @@ export function readAdminQuest(tx: SqlReader, id: string, now: Date): AdminQuest
     passThreshold: quest.pass_threshold,
     maxAttempts: quest.max_attempts,
     imageUrl: imageUrl(quest, 'admin'),
-    items: listItems(tx, id).map(({ id: itemId, prompt, answers, choices, correct }) => ({
-      id: itemId,
-      prompt,
-      answers,
-      choices,
-      correct,
-    })),
+    items: listItems(tx, id).map(
+      ({ id: itemId, prompt, answers, choices, correct, explanation }) => ({
+        id: itemId,
+        prompt,
+        answers,
+        choices,
+        correct,
+        explanation,
+      }),
+    ),
     draftAssignees: draftAssignees(quest),
     locked: questIsLocked(tx, id),
     assignments: listAdminAssignments(tx, quest, now),

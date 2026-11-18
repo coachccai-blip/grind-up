@@ -5,7 +5,7 @@ import type {
   AdminQuestResponse,
   AdminQuestsResponse,
   AssignmentResponse,
-  SaveQuestRequest,
+  SaveQuestRequestBody,
   StudentQuestDetail,
   StudentQuestResponse,
   StudentQuestsResponse,
@@ -24,7 +24,7 @@ import {
 const IN_TWO_DAYS = '2026-11-19T10:00:00.000Z'
 const IN_THREE_HOURS = '2026-11-17T13:00:00.000Z'
 
-type QuestDraft = Partial<SaveQuestRequest>
+type QuestDraft = Partial<SaveQuestRequestBody>
 
 const baseQuest = (overrides: QuestDraft = {}): QuestDraft => ({
   title: 'Tables de multiplication',

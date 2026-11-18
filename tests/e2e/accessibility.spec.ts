@@ -151,7 +151,13 @@ test.describe('accessibilité et mise en page', () => {
       format: 'qcm',
       deadlineAt: inHours(20),
       items: [
-        { prompt: 'Capitale de l’Italie ?', choices: ['Milan', 'Rome', 'Naples'], correct: [1] },
+        {
+          prompt: 'Capitale de l’Italie ?',
+          choices: ['Milan', 'Rome', 'Naples'],
+          correct: [1],
+          explanation:
+            '**Rome**\nCapitale de l’Italie depuis 1871.\n\n**Les pièges**\n- **Milan**\u00A0: la plus grande ville du nord.\n- **Naples**\u00A0: la plus grande ville du sud.',
+        },
         { prompt: 'Villes de France ?', choices: ['Lyon', 'Turin', 'Lille'], correct: [0, 2] },
       ],
     })
@@ -198,6 +204,16 @@ test.describe('accessibilité et mise en page', () => {
 
     await page.goto(`/quetes/${qcm.id}`)
     await audit(page, 'QCM')
+    // QCM validé : le corrigé, et la correction détaillée d'une question, dépliée.
+    await page.getByRole('radio', { name: 'Rome' }).check()
+    await page.getByRole('checkbox', { name: 'Lyon' }).check()
+    await page.getByRole('checkbox', { name: 'Lille' }).check()
+    await page.getByRole('button', { name: 'Valider mes réponses' }).click()
+    await acknowledgeCelebration(page)
+    await audit(page, 'QCM validé')
+    await page.locator('summary', { hasText: 'Correction détaillée' }).click()
+    await expect(page.getByText('Capitale de l’Italie depuis 1871.')).toBeVisible()
+    await audit(page, 'QCM validé, correction dépliée')
 
     // Cartes de mémorisation : le parcours des cartes, puis le test.
     await page.goto(`/quetes/${cards.id}`)
@@ -250,7 +266,9 @@ test.describe('accessibilité et mise en page', () => {
     const quest = await publishQuest(page, {
       title: `Calcul ${tag}`,
       deadlineAt: inHours(30),
-      items: [{ prompt: '6 × 7 ?', answers: ['42'] }],
+      items: [
+        { prompt: '6 × 7 ?', answers: ['42'], explanation: '**6 × 7 = 42**\nC’est la table de 7.' },
+      ],
     })
     const essay = await publishQuest(page, {
       title: `Résumé ${tag}`,
@@ -300,13 +318,21 @@ test.describe('accessibilité et mise en page', () => {
     await audit(page, 'Quêtes')
     await page.goto(`/admin/quetes/${quest.id}`)
     await audit(page, 'Fiche d’une quête')
+    await page.locator('summary', { hasText: 'Correction détaillée' }).click()
+    await expect(page.getByText('C’est la table de 7.')).toBeVisible()
+    await audit(page, 'Fiche d’une quête, correction dépliée')
     await page.getByRole('button', { name: 'Ajouter des élèves' }).click()
+    // La fenêtre est contrôlée une fois son contenu affiché, pas pendant son ouverture.
+    await expect(page.getByRole('dialog').getByRole('radio').first()).toBeVisible()
     await audit(page, 'Fenêtre d’ajout d’élèves')
     await page.getByRole('button', { name: 'Annuler', exact: true }).click()
     await page.goto('/admin/quetes/nouvelle')
     await audit(page, 'Nouvelle quête, réponse exacte')
     await page.getByRole('radio', { name: /^QCM/ }).check()
     await audit(page, 'Nouvelle quête, QCM')
+    await page.getByText('Correction détaillée', { exact: true }).click()
+    await expect(page.getByLabel('Texte de la correction')).toBeVisible()
+    await audit(page, 'Nouvelle quête, correction détaillée dépliée')
     await page.getByRole('radio', { name: /^Cartes de mémorisation/ }).check()
     await audit(page, 'Nouvelle quête, cartes')
     await page.getByRole('radio', { name: /^Déclaratif/ }).check()
@@ -316,6 +342,14 @@ test.describe('accessibilité et mise en page', () => {
     await page.getByRole('button', { name: 'Publier la quête' }).click()
     await expect(page.getByText(/à corriger/)).toBeVisible()
     await audit(page, 'Nouvelle quête refusée')
+
+    // Bibliothèque : la liste des exercices, puis une quête pré-remplie par l'un d'eux.
+    await page.goto('/admin/quetes/bibliotheque')
+    await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible()
+    await audit(page, 'Bibliothèque')
+    await page.getByRole('link', { name: /Utiliser cet exercice.*cas difficiles/ }).click()
+    await expect(page.getByRole('heading', { name: 'Question 8' })).toBeVisible()
+    await audit(page, 'Nouvelle quête reprise de la bibliothèque')
 
     // Validations : la file et la fenêtre de refus.
     await openAdminScreen(page, 'Validations')

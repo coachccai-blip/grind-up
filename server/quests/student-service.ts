@@ -180,7 +180,7 @@ function cardOptions(card: QuestItem, cards: readonly QuestItem[]): { id: string
   }))
 }
 
-/** Les éléments tels que l'élève les reçoit : jamais les réponses attendues. */
+/** Les éléments tels que l'élève les reçoit : jamais les réponses attendues ni leur correction. */
 function toStudentItems(quest: QuestRow, items: readonly QuestItem[]): StudentQuestItem[] {
   return items.map((item): StudentQuestItem => {
     switch (quest.format) {
@@ -244,6 +244,18 @@ function corrections(
   return null
 }
 
+/**
+ * Corrections détaillées d'une quête validée, pour les questions qui en ont une.
+ * Elles disent comment trouver la réponse : comme le corrigé, elles ne sont
+ * envoyées qu'une fois la quête validée.
+ */
+function explanations(quest: QuestRow, items: readonly QuestItem[]): Record<string, string> | null {
+  if (quest.format !== 'exact' && quest.format !== 'qcm') return null
+  return Object.fromEntries(
+    items.filter((item) => item.explanation !== '').map((item) => [item.id, item.explanation]),
+  )
+}
+
 export function readMyQuest(
   tx: SqlReader,
   studentId: string,
@@ -269,6 +281,7 @@ export function readMyQuest(
     adminComment: assignment.admin_comment,
     reward: readReward(tx, assignment),
     corrections: validated ? corrections(quest, items) : null,
+    explanations: validated ? explanations(quest, items) : null,
   }
 }
 

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Button } from '../../../ui/Button'
 import { Field } from '../../../ui/Field'
 import { Notice } from '../../../ui/Notice'
+import { DetailedCorrection } from './DetailedCorrection'
 import styles from './formats.module.css'
 import { ItemResult } from './ItemResult'
 import type { FormatProps } from './types'
@@ -53,6 +54,10 @@ export function ExactForm({ quest, busy, onSubmit, readOnly = false }: FormatPro
                   <strong>{expected.join(' ou ')}</strong>
                 </p>
               )}
+              <DetailedCorrection
+                text={quest.explanations?.[item.id]}
+                wrong={last?.results[item.id] === false}
+              />
             </li>
           )
         })}

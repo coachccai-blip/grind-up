@@ -41,6 +41,19 @@ export function QuestPage() {
     }
   }, [status, startQuest])
 
+  // Après une réponse, son résultat est amené à l'écran : l'élève vient de toucher le
+  // bouton tout en bas de la quête, et le verdict s'affiche plus haut.
+  const result = useRef<HTMLDivElement>(null)
+  const attemptsSeen = useRef<number | null>(null)
+  const attemptsUsed = quest?.attemptsUsed
+  useEffect(() => {
+    if (attemptsUsed === undefined) return
+    if (attemptsSeen.current !== null && attemptsUsed > attemptsSeen.current) {
+      result.current?.scrollIntoView({ block: 'start' })
+    }
+    attemptsSeen.current = attemptsUsed
+  }, [attemptsUsed])
+
   if (query.isPending) return <p>Chargement de la quête…</p>
   if (!quest) {
     const missing = query.error instanceof ApiError && query.error.status === 404
@@ -106,14 +119,16 @@ export function QuestPage() {
         </Card>
       )}
 
-      <QuestBody
-        // Une nouvelle correction repart d'un formulaire rempli avec les dernières réponses.
-        key={`${view}-${quest.attemptsUsed}`}
-        quest={quest}
-        busy={attempt.isPending}
-        onSubmit={(body: AttemptBody) => attempt.mutate(body)}
-        error={attempt.isError ? attempt.error : null}
-      />
+      <div ref={result} className={styles.body}>
+        <QuestBody
+          // Une nouvelle correction repart d'un formulaire rempli avec les dernières réponses.
+          key={`${view}-${quest.attemptsUsed}`}
+          quest={quest}
+          busy={attempt.isPending}
+          onSubmit={(body: AttemptBody) => attempt.mutate(body)}
+          error={attempt.isError ? attempt.error : null}
+        />
+      </div>
     </>
   )
 }

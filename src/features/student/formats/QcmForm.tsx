@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Button } from '../../../ui/Button'
 import { Checkbox, Radio } from '../../../ui/Choice'
 import { Notice } from '../../../ui/Notice'
+import { DetailedCorrection } from './DetailedCorrection'
 import styles from './formats.module.css'
 import { ItemResult } from './ItemResult'
 import type { FormatProps } from './types'
@@ -70,6 +71,10 @@ export function QcmForm({ quest, busy, onSubmit, readOnly = false }: FormatProps
                     <strong>{expected.join(', ')}</strong>
                   </p>
                 )}
+                <DetailedCorrection
+                  text={quest.explanations?.[item.id]}
+                  wrong={last?.results[item.id] === false}
+                />
               </fieldset>
             </li>
           )

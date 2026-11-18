@@ -13,6 +13,7 @@ import {
   type SaveQuestRequest,
 } from '../../../../shared/schemas/quests'
 import type { GameSettings } from '../../../../shared/rules/settings'
+import type { LibraryExercise } from '../../../../shared/schemas/library'
 import { instantToParisLocal, parisLocalToInstant } from '../../../../shared/time'
 
 /**
@@ -28,6 +29,8 @@ export interface FormItem {
   /** QCM : les choix proposés, et les positions des bonnes réponses. */
   choices: string[]
   correct: number[]
+  /** Question (réponse exacte, QCM) : sa correction détaillée, facultative. */
+  explanation: string
 }
 
 export interface QuestForm {
@@ -58,6 +61,7 @@ export function newItem(format: QuestFormat): FormItem {
     answersText: '',
     choices: format === 'qcm' ? Array.from({ length: QCM_INITIAL_CHOICES }, () => '') : [],
     correct: [],
+    explanation: '',
   }
 }
 
@@ -92,6 +96,31 @@ export function emptyForm(settings: GameSettings): QuestForm {
   }
 }
 
+/**
+ * Une quête neuve qui reprend un exercice de la bibliothèque : son contenu et
+ * ses corrections, avec la récompense de sa difficulté et les réglages des
+ * paramètres. Tout reste modifiable.
+ */
+export function formFromExercise(exercise: LibraryExercise, settings: GameSettings): QuestForm {
+  return {
+    ...emptyForm(settings),
+    title: exercise.title,
+    instructions: exercise.instructions,
+    category: exercise.category,
+    format: exercise.format,
+    difficulty: exercise.difficulty,
+    rewardXp: String(settings.rewards[exercise.difficulty]),
+    items: exercise.items.map((item) => ({
+      ...newItem(exercise.format),
+      prompt: item.prompt,
+      answersText: item.answers.join(' ; '),
+      choices: item.choices,
+      correct: item.correct,
+      explanation: item.explanation,
+    })),
+  }
+}
+
 export function formFromQuest(quest: AdminQuestDetail, settings: GameSettings): QuestForm {
   // Un format validé par l'admin n'a ni seuil ni tentatives : si la quête change de
   // format, ce sont les valeurs des paramètres qui sont proposées.
@@ -113,6 +142,7 @@ export function formFromQuest(quest: AdminQuestDetail, settings: GameSettings): 
       answersText: item.answers.join(' ; '),
       choices: item.choices,
       correct: item.correct,
+      explanation: item.explanation,
     })),
     assignAll: quest.draftAssignees === 'all',
     assignees: quest.draftAssignees === 'all' ? [] : quest.draftAssignees,
@@ -143,6 +173,7 @@ export function toRequest(form: QuestForm, publish: boolean): SaveQuestRequest {
           : [item.answersText],
       choices: item.choices,
       correct: item.correct,
+      explanation: item.explanation,
     })),
     assignees: form.assignAll ? 'all' : form.assignees,
     publish,

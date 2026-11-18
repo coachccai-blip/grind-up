@@ -50,6 +50,26 @@
   overflow-wrap: anywhere;
 }
 
+/* Correction détaillée : elle se déplie sous la bonne réponse, sur toute la largeur. */
+.explanation {
+  align-self: stretch;
+  width: 100%;
+}
+
+.explanation summary {
+  min-height: var(--touch-target);
+  padding-block: 10px;
+  color: var(--color-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.explanationText {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-page);
+}
+
 .progress {
   color: var(--color-text-secondary);
   font-weight: 700;

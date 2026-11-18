@@ -3,8 +3,10 @@
 Plateforme de quêtes gamifiée pour élèves : un accompagnant donne des quêtes, les élèves les
 réalisent, gagnent de l'XP, montent de niveau et se comparent sur un leaderboard.
 
-**État : version 1.0.0, les six étapes du brief sont livrées.** L'admin crée des quêtes dans
-cinq formats, les donne à ses élèves et valide les réalisations. Chaque quête validée crédite de
+**État : version 1.1.0.** Les six étapes du brief sont livrées ; la version 1.1 y ajoute une
+bibliothèque d'exercices prêts à l'emploi et la correction détaillée des questions. L'admin crée
+des quêtes dans cinq formats, ou reprend un exercice de la bibliothèque, les donne à ses élèves
+et valide les réalisations. Chaque quête validée crédite de
 l'XP : niveau, série, badges. Le leaderboard classe les élèves par missions accomplies, puis par
 XP, sur la semaine, le mois ou depuis toujours ; l'admin peut l'animer avec des bots. Une vue
 d'ensemble lui montre ce qui demande son attention, et ses paramètres règlent le barème, les
@@ -65,6 +67,30 @@ fonctionne. En cas d'échec, le bouton _Copier le détail_ de la page copie le d
    _Paramètres_.
 7. **Mot de passe oublié.** Dans _Élèves_, ouvrir la fiche de l'élève et choisir _Mot de passe
    temporaire_. L'élève se connecte avec, puis choisit aussitôt le sien.
+
+### Bibliothèque et corrections détaillées
+
+Dans _Quêtes_, le bouton _Bibliothèque_ ouvre des exercices prêts à l'emploi. _Utiliser cet
+exercice_ ouvre une nouvelle quête déjà remplie : titre, consigne, questions, bonnes réponses,
+correction détaillée de chaque question, difficulté. Rien n'est enregistré à ce stade et tout
+reste modifiable : il reste à choisir les élèves (tous, ou quelques-uns), puis à publier.
+
+| Exercice                                | Niveau | Contenu                           |
+| --------------------------------------- | ------ | --------------------------------- |
+| Identités remarquables : cas simples    | 3e     | QCM de 6 questions, « Facile »    |
+| Identités remarquables : cas difficiles | 3e     | QCM de 8 questions, « Difficile » |
+
+Dans ces QCM, chaque mauvais choix correspond à une erreur courante, que la correction nomme.
+
+Toute question d'une quête à réponse exacte ou d'un QCM peut porter une **correction détaillée**,
+y compris dans vos propres quêtes : elle s'écrit dans le formulaire de la quête, sous la
+question, avec la même mise en forme que la consigne. L'élève la lit une fois sa quête validée,
+sous la bonne réponse ; la correction d'une réponse fausse est déjà dépliée.
+
+Pour ajouter un exercice à la bibliothèque : créer un fichier dans `server/library/exercises/`,
+sur le modèle de `identites-remarquables.ts`, puis l'ajouter à la liste de
+`server/library/index.ts`. Les tests de `tests/unit/library.test.ts` relisent le contenu : ils
+recalculent chaque énoncé, chaque bonne réponse et chaque égalité écrite dans une correction.
 
 ### Paramètres et export
 
@@ -215,7 +241,7 @@ Sur Netlify, la fonction ne tourne pas à partir du code source mais d'un paquet
 mise en ligne. À chaque demande de fusion, l'action _Tests_ construit le zip avec l'outil de
 Netlify, puis `scripts/verify-bundle.mjs` charge ce paquet seul et lui fait jouer un parcours
 complet : test de déploiement, inscriptions, session, droits, quête, classement, paramètres,
-export. Pour le lancer à la main, depuis un dossier où le zip a été décompressé et ses dépendances installées :
+export, bibliothèque. Pour le lancer à la main, depuis un dossier où le zip a été décompressé et ses dépendances installées :
 
 ```bash
 npx netlify-cli@27.20.0 build --offline
@@ -258,7 +284,9 @@ attache le zip. L'action _Tests_ vérifie chaque demande de fusion.
 - **Export :** réservé à l'admin. Les fichiers ne contiennent ni mot de passe ni identifiant
   interne, et un texte saisi par un utilisateur ne peut pas y devenir une formule de tableur.
 - **Réponses attendues :** elles restent sur le serveur, qui corrige ; l'élève ne reçoit le
-  corrigé qu'une fois sa quête validée.
+  corrigé, corrections détaillées comprises, qu'une fois sa quête validée.
+- **Bibliothèque :** servie à l'admin seulement. Son contenu fait partie du code du serveur et
+  ne figure pas dans le code envoyé au navigateur.
 - **XP :** une quête est validée et créditée dans la même transaction, une seule fois, même en
   cas de double clic ou de requête rejouée.
 - **Tentatives :** connexions, inscriptions et essais du code admin sont limités par adresse IP.
@@ -289,6 +317,7 @@ server/                    logique serveur
   app.ts                   assemblage des routes ; tout ce qui est sous /admin exige un admin
   auth/                    mots de passe, sessions, limitation des tentatives, comptes
   quests/                  quêtes : création, correction automatique, validation, crédit de l'XP
+  library/                 bibliothèque : exercices prêts à l'emploi et leurs corrections
   progress/                progression : XP, niveau, série, badges, journal
   leaderboard/             classement par période, mouvement depuis la veille, podium
   bots/                    bots : réglages, progression calculée à la demande

@@ -4,6 +4,7 @@ import { AdminLayout } from './AdminLayout'
 import { OverviewPage } from './AdminPages'
 import { BotEditorPage } from './bots/BotEditorPage'
 import { BotsPage } from './bots/BotsPage'
+import { LibraryPage } from './quests/LibraryPage'
 import { QuestDetailPage } from './quests/QuestDetailPage'
 import { QuestEditorPage } from './quests/QuestEditorPage'
 import { QuestsPage } from './quests/QuestsPage'
@@ -25,6 +26,7 @@ export default function AdminApp() {
         <Route path="eleves/:id" element={<StudentPage />} />
         <Route path="quetes" element={<QuestsPage />} />
         <Route path="quetes/nouvelle" element={<QuestEditorPage />} />
+        <Route path="quetes/bibliotheque" element={<LibraryPage />} />
         <Route path="quetes/:id" element={<QuestDetailPage />} />
         <Route path="quetes/:id/modifier" element={<QuestEditorPage />} />
         <Route path="validations" element={<ValidationsPage />} />
