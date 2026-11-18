@@ -18,11 +18,23 @@ const pythagore = defineExercise({
       '- **Théorème :** si le triangle ABC est rectangle en A, alors BC² = AB² + AC². Le carré de l’hypoténuse est égal à la somme des carrés des deux autres côtés.',
       '- **Réciproque :** si, dans un triangle, le carré du plus long côté est égal à la somme des carrés des deux autres, alors ce triangle est rectangle. Si cette égalité est fausse, le triangle n’est pas rectangle.',
     ].join('\n'),
+    figure(
+      'pythagore-rappel-hypotenuse',
+      'Un triangle ABC rectangle en A : l’hypoténuse BC est en face de l’angle droit ; sous la figure, BC² est la somme de AB² et AC².',
+    ),
+    figure(
+      'pythagore-rappel-carres',
+      'Les carrés construits sur les trois côtés du triangle ABC rectangle en A : le carré BC² sur l’hypoténuse, les carrés AB² et AC² sur les deux autres.',
+    ),
     'Pour calculer l’hypoténuse, on additionne les carrés. Pour calculer un côté de l’angle droit, on soustrait.',
   ),
   example: [
     {
       statement: 'Le triangle EFG est rectangle en E. EF = 8 cm et EG = 15 cm. Calcule FG.',
+      figure: {
+        id: 'pythagore-exemple-efg',
+        alt: 'Le triangle EFG rectangle en E ; EF mesure 8 cm, EG 15 cm, FG est cherchée.',
+      },
       steps: [
         [
           'FG² = EF² + EG²',
@@ -41,6 +53,10 @@ const pythagore = defineExercise({
     },
     {
       statement: 'Le triangle RST est rectangle en R. ST = 20 cm et RS = 12 cm. Calcule RT.',
+      figure: {
+        id: 'pythagore-exemple-rst',
+        alt: 'Le triangle RST rectangle en R ; ST mesure 20 cm, RS 12 cm, RT est cherchée.',
+      },
       steps: [
         [
           'ST² = RS² + RT²',
@@ -58,6 +74,10 @@ const pythagore = defineExercise({
   questions: [
     exact({
       prompt: 'Le triangle ABC est rectangle en A. AB = 3 cm et AC = 4 cm. Calcule BC, en cm.',
+      figure: {
+        id: 'pythagore-q1-abc',
+        alt: 'Le triangle ABC rectangle en A ; AB mesure 3 cm, AC 4 cm, BC est cherchée.',
+      },
       answers: ['5'],
       correction: {
         steps: [
@@ -74,6 +94,10 @@ const pythagore = defineExercise({
     }),
     exact({
       prompt: 'Le triangle DEF est rectangle en D. DE = 5 cm et DF = 12 cm. Calcule EF, en cm.',
+      figure: {
+        id: 'pythagore-q2-def',
+        alt: 'Le triangle DEF rectangle en D ; DE mesure 5 cm, DF 12 cm, EF est cherchée.',
+      },
       answers: ['13'],
       correction: {
         steps: [
@@ -87,6 +111,10 @@ const pythagore = defineExercise({
     }),
     exact({
       prompt: 'Le triangle IJK est rectangle en I. JK = 10 cm et IJ = 6 cm. Calcule IK, en cm.',
+      figure: {
+        id: 'pythagore-q3-ijk',
+        alt: 'Le triangle IJK rectangle en I ; JK mesure 10 cm, IJ 6 cm, IK est cherchée.',
+      },
       answers: ['8'],
       correction: {
         steps: [
@@ -104,6 +132,10 @@ const pythagore = defineExercise({
     exact({
       prompt:
         'Le triangle LMN est rectangle en M. LM = 4 cm et MN = 6 cm. Calcule LN, en cm, arrondi au dixième.',
+      figure: {
+        id: 'pythagore-q4-lmn',
+        alt: 'Le triangle LMN rectangle en M ; LM mesure 4 cm, MN 6 cm, LN est cherchée.',
+      },
       answers: ['7,2'],
       correction: {
         steps: [
@@ -121,6 +153,10 @@ const pythagore = defineExercise({
     exact({
       prompt:
         'Une échelle de 5 m est posée sur un sol horizontal, contre un mur vertical. Son pied est à 1,4 m du mur. À quelle hauteur, en m, touche-t-elle le mur ?',
+      figure: {
+        id: 'pythagore-q5-echelle',
+        alt: 'Une échelle de 5 m contre un mur vertical, son pied à 1,4 m du mur ; la hauteur atteinte est cherchée.',
+      },
       answers: ['4,8'],
       correction: {
         steps: [
@@ -138,6 +174,10 @@ const pythagore = defineExercise({
     exact({
       prompt:
         'Un triangle a pour côtés 9 cm, 12 cm et 15 cm. Est-il rectangle ? Réponds par oui ou par non.',
+      figure: {
+        id: 'pythagore-q6-triangle',
+        alt: 'Schéma à main levée d’un triangle de côtés 9 cm, 12 cm et 15 cm, sans codage.',
+      },
       answers: ['oui'],
       correction: {
         steps: [
@@ -161,6 +201,10 @@ const pythagore = defineExercise({
     exact({
       prompt:
         'Un triangle a pour côtés 7 cm, 9 cm et 11 cm. Est-il rectangle ? Réponds par oui ou par non.',
+      figure: {
+        id: 'pythagore-q7-triangle',
+        alt: 'Schéma à main levée d’un triangle de côtés 7 cm, 9 cm et 11 cm, sans codage.',
+      },
       answers: ['non'],
       correction: {
         steps: [
@@ -192,6 +236,14 @@ const thales = defineExercise({
       '- les **triangles emboîtés** : M est sur le segment [AB] et N sur le segment [AC] ;',
       '- le **papillon** : A est entre M et B, et aussi entre N et C.',
     ].join('\n'),
+    figure(
+      'thales-rappel-emboites',
+      'Triangles emboîtés : le petit triangle AMN dans le grand triangle ABC, M sur AB, N sur AC, (MN) parallèle à (BC).',
+    ),
+    figure(
+      'thales-rappel-papillon',
+      'Papillon : les triangles AMN et ABC de part et d’autre de A, (MN) parallèle à (BC).',
+    ),
     '**Théorème :** si les droites (MN) et (BC) sont parallèles, alors AM/AB = AN/AC = MN/BC.',
     'En haut de chaque rapport, un côté du triangle AMN ; en bas, le côté correspondant du triangle ABC. Les longueurs AM, AB, AN et AC partent toutes du point A : le premier rapport est AM/AB, jamais AM/MB.',
     [
@@ -204,6 +256,10 @@ const thales = defineExercise({
     {
       statement:
         'Dans le triangle ABC, M est un point du segment [AB] et N un point du segment [AC]. Les droites (MN) et (BC) sont parallèles. AM = 6 cm, MB = 2 cm et BC = 12 cm. Calcule MN.',
+      figure: {
+        id: 'thales-exemple-emboites',
+        alt: 'Triangles emboîtés ABC et AMN ; AM 6 cm, MB 2 cm, BC 12 cm, MN cherchée.',
+      },
       steps: [
         [
           'AM/AB = AN/AC = MN/BC',
@@ -228,6 +284,10 @@ const thales = defineExercise({
     {
       statement:
         'Les droites (EG) et (FH) se coupent en K. Les points E, K, G sont alignés dans cet ordre, ainsi que les points F, K, H. Les droites (EF) et (GH) sont parallèles. KE = 3 cm, KG = 7,5 cm et KF = 2 cm. Calcule KH.',
+      figure: {
+        id: 'thales-exemple-papillon',
+        alt: 'Papillon de centre K ; KE 3 cm, KG 7,5 cm, KF 2 cm, KH cherchée.',
+      },
       steps: [
         [
           'KE/KG = KF/KH = EF/GH',
@@ -245,11 +305,16 @@ const thales = defineExercise({
       conclusion: 'KH = 5 cm.',
     },
   ],
-  intro: 'Pour chaque question, fais d’abord un schéma à main levée, avec les longueurs connues.',
+  intro:
+    'Pour chaque question, repère sur la figure les deux triangles, puis les longueurs connues et la longueur cherchée.',
   questions: [
     exact({
       prompt:
         'Dans le triangle ABC, M est un point du segment [AB] et N un point du segment [AC]. Les droites (MN) et (BC) sont parallèles. AM = 2 cm, AB = 6 cm et AC = 9 cm. Calcule AN, en cm.',
+      figure: {
+        id: 'thales-q1-abc',
+        alt: 'Triangles emboîtés ABC et AMN ; AM 2 cm, AB 6 cm, AC 9 cm, AN cherchée.',
+      },
       answers: ['3'],
       correction: {
         steps: [
@@ -274,6 +339,10 @@ const thales = defineExercise({
     exact({
       prompt:
         'Dans le triangle RST, U est un point du segment [RS] et V un point du segment [RT]. Les droites (UV) et (ST) sont parallèles. RU = 4 cm, RS = 10 cm et UV = 3 cm. Calcule ST, en cm.',
+      figure: {
+        id: 'thales-q2-rst',
+        alt: 'Triangles emboîtés RST et RUV ; RU 4 cm, RS 10 cm, UV 3 cm, ST cherchée.',
+      },
       answers: ['7,5'],
       correction: {
         steps: [
@@ -299,6 +368,10 @@ const thales = defineExercise({
     exact({
       prompt:
         'Dans le triangle ABC, M est un point du segment [AB] et N un point du segment [AC]. Les droites (MN) et (BC) sont parallèles. AM = 5 cm, MB = 3 cm et MN = 4 cm. Calcule BC, en cm.',
+      figure: {
+        id: 'thales-q3-abc',
+        alt: 'Triangles emboîtés ABC et AMN ; AM 5 cm, MB 3 cm, MN 4 cm, BC cherchée.',
+      },
       answers: ['6,4'],
       correction: {
         steps: [
@@ -328,6 +401,10 @@ const thales = defineExercise({
     exact({
       prompt:
         'Les droites (MB) et (NC) se coupent en A. Les points M, A, B sont alignés dans cet ordre, ainsi que les points N, A, C. Les droites (MN) et (BC) sont parallèles. AM = 2,4 cm, AB = 6 cm et AN = 3,2 cm. Calcule AC, en cm.',
+      figure: {
+        id: 'thales-q4-papillon',
+        alt: 'Papillon de centre A ; AM 2,4 cm, AB 6 cm, AN 3,2 cm, AC cherchée.',
+      },
       answers: ['8'],
       correction: {
         steps: [
@@ -353,6 +430,10 @@ const thales = defineExercise({
     exact({
       prompt:
         'Les droites (EK) et (FL) se coupent en G. Les points E, G, K sont alignés dans cet ordre, ainsi que les points F, G, L. Les droites (EF) et (KL) sont parallèles. GE = 3 cm, GK = 5 cm et EF = 7 cm. Calcule KL, en cm, arrondi au dixième.',
+      figure: {
+        id: 'thales-q5-papillon',
+        alt: 'Papillon de centre G ; GE 3 cm, GK 5 cm, EF 7 cm, KL cherchée.',
+      },
       answers: ['11,7'],
       correction: {
         steps: [
@@ -378,6 +459,10 @@ const thales = defineExercise({
     exact({
       prompt:
         'Un arbre [BC] et un bâton [MN] sont plantés verticalement sur un sol horizontal : B et M sont leurs pieds, C et N leurs sommets. Le bâton mesure 1,5 m et il est planté à 10 m de l’arbre. Au soleil, leurs deux ombres se terminent au même point A du sol : les points A, M, B sont alignés dans cet ordre, ainsi que les points A, N, C. L’ombre du bâton mesure 2 m. Calcule la hauteur de l’arbre, en m.',
+      figure: {
+        id: 'thales-q6-arbre',
+        alt: 'L’arbre BC, le bâton MN de 1,5 m et le rayon de soleil qui passe par C et N jusqu’en A ; AM 2 m, MB 10 m, BC cherchée.',
+      },
       answers: ['9'],
       correction: {
         steps: [
@@ -422,6 +507,14 @@ const reciproqueDeThales = defineExercise({
       '- **Rapports différents** : les droites (MN) et (BC) ne sont pas parallèles. Si elles l’étaient, le théorème de Thalès donnerait l’égalité.',
     ].join('\n'),
     '« Dans le même ordre » : M et N sont tous les deux du même côté de A que B et C (triangles emboîtés), ou tous les deux de l’autre côté (papillon). Sinon, la réciproque ne s’applique pas : les droites (MN) et (BC) ne sont alors pas parallèles, même si les rapports sont égaux.',
+    figure(
+      'reciproque-thales-rappel-meme-ordre',
+      'Deux figures où les points sont dans le même ordre : M sur AB et N sur AC ; puis A entre M et B, et entre N et C.',
+    ),
+    figure(
+      'reciproque-thales-rappel-ordre-different',
+      'Une figure où l’ordre diffère : M est sur AB, mais N est de l’autre côté de A par rapport à C.',
+    ),
     [
       '1. Calcule AM/AB, puis AN/AC, séparément.',
       '2. Compare leurs valeurs exactes : nombres décimaux exacts ou fractions irréductibles, jamais des valeurs arrondies.',
@@ -433,6 +526,10 @@ const reciproqueDeThales = defineExercise({
     {
       statement:
         'Dans le triangle ABC, M est un point du segment [AB] et N un point du segment [AC]. AM = 3 cm, AB = 12 cm, AN = 2 cm et AC = 8 cm. Les droites (MN) et (BC) sont-elles parallèles ?',
+      figure: {
+        id: 'reciproque-thales-exemple-emboites',
+        alt: 'Schéma à main levée : M sur AB, N sur AC ; AM 3 cm, AB 12 cm, AN 2 cm, AC 8 cm.',
+      },
       steps: [
         [
           'AM/AB = 3/12 = 0,25',
@@ -453,6 +550,10 @@ const reciproqueDeThales = defineExercise({
     {
       statement:
         'Les droites (EG) et (FH) se coupent en K. Les points E, K, G sont alignés dans cet ordre, ainsi que les points F, K, H. KE = 4 cm, KG = 9 cm, KF = 3 cm et KH = 7 cm. Les droites (EF) et (GH) sont-elles parallèles ?',
+      figure: {
+        id: 'reciproque-thales-exemple-papillon',
+        alt: 'Schéma à main levée d’un papillon de centre K ; KE 4 cm, KG 9 cm, KF 3 cm, KH 7 cm.',
+      },
       steps: [
         [
           'KE/KG = 4/9',
@@ -475,11 +576,15 @@ const reciproqueDeThales = defineExercise({
     },
   ],
   intro:
-    'Pour chaque question, fais d’abord un schéma à main levée : il montre dans quel ordre les points sont alignés. Chaque choix donne une conclusion et sa justification : les deux doivent être justes.',
+    'Pour chaque question, regarde d’abord sur le schéma dans quel ordre les points sont alignés. Chaque choix donne une conclusion et sa justification : les deux doivent être justes.',
   questions: [
     qcm({
       prompt:
         'Dans le triangle ABC, M est un point du segment [AB] et N un point du segment [AC]. AM = 2 cm, AB = 5 cm, AN = 3 cm et AC = 7,5 cm. Les droites (MN) et (BC) sont-elles parallèles ?',
+      figure: {
+        id: 'reciproque-thales-q1-abc',
+        alt: 'Schéma à main levée : M sur AB, N sur AC ; AM 2 cm, AB 5 cm, AN 3 cm, AC 7,5 cm.',
+      },
       choices: [
         'Non : AM/MB ≈ 0,67 et AN/AC = 0,4',
         'Oui : AM/AB = AN/AC = 0,4',
@@ -519,6 +624,10 @@ const reciproqueDeThales = defineExercise({
     qcm({
       prompt:
         'Dans le triangle RST, U est un point du segment [RS] et V un point du segment [RT]. RU = 3 cm, RS = 5 cm, RV = 6 cm et RT = 8 cm. Les droites (UV) et (ST) sont-elles parallèles ?',
+      figure: {
+        id: 'reciproque-thales-q2-rst',
+        alt: 'Schéma à main levée : U sur RS, V sur RT ; RU 3 cm, RS 5 cm, RV 6 cm, RT 8 cm.',
+      },
       choices: [
         'Non : RU/RS = 0,6 et RV/RT ≈ 1,33',
         'On ne peut pas conclure : les rapports sont différents',
@@ -555,6 +664,10 @@ const reciproqueDeThales = defineExercise({
     qcm({
       prompt:
         'Les droites (MB) et (NC) se coupent en A. Les points M, A, B sont alignés dans cet ordre, ainsi que les points N, A, C. AM = 4 cm, AB = 6 cm, AN = 6 cm et AC = 9 cm. Les droites (MN) et (BC) sont-elles parallèles ?',
+      figure: {
+        id: 'reciproque-thales-q3-papillon',
+        alt: 'Schéma à main levée d’un papillon de centre A ; AM 4 cm, AB 6 cm, AN 6 cm, AC 9 cm.',
+      },
       choices: [
         'Oui : AM/AB = AN/AC = 2/3',
         'Non : AM/AB ≈ 0,67 et AN/AC ≈ 0,66',
@@ -594,6 +707,10 @@ const reciproqueDeThales = defineExercise({
     qcm({
       prompt:
         'Dans le triangle EFG, K est un point du segment [EF] et L un point du segment [EG]. EK = 4 cm, KF = 6 cm, EL = 6 cm et EG = 15 cm. Les droites (KL) et (FG) sont-elles parallèles ?',
+      figure: {
+        id: 'reciproque-thales-q4-efg',
+        alt: 'Schéma à main levée : K sur EF, L sur EG ; EK 4 cm, KF 6 cm, EL 6 cm, EG 15 cm.',
+      },
       choices: [
         'Non : EK/KF ≈ 0,67 et EL/EG = 0,4',
         'Oui : d’après le théorème de Thalès, EK/EF = EL/EG',
@@ -634,6 +751,10 @@ const reciproqueDeThales = defineExercise({
     qcm({
       prompt:
         'Un escabeau, vu de profil, forme un triangle ABC : A est son sommet, B et C sont ses pieds, posés sur un sol horizontal. Une tablette [MN] relie le point M du côté [AB] au point N du côté [AC]. AM = 60 cm, AB = 90 cm, AN = 67 cm et AC = 100 cm. La tablette est-elle parallèle au sol ?',
+      figure: {
+        id: 'reciproque-thales-q5-escabeau',
+        alt: 'Schéma à main levée de l’escabeau ABC posé au sol, la tablette MN entre ses deux montants, avec les quatre longueurs.',
+      },
       choices: [
         'Oui : AM/AB = AN/AC = 0,67',
         'Non : AM/AB = 2/3 et AN/AC = 67/100',
@@ -677,6 +798,10 @@ const reciproqueDeThales = defineExercise({
     qcm({
       prompt:
         'Deux droites se coupent en A. Sur la première, M est un point du segment [AB]. Sur la seconde, les points N, A, C sont alignés dans cet ordre : A est entre N et C. AM = 3 cm, AB = 4 cm, AN = 4,5 cm et AC = 6 cm. Les droites (MN) et (BC) sont-elles parallèles ?',
+      figure: {
+        id: 'reciproque-thales-q6-ordre',
+        alt: 'Schéma à main levée : M sur AB, A entre N et C ; AM 3 cm, AB 4 cm, AN 4,5 cm, AC 6 cm.',
+      },
       choices: [
         'Oui : AM/AB = AN/AC = 0,75',
         'Non : AM/AB = 0,75 et AN/AC ≈ 1,33',
