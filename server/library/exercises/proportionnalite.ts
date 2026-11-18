@@ -1,4 +1,4 @@
-import { defineExercise, exact, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, exact, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
  * Proportionnalité et pourcentages : les pourcentages et les évolutions, les
@@ -23,11 +23,23 @@ const pourcentages = defineExercise({
       '- **Valeur d’arrivée** = valeur de départ × coefficient. Pour retrouver la valeur de départ, divise donc la valeur d’arrivée par le coefficient.',
       '- **Pourcentage d’évolution** : (valeur d’arrivée − valeur de départ) ÷ valeur de départ, quotient que l’on écrit en pourcentage.',
     ].join('\n'),
+    figure(
+      'pourcentages-rappel-barres',
+      'Trois barres : le prix de départ (100 %), après une hausse de 20 % (120 %), après une baisse de 15 % (85 %).',
+    ),
+    figure(
+      'pourcentages-rappel-coefficient',
+      'De la valeur de départ à la valeur d’arrivée, on multiplie par le coefficient ; pour revenir, on divise par le coefficient.',
+    ),
     'Une évolution se calcule toujours par rapport à la valeur de départ.',
   ),
   example: [
     {
       statement: 'Un pull coûte 40 €. Son prix baisse de 15 %. Calcule le nouveau prix.',
+      figure: {
+        id: 'pourcentages-ex-pull',
+        alt: 'De 40 € au nouveau prix : une baisse de 15 %, soit une multiplication par 0,85.',
+      },
       steps: [
         [
           '1 − 15/100 = 0,85',
@@ -44,6 +56,10 @@ const pourcentages = defineExercise({
     {
       statement:
         'Après une augmentation de 5 %, un loyer est de 630 €. Quel était le loyer avant l’augmentation ?',
+      figure: {
+        id: 'pourcentages-ex-loyer',
+        alt: 'Du loyer de départ, inconnu, à 630 € : une hausse de 5 %, soit une multiplication par 1,05.',
+      },
       steps: [
         [
           '1 + 5/100 = 1,05',
@@ -66,6 +82,10 @@ const pourcentages = defineExercise({
     exact({
       prompt:
         'Un collège compte 450 élèves. 60 % d’entre eux sont demi-pensionnaires. Combien d’élèves sont demi-pensionnaires ?',
+      figure: {
+        id: 'pourcentages-q1-demi-pension',
+        alt: 'Une bande de 450 élèves partagée en 10 cases ; 6 cases, les 60 %, sont coloriées.',
+      },
       answers: ['270'],
       correction: {
         steps: [
@@ -86,6 +106,10 @@ const pourcentages = defineExercise({
     exact({
       prompt:
         'Dans une classe de 25 élèves, 8 font partie de la chorale. Quel pourcentage des élèves de la classe cela représente-t-il ? Donne ta réponse en %.',
+      figure: {
+        id: 'pourcentages-q2-chorale',
+        alt: 'Une bande de 25 cases, une par élève ; 8 cases, les choristes, sont coloriées.',
+      },
       answers: ['32'],
       correction: {
         steps: [
@@ -106,6 +130,10 @@ const pourcentages = defineExercise({
     exact({
       prompt:
         'Un abonnement de sport coûte 350 € par an. Son prix augmente de 6 %. Calcule le nouveau prix, en euros.',
+      figure: {
+        id: 'pourcentages-q3-abonnement',
+        alt: 'De 350 € au nouveau prix, inconnu : une hausse de 6 %.',
+      },
       answers: ['371'],
       correction: {
         steps: [
@@ -126,6 +154,10 @@ const pourcentages = defineExercise({
     exact({
       prompt:
         'En un an, le nombre d’adhérents d’un club d’échecs passe de 160 à 200. Calcule le pourcentage d’augmentation. Donne ta réponse en %.',
+      figure: {
+        id: 'pourcentages-q4-club',
+        alt: 'De 160 à 200 adhérents : le pourcentage d’augmentation est cherché.',
+      },
       answers: ['25'],
       correction: {
         steps: [
@@ -147,6 +179,10 @@ const pourcentages = defineExercise({
     exact({
       prompt:
         'Pendant les soldes, un blouson est vendu 68 € après une réduction de 20 %. Quel était son prix avant les soldes, en euros ?',
+      figure: {
+        id: 'pourcentages-q5-blouson',
+        alt: 'Du prix de départ, inconnu, à 68 € : une baisse de 20 %.',
+      },
       answers: ['85'],
       correction: {
         steps: [
@@ -171,6 +207,10 @@ const pourcentages = defineExercise({
     exact({
       prompt:
         'Un téléphone coûte 300 €. Son prix augmente de 20 %, puis le nouveau prix baisse de 20 %. Calcule le prix final, en euros.',
+      figure: {
+        id: 'pourcentages-q6-telephone',
+        alt: 'De 300 € à un prix intermédiaire par une hausse de 20 %, puis au prix final par une baisse de 20 %.',
+      },
       answers: ['288'],
       correction: {
         steps: [
@@ -206,13 +246,29 @@ const vitesse = defineExercise({
       '- d = v × t, pour calculer une distance ;',
       '- t = d ÷ v, pour calculer une durée.',
     ].join('\n'),
+    figure(
+      'vitesse-rappel-triangle',
+      'Le triangle des vitesses : d en haut, v et t en bas, et les trois formules.',
+    ),
     'Les unités doivent s’accorder : avec d en km et t en h, v est en km/h.',
     '**Durées.** Une heure compte 60 minutes, pas 100. Pour écrire des minutes en heures, divise par 60 : 30 min = 0,5 h ; 15 min = 0,25 h ; 45 min = 0,75 h. Ainsi 1 h 30 min = 1,5 h, et non 1,3 h. Dans l’autre sens, multiplie par 60 : 0,2 h = 12 min.',
+    figure(
+      'vitesse-rappel-heure',
+      'Une horloge dont un quart est colorié : 15 min, c’est un quart d’heure ; puis 30, 45 et 60 min écrites en heures.',
+    ),
     '**Conversions.** 1 m/s = 3,6 km/h. Pour passer des km/h aux m/s, divise par 3,6. Pour passer des m/s aux km/h, multiplie par 3,6.',
+    figure(
+      'vitesse-rappel-conversion',
+      'Des m/s aux km/h, on multiplie par 3,6 ; des km/h aux m/s, on divise par 3,6.',
+    ),
   ),
   example: [
     {
       statement: 'Un car parcourt 105 km en 1 h 30 min. Calcule sa vitesse moyenne, en km/h.',
+      figure: {
+        id: 'vitesse-ex-car',
+        alt: 'Un véhicule sur une route de 105 km, parcourue en 1 h 30 min ; la vitesse est cherchée.',
+      },
       steps: [
         [
           '30 ÷ 60 = 0,5',
@@ -273,6 +329,10 @@ const vitesse = defineExercise({
     }),
     exact({
       prompt: 'Une voiture parcourt 150 km en 2 h 30 min. Calcule sa vitesse moyenne, en km/h.',
+      figure: {
+        id: 'vitesse-q2-voiture',
+        alt: 'Une voiture sur une route de 150 km, parcourue en 2 h 30 min ; la vitesse est cherchée.',
+      },
       answers: ['60'],
       correction: {
         steps: [
@@ -294,6 +354,10 @@ const vitesse = defineExercise({
     exact({
       prompt:
         'Un coureur court pendant 45 min à la vitesse moyenne de 12 km/h. Quelle distance parcourt-il, en km ?',
+      figure: {
+        id: 'vitesse-q3-coureur',
+        alt: 'Un coureur : 45 min à 12 km/h ; la distance est cherchée.',
+      },
       answers: ['9'],
       correction: {
         steps: [
@@ -316,6 +380,10 @@ const vitesse = defineExercise({
     exact({
       prompt:
         'Une cycliste roule à la vitesse moyenne de 25 km/h. Combien de temps met-elle pour parcourir 10 km ? Donne ta réponse en minutes.',
+      figure: {
+        id: 'vitesse-q4-cycliste',
+        alt: 'Une cycliste à 25 km/h sur une route de 10 km ; la durée, en minutes, est cherchée.',
+      },
       answers: ['24'],
       correction: {
         steps: [
@@ -358,6 +426,10 @@ const vitesse = defineExercise({
     exact({
       prompt:
         'Pour partir en vacances, une famille roule 2 h sur l’autoroute à 110 km/h, puis 1 h sur une route de campagne à 50 km/h. Calcule sa vitesse moyenne sur l’ensemble du trajet, en km/h.',
+      figure: {
+        id: 'vitesse-q6-vacances',
+        alt: 'Le trajet en deux parties : 2 h d’autoroute à 110 km/h, puis 1 h de campagne à 50 km/h ; la vitesse moyenne est cherchée.',
+      },
       answers: ['90'],
       correction: {
         steps: [
@@ -393,18 +465,34 @@ const ratios = defineExercise({
   lesson: paragraphs(
     'Deux grandeurs sont **proportionnelles** quand on passe de l’une à l’autre en multipliant toujours par le même nombre, le **coefficient de proportionnalité**.',
     '**Produit en croix.** Dans un tableau de proportionnalité, la valeur manquante s’obtient en multipliant les deux nombres de la diagonale complète, puis en divisant par le troisième nombre. Exemple : 4 m de tissu coûtent 10 €. Pour le prix de 6 m, on calcule 10 × 6 ÷ 4 = 15 : ils coûtent 15 €.',
+    figure(
+      'ratios-rappel-tableau',
+      'Le tableau du tissu : 4 m pour 10 €, 6 m pour 15 € ; on passe d’une ligne à l’autre par × 2,5, d’une colonne à l’autre par × 1,5.',
+    ),
     '**Ratio.** Deux quantités sont dans le ratio 2:3 (on lit « 2 pour 3 ») quand la première compte 2 parts chaque fois que la seconde en compte 3, toutes les parts étant égales. Avec trois quantités, on écrit de même 2:3:5. Pour partager une quantité dans un ratio donné :',
     [
       '1. compte le nombre total de parts ;',
       '2. calcule la valeur d’une part ;',
       '3. multiplie-la par le nombre de parts de chacun.',
     ].join('\n'),
+    figure(
+      'ratios-rappel-bande',
+      'Une bande de 5 parts égales : 2 parts d’une couleur, 3 parts d’une autre, pour le ratio 2:3.',
+    ),
     '**Échelle.** Sur une carte, les longueurs sont proportionnelles aux longueurs réelles. À l’échelle 1/50 000, 1 cm sur la carte représente 50 000 cm en réalité, soit 500 m.',
+    figure(
+      'ratios-rappel-echelle',
+      'Une carte et sa barre d’échelle : à l’échelle 1/50 000, 1 cm sur la carte représente 50 000 cm, soit 500 m.',
+    ),
   ),
   example: [
     {
       statement:
         'Adam et Inès se partagent 56 billes dans le ratio 3:4. Combien de billes reçoit chacun ?',
+      figure: {
+        id: 'ratios-ex-billes',
+        alt: 'Une bande de 56 billes partagée en 7 parts égales : 3 pour Adam, 4 pour Inès.',
+      },
       steps: [
         [
           '3 + 4 = 7',
@@ -442,6 +530,10 @@ const ratios = defineExercise({
     qcm({
       prompt:
         'Dans un tableau de proportionnalité, la première ligne donne la masse de pommes : 3 kg, puis 5 kg. La seconde ligne donne le prix : 7,50 € sous les 3 kg, et une case vide sous les 5 kg. Quel prix faut-il écrire dans la case vide ?',
+      figure: {
+        id: 'ratios-q1-tableau',
+        alt: 'Le tableau : 3 kg pour 7,50 €, 5 kg pour un prix cherché.',
+      },
       choices: ['9,50 €', '12,50 €', '4,50 €', '37,50 €'],
       answer: '12,50 €',
       correction: {
@@ -472,6 +564,10 @@ const ratios = defineExercise({
     qcm({
       prompt:
         'Dans un club de judo, le nombre de filles et le nombre de garçons sont dans le ratio 2:3. Quelle composition du club respecte ce ratio ?',
+      figure: {
+        id: 'ratios-q2-judo',
+        alt: 'Une bande de 5 parts égales : 2 parts de filles, 3 parts de garçons.',
+      },
       choices: [
         '10 filles et 15 garçons',
         '15 filles et 10 garçons',
@@ -509,6 +605,10 @@ const ratios = defineExercise({
     qcm({
       prompt:
         'Léo et Jade se partagent 60 € dans le ratio 2:3. Léo reçoit donc 2 parts quand Jade en reçoit 3. Combien reçoit Jade ?',
+      figure: {
+        id: 'ratios-q3-partage',
+        alt: 'Une bande de 60 € en 5 parts égales : 2 pour Léo, 3 pour Jade, dont la somme est cherchée.',
+      },
       choices: ['12 €', '20 €', '40 €', '36 €'],
       answer: '36 €',
       correction: {
@@ -538,6 +638,10 @@ const ratios = defineExercise({
     qcm({
       prompt:
         'Ali, Bianca et Chloé se partagent 90 € dans le ratio 2:3:5. Combien reçoit Chloé, qui a 5 parts ?',
+      figure: {
+        id: 'ratios-q4-partage',
+        alt: 'Une bande de 90 € en 10 parts égales : 2 pour Ali, 3 pour Bianca, 5 pour Chloé, dont la somme est cherchée.',
+      },
       choices: ['45 €', '18 €', '30 €', '9 €'],
       answer: '45 €',
       correction: {
@@ -570,6 +674,10 @@ const ratios = defineExercise({
     qcm({
       prompt:
         'Sur une carte de randonnée à l’échelle 1/25 000, deux refuges sont distants de 6 cm. Quelle est la distance réelle entre ces deux refuges ?',
+      figure: {
+        id: 'ratios-q5-carte',
+        alt: 'Une carte à l’échelle 1/25 000 : deux refuges à 6 cm l’un de l’autre ; la distance réelle est cherchée.',
+      },
       choices: ['150 m', '15 km', '1,5 km', '150 km'],
       answer: '1,5 km',
       correction: {
@@ -605,6 +713,10 @@ const ratios = defineExercise({
     qcm({
       prompt:
         'Une recette de pâte à crêpes prévue pour 4 personnes demande 250 g de farine. Quelle masse de farine faut-il pour 10 personnes ?',
+      figure: {
+        id: 'ratios-q6-recette',
+        alt: 'Le tableau de la recette : 250 g de farine pour 4 personnes, une masse cherchée pour 10 personnes.',
+      },
       choices: ['500 g', '625 g', '2 500 g', '100 g'],
       answer: '625 g',
       correction: {

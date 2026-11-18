@@ -1,8 +1,9 @@
-import { defineExercise, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
- * Espace et grandeurs. Aucune figure : chaque solide et chaque plan de coupe
- * sont décrits par l'énoncé, assez précisément pour être dessinés à main levée.
+ * Espace et grandeurs. Chaque solide et chaque plan de coupe sont décrits par
+ * l'énoncé, assez précisément pour être dessinés à main levée ; les figures,
+ * dans server/library/figures/espace.ts, accompagnent le texte sans le remplacer.
  */
 
 const volumes = defineExercise({
@@ -20,6 +21,14 @@ const volumes = defineExercise({
       '- **Boule de rayon r :** V = 4/3 × π × r³.',
       '- **Sphère de rayon r** (la surface de la boule) : aire = 4 × π × r².',
     ].join('\n'),
+    figure(
+      'volumes-rappel-tiers',
+      'Une pyramide dans un pavé droit et un cône dans un cylindre, de même base et de même hauteur h : chacun en occupe le tiers.',
+    ),
+    figure(
+      'volumes-rappel-cylindre-boule',
+      'Un cylindre de rayon r et de hauteur h, une boule de rayon r, et leurs formules de volume.',
+    ),
     'Le **rayon** est la moitié du diamètre. La **valeur exacte** garde la lettre π, comme 36π ; la calculatrice ne sert qu’à la fin, pour donner une valeur arrondie. Utilise alors la touche π de la calculatrice, et non 3,14 : avec 3,14, le dernier chiffre de l’arrondi peut changer.',
     'Avec des longueurs en cm, une aire est en cm² et un volume en cm³. Pour les contenances : 1 L = 1 dm³ = 1 000 cm³.',
   ),
@@ -27,6 +36,10 @@ const volumes = defineExercise({
     {
       statement:
         'Un cône a pour base un disque de rayon 2 cm ; sa hauteur est 6 cm. Calcule son volume : valeur exacte, puis valeur arrondie au dixième de cm³.',
+      figure: {
+        id: 'volumes-ex-cone',
+        alt: 'Le cône de sommet S : rayon de base 2 cm, hauteur 6 cm ; le volume est cherché.',
+      },
       steps: [
         [
           'V = 1/3 × aire de la base × hauteur',
@@ -50,6 +63,10 @@ const volumes = defineExercise({
     {
       statement:
         'Calcule le volume d’une boule de rayon 6 cm : valeur exacte, puis valeur arrondie au cm³.',
+      figure: {
+        id: 'volumes-ex-boule',
+        alt: 'Une boule de centre O et de rayon 6 cm ; le volume est cherché.',
+      },
       steps: [
         [
           'V = 4/3 × π × r³',
@@ -72,6 +89,10 @@ const volumes = defineExercise({
     qcm({
       prompt:
         'Une pyramide a pour base un carré de côté 6 cm ; sa hauteur est 5 cm. Calcule son volume.',
+      figure: {
+        id: 'volumes-q1-pyramide',
+        alt: 'La pyramide de sommet S : base carrée de côté 6 cm, hauteur 5 cm ; le volume est cherché.',
+      },
       choices: ['180 cm³', '60 cm³', '90 cm³', '20 cm³'],
       answer: '60 cm³',
       correction: {
@@ -107,6 +128,10 @@ const volumes = defineExercise({
     qcm({
       prompt:
         'Un cône a pour base un disque de rayon 5 cm ; sa hauteur est 9 cm. Quelle est la valeur exacte de son volume ?',
+      figure: {
+        id: 'volumes-q2-cone',
+        alt: 'Le cône de sommet S : rayon de base 5 cm, hauteur 9 cm ; le volume est cherché.',
+      },
       choices: ['225π cm³', '15π cm³', '30π cm³', '75π cm³'],
       answer: '75π cm³',
       correction: {
@@ -143,6 +168,10 @@ const volumes = defineExercise({
     }),
     qcm({
       prompt: 'Calcule le volume d’une boule de rayon 9 cm, arrondi au cm³.',
+      figure: {
+        id: 'volumes-q3-boule',
+        alt: 'Une boule de centre O et de rayon 9 cm ; le volume est cherché.',
+      },
       choices: ['339 cm³', '1 018 cm³', '3 054 cm³', '2 290 cm³'],
       answer: '3 054 cm³',
       correction: {
@@ -178,6 +207,10 @@ const volumes = defineExercise({
     }),
     qcm({
       prompt: 'Une sphère a pour diamètre 10 cm. Calcule son aire, arrondie au dixième de cm².',
+      figure: {
+        id: 'volumes-q4-sphere',
+        alt: 'Une sphère de centre O et de diamètre 10 cm ; son aire est cherchée.',
+      },
       choices: ['314,2 cm²', '1 256,6 cm²', '78,5 cm²', '523,6 cm²'],
       answer: '314,2 cm²',
       correction: {
@@ -212,6 +245,10 @@ const volumes = defineExercise({
     qcm({
       prompt:
         'Un récupérateur d’eau de pluie a la forme d’un cylindre de diamètre 80 cm et de hauteur 1 m. Quelle est sa contenance, arrondie au litre ?',
+      figure: {
+        id: 'volumes-q5-recuperateur',
+        alt: 'Un récupérateur cylindrique sous une gouttière : diamètre 80 cm, hauteur 1 m ; la contenance est cherchée.',
+      },
       choices: ['168 L', '2 011 L', '503 L', '5 027 L'],
       answer: '503 L',
       correction: {
@@ -247,6 +284,10 @@ const volumes = defineExercise({
     qcm({
       prompt:
         'Un cornet de glace est formé d’un cône de rayon 3 cm et de hauteur 12 cm, surmonté d’une demi-boule de glace de rayon 3 cm. Calcule le volume total, arrondi au cm³.',
+      figure: {
+        id: 'volumes-q6-cornet',
+        alt: 'Le cornet : un cône pointe en bas, de hauteur 12 cm, surmonté d’une demi-boule de rayon 3 cm.',
+      },
       choices: ['396 cm³', '170 cm³', '226 cm³', '132 cm³'],
       answer: '170 cm³',
       correction: {
@@ -299,7 +340,7 @@ const sections = defineExercise({
   theme: 'espace',
   difficulty: 'medium',
   description:
-    'Huit questions sans figure : section d’un pavé droit, d’un cylindre, d’une pyramide, d’un cône et d’une sphère par un plan, puis repérage dans un pavé droit et sur la sphère terrestre.',
+    'Huit questions illustrées : section d’un pavé droit, d’un cylindre, d’une pyramide, d’un cône et d’une sphère par un plan, puis repérage dans un pavé droit et sur la sphère terrestre.',
   lesson: paragraphs(
     'Quand on coupe un solide par un plan, la figure obtenue s’appelle la **section**.',
     [
@@ -308,13 +349,29 @@ const sections = defineExercise({
       '- **Pyramide ou cône**, plan parallèle à la base : une réduction de la base. Son rapport est k = distance du sommet au plan ÷ hauteur ; toutes les longueurs de la base sont multipliées par k.',
       '- **Sphère** de centre O et de rayon R : un cercle, de centre H. La distance du centre O au plan est OH. Si M est un point du cercle, le triangle OHM est rectangle en H, donc HM² = R² − OH².',
     ].join('\n'),
+    figure(
+      'sections-rappel-solides',
+      'Un pavé droit, un cylindre et un cône coupés par un plan parallèle à la base : un rectangle, un disque, un disque réduit.',
+    ),
+    figure(
+      'sections-rappel-sphere',
+      'Une sphère de centre O coupée par un plan : le cercle de section de centre H, un point M du cercle, le triangle OHM rectangle en H.',
+    ),
     '**Se repérer.** Dans un pavé droit, un point a trois coordonnées : (abscisse ; ordonnée ; altitude).',
     'Sur la sphère terrestre, un point a deux coordonnées. Sa **latitude** est un angle compté à partir de l’équateur, de 0° à 90° vers le nord ou vers le sud : les points de même latitude forment un parallèle. Sa **longitude** est un angle compté à partir du méridien de Greenwich, de 0° à 180° vers l’est ou vers l’ouest : les points de même longitude forment un méridien.',
+    figure(
+      'sections-rappel-globe',
+      'Le globe, l’équateur et le méridien de Greenwich ; un point M, son parallèle, son méridien, sa latitude et sa longitude.',
+    ),
   ),
   example: [
     {
       statement:
         'Un cône de sommet S a pour base un disque de rayon 15 cm ; sa hauteur est 20 cm. On le coupe par un plan parallèle à la base, situé à 8 cm du sommet S. Quelle est la section ?',
+      figure: {
+        id: 'sections-ex-cone',
+        alt: 'Le cône de sommet S, de rayon 15 cm et de hauteur 20 cm, coupé par un plan parallèle à la base, à 8 cm de S.',
+      },
       steps: [
         [
           'Section : un disque',
@@ -334,6 +391,10 @@ const sections = defineExercise({
     {
       statement:
         'Une sphère de centre O a pour rayon 5 cm. On la coupe par un plan situé à 3 cm de O. Quel est le rayon du cercle de section ?',
+      figure: {
+        id: 'sections-ex-sphere',
+        alt: 'La sphère de centre O coupée par un plan : OM 5 cm, OH 3 cm, rayon HM cherché.',
+      },
       steps: [
         [
           'OM² = OH² + HM²',
@@ -356,6 +417,10 @@ const sections = defineExercise({
     qcm({
       prompt:
         'Un pavé droit ABCDEFGH a pour base le rectangle ABCD, avec AB = 8 cm et AD = 5 cm. Ses arêtes [AE], [BF], [CG] et [DH] mesurent 3 cm. On le coupe par un plan parallèle à la face ABCD. Quelle est la section ?',
+      figure: {
+        id: 'sections-q1-pave',
+        alt: 'Le pavé droit ABCDEFGH (AB 8 cm, AD 5 cm, AE 3 cm) et le plan de coupe, parallèle à la face ABCD.',
+      },
       choices: [
         'Un rectangle de 8 cm sur 3 cm',
         'Un rectangle de 8 cm sur 5 cm',
@@ -395,6 +460,10 @@ const sections = defineExercise({
     qcm({
       prompt:
         'Un cylindre a pour rayon 4 cm et pour hauteur 10 cm. On le coupe par un plan parallèle à sa base, situé à 3 cm de celle-ci. Quelle est la section ?',
+      figure: {
+        id: 'sections-q2-cylindre',
+        alt: 'Le cylindre de rayon 4 cm et de hauteur 10 cm, et le plan de coupe parallèle à la base, à 3 cm de celle-ci.',
+      },
       choices: [
         'Un disque de rayon 4 cm',
         'Un disque de rayon 3 cm',
@@ -432,6 +501,10 @@ const sections = defineExercise({
     qcm({
       prompt:
         'Un cylindre a pour rayon 3 cm et pour hauteur 7 cm. On le coupe par un plan qui contient son axe, la droite passant par les centres des deux bases. Quelle est la section ?',
+      figure: {
+        id: 'sections-q3-cylindre-axe',
+        alt: 'Le cylindre de rayon 3 cm et de hauteur 7 cm, son axe en pointillés et le plan de coupe vertical qui le contient.',
+      },
       choices: [
         'Un rectangle de 3 cm sur 7 cm',
         'Un disque de rayon 3 cm',
@@ -473,6 +546,10 @@ const sections = defineExercise({
     qcm({
       prompt:
         'Dans un pavé droit ABCDEFGH, la face ABCD est posée sur le sol et les arêtes [AE], [BF], [CG] et [DH] sont verticales. On donne AB = 6 cm, AD = 4 cm et AE = 3 cm. Le repère a pour origine A : l’abscisse se lit sur [AB], l’ordonnée sur [AD] et l’altitude sur [AE], avec le centimètre pour unité. Quelles sont les coordonnées (abscisse ; ordonnée ; altitude) du sommet F ?',
+      figure: {
+        id: 'sections-q4-pave-repere',
+        alt: 'Le pavé ABCDEFGH, ses arêtes et le repère d’origine A ; le sommet F est marqué.',
+      },
       choices: ['(6 ; 4 ; 3)', '(6 ; 3 ; 0)', '(0 ; 4 ; 3)', '(6 ; 0 ; 3)'],
       answer: '(6 ; 0 ; 3)',
       correction: {
@@ -502,6 +579,10 @@ const sections = defineExercise({
     qcm({
       prompt:
         'Un voilier navigue sur l’océan Atlantique. Il se trouve sur le parallèle situé à 45° au nord de l’équateur, et sur le méridien situé à 30° à l’ouest du méridien de Greenwich. Quelles sont ses coordonnées géographiques ?',
+      figure: {
+        id: 'sections-q5-voilier',
+        alt: 'Le globe : équateur, méridien de Greenwich, et le voilier, à 45° au nord de l’équateur et à 30° à l’ouest de Greenwich.',
+      },
       choices: [
         'Latitude 30° nord, longitude 45° ouest',
         'Latitude 45° ouest, longitude 30° nord',
@@ -543,6 +624,10 @@ const sections = defineExercise({
     qcm({
       prompt:
         'Une pyramide de sommet S a pour base un carré de côté 12 cm ; sa hauteur est 24 cm. On la coupe par un plan parallèle à la base, situé à 6 cm du sommet S. Quelle est la section ?',
+      figure: {
+        id: 'sections-q6-pyramide',
+        alt: 'La pyramide de sommet S, de base carrée de côté 12 cm et de hauteur 24 cm, et le plan de coupe à 6 cm de S.',
+      },
       choices: [
         'Un carré de côté 3 cm',
         'Un carré de côté 9 cm',
@@ -586,6 +671,10 @@ const sections = defineExercise({
     qcm({
       prompt:
         'Une sphère de centre O a pour rayon 13 cm. On la coupe par un plan situé à 5 cm du centre O. Quel est le rayon du cercle de section ?',
+      figure: {
+        id: 'sections-q7-sphere',
+        alt: 'La sphère de centre O coupée par un plan : OM 13 cm, OH 5 cm, rayon HM cherché.',
+      },
       choices: ['8 cm', '13 cm', '13,9 cm', '12 cm'],
       answer: '12 cm',
       correction: {
@@ -623,6 +712,10 @@ const sections = defineExercise({
     qcm({
       prompt:
         'Un gobelet a la forme d’un cône posé pointe en bas. Sa hauteur est 12 cm et son ouverture est un disque de rayon 6 cm. On y verse de l’eau jusqu’à 9 cm de hauteur, mesurés à partir de la pointe. Quel est le rayon du disque formé par la surface de l’eau ?',
+      figure: {
+        id: 'sections-q8-gobelet',
+        alt: 'Le gobelet conique pointe en bas : hauteur 12 cm, rayon 6 cm, eau sur 9 cm ; le rayon de la surface de l’eau est cherché.',
+      },
       choices: ['1,5 cm', '4,5 cm', '6 cm', '8 cm'],
       answer: '4,5 cm',
       correction: {
