@@ -16,43 +16,43 @@ const pythagore = defineExercise({
     'Le théorème de Pythagore ne s’utilise que dans un **triangle rectangle**. L’**hypoténuse** est le côté en face de l’angle droit : c’est le plus long des trois côtés.',
     [
       '- **Théorème :** si le triangle ABC est rectangle en A, alors BC² = AB² + AC². Le carré de l’hypoténuse est égal à la somme des carrés des deux autres côtés.',
-      '- **Réciproque :** si, dans un triangle, le carré du plus long côté est égal à la somme des carrés des deux autres, alors ce triangle est rectangle.',
+      '- **Réciproque :** si, dans un triangle, le carré du plus long côté est égal à la somme des carrés des deux autres, alors ce triangle est rectangle. Si cette égalité est fausse, le triangle n’est pas rectangle.',
     ].join('\n'),
     'Pour calculer l’hypoténuse, on additionne les carrés. Pour calculer un côté de l’angle droit, on soustrait.',
   ),
   example: [
     {
-      statement: 'Le triangle EFG est rectangle en E. EF = 6 cm et EG = 8 cm. Calcule FG.',
+      statement: 'Le triangle EFG est rectangle en E. EF = 8 cm et EG = 15 cm. Calcule FG.',
       steps: [
         [
           'FG² = EF² + EG²',
           'On fait un schéma à main levée. L’angle droit est en E, donc l’hypoténuse est [FG], le côté en face. On écrit l’égalité de Pythagore.',
         ],
         [
-          'FG² = 6² + 8² = 36 + 64 = 100',
+          'FG² = 8² + 15² = 64 + 225 = 289',
           'On remplace par les longueurs connues, puis on calcule les carrés et leur somme.',
         ],
         [
-          'FG = √100 = 10',
-          'FG est une longueur, donc un nombre positif : c’est la racine carrée de 100.',
+          'FG = √289 = 17',
+          'FG est une longueur, donc un nombre positif : c’est la racine carrée de 289.',
         ],
       ],
-      conclusion: 'FG = 10 cm.',
+      conclusion: 'FG = 17 cm.',
     },
     {
-      statement: 'Le triangle RST est rectangle en R. ST = 13 cm et RS = 5 cm. Calcule RT.',
+      statement: 'Le triangle RST est rectangle en R. ST = 20 cm et RS = 12 cm. Calcule RT.',
       steps: [
         [
           'ST² = RS² + RT²',
           'L’hypoténuse est [ST]. On écrit la même égalité : cette fois, la longueur cherchée est un côté de l’angle droit.',
         ],
         [
-          'RT² = 13² − 5² = 169 − 25 = 144',
-          'Pour isoler RT², on retranche 5² au carré de l’hypoténuse.',
+          'RT² = 20² − 12² = 400 − 144 = 256',
+          'Pour isoler RT², on retranche 12² au carré de l’hypoténuse.',
         ],
-        ['RT = √144 = 12', 'On prend la racine carrée.'],
+        ['RT = √256 = 16', 'On prend la racine carrée.'],
       ],
-      conclusion: 'RT = 12 cm. Ce côté est bien plus court que l’hypoténuse, qui mesure 13 cm.',
+      conclusion: 'RT = 16 cm. Ce côté est bien plus court que l’hypoténuse, qui mesure 20 cm.',
     },
   ],
   questions: [
@@ -115,12 +115,12 @@ const pythagore = defineExercise({
           ],
         ],
         mistake:
-          'arrondir trop tôt, ou donner 7,21 : « au dixième » veut dire un seul chiffre après la virgule.',
+          'donner 7,21 : « au dixième » veut dire un seul chiffre après la virgule. Le chiffre des centièmes est 1 : on garde 7,2.',
       },
     }),
     exact({
       prompt:
-        'Une échelle de 5 m est posée contre un mur vertical. Son pied est à 1,4 m du mur. À quelle hauteur, en m, touche-t-elle le mur ?',
+        'Une échelle de 5 m est posée sur un sol horizontal, contre un mur vertical. Son pied est à 1,4 m du mur. À quelle hauteur, en m, touche-t-elle le mur ?',
       answers: ['4,8'],
       correction: {
         steps: [
@@ -352,7 +352,7 @@ const thales = defineExercise({
     }),
     exact({
       prompt:
-        'Les droites (EK) et (FL) se coupent en G. Les points E, G, K sont alignés dans cet ordre, ainsi que les points F, G, L. Les droites (EF) et (KL) sont parallèles. GE = 3 cm, GK = 7 cm et EF = 5 cm. Calcule KL, en cm, arrondi au dixième.',
+        'Les droites (EK) et (FL) se coupent en G. Les points E, G, K sont alignés dans cet ordre, ainsi que les points F, G, L. Les droites (EF) et (KL) sont parallèles. GE = 3 cm, GK = 5 cm et EF = 7 cm. Calcule KL, en cm, arrondi au dixième.',
       answers: ['11,7'],
       correction: {
         steps: [
@@ -361,18 +361,18 @@ const thales = defineExercise({
             'Les deux droites se coupent en G : ce point joue le rôle de A. C’est un papillon : en haut, les côtés du triangle GEF ; en bas, ceux du triangle GKL. Les côtés parallèles, [EF] et [KL], forment le troisième rapport.',
           ],
           [
-            '3/7 = 5/KL',
+            '3/5 = 7/KL',
             'On cherche KL : on garde le rapport EF/KL, avec le rapport GE/GK dont on connaît les deux longueurs.',
           ],
           [
-            'KL = 5 × 7 ÷ 3 ≈ 11,7',
-            'Produit en croix : 3 × KL = 5 × 7. La division 35 ÷ 3 ne tombe pas juste : la calculatrice affiche 11,666… Arrondie au dixième, la longueur KL est 11,7 cm.',
+            'KL = 7 × 5 ÷ 3 ≈ 11,7',
+            'Produit en croix : 3 × KL = 7 × 5. La division 35 ÷ 3 ne tombe pas juste : la calculatrice affiche 11,666… Arrondie au dixième, la longueur KL est 11,7 cm.',
           ],
         ],
         mistake:
           'tronquer au lieu d’arrondir, et répondre 11,6. Le chiffre des centièmes est 6 : on arrondit au dixième supérieur.',
         check:
-          'GK est un peu plus du double de GE. KL doit donc être un peu plus du double de EF : 11,7 cm dépasse bien 10 cm.',
+          'GK est un peu moins du double de GE. KL doit donc être un peu moins du double de EF : 11,7 cm est bien inférieur à 14 cm.',
       },
     }),
     exact({
@@ -421,7 +421,7 @@ const reciproqueDeThales = defineExercise({
       '- **Rapports égaux**, et points A, M, B alignés dans le même ordre que A, N, C : d’après la réciproque du théorème de Thalès, les droites (MN) et (BC) sont parallèles.',
       '- **Rapports différents** : les droites (MN) et (BC) ne sont pas parallèles. Si elles l’étaient, le théorème de Thalès donnerait l’égalité.',
     ].join('\n'),
-    '« Dans le même ordre » : M et N sont tous les deux du même côté de A que B et C (triangles emboîtés), ou tous les deux de l’autre côté (papillon). Sinon, la réciproque ne s’applique pas.',
+    '« Dans le même ordre » : M et N sont tous les deux du même côté de A que B et C (triangles emboîtés), ou tous les deux de l’autre côté (papillon). Sinon, la réciproque ne s’applique pas : les droites (MN) et (BC) ne sont alors pas parallèles, même si les rapports sont égaux.',
     [
       '1. Calcule AM/AB, puis AN/AC, séparément.',
       '2. Compare leurs valeurs exactes : nombres décimaux exacts ou fractions irréductibles, jamais des valeurs arrondies.',
@@ -475,15 +475,15 @@ const reciproqueDeThales = defineExercise({
     },
   ],
   intro:
-    'Pour chaque question, fais d’abord un schéma à main levée : il montre dans quel ordre les points sont alignés.',
+    'Pour chaque question, fais d’abord un schéma à main levée : il montre dans quel ordre les points sont alignés. Chaque choix donne une conclusion et sa justification : les deux doivent être justes.',
   questions: [
     qcm({
       prompt:
         'Dans le triangle ABC, M est un point du segment [AB] et N un point du segment [AC]. AM = 2 cm, AB = 5 cm, AN = 3 cm et AC = 7,5 cm. Les droites (MN) et (BC) sont-elles parallèles ?',
       choices: [
-        'Non : AM/AB = 0,4 et AN/AC = 2,5',
-        'Oui : AM/AB = AN/AC = 0,4',
         'Non : AM/MB ≈ 0,67 et AN/AC = 0,4',
+        'Oui : AM/AB = AN/AC = 0,4',
+        'Oui : AM/AB = AN/AC = 2,5',
         'Non : MB = 3 cm et NC = 4,5 cm',
       ],
       answer: 'Oui : AM/AB = AN/AC = 0,4',
@@ -501,8 +501,8 @@ const reciproqueDeThales = defineExercise({
         ],
         traps: [
           [
-            'Non : AM/AB = 0,4 et AN/AC = 2,5',
-            'le second rapport est inversé : 2,5 est la valeur de AC/AN. Les deux rapports se construisent de la même façon, avec AM et AN en haut.',
+            'Oui : AM/AB = AN/AC = 2,5',
+            'les deux divisions sont faites à l’envers : 2,5 est la valeur de AB/AM et de AC/AN. AM est plus court que AB, donc AM/AB est inférieur à 1 : il vaut 0,4. La conclusion est juste, mais l’égalité écrite est fausse.',
           ],
           [
             'Non : AM/MB ≈ 0,67 et AN/AC = 0,4',
@@ -520,7 +520,7 @@ const reciproqueDeThales = defineExercise({
       prompt:
         'Dans le triangle RST, U est un point du segment [RS] et V un point du segment [RT]. RU = 3 cm, RS = 5 cm, RV = 6 cm et RT = 8 cm. Les droites (UV) et (ST) sont-elles parallèles ?',
       choices: [
-        'Oui : U est sur [RS] et V est sur [RT]',
+        'Non : RU/RS = 0,6 et RV/RT ≈ 1,33',
         'On ne peut pas conclure : les rapports sont différents',
         'Oui : RS − RU = RT − RV = 2',
         'Non : RU/RS = 0,6 et RV/RT = 0,75',
@@ -537,8 +537,8 @@ const reciproqueDeThales = defineExercise({
         ],
         traps: [
           [
-            'Oui : U est sur [RS] et V est sur [RT]',
-            'cette position des points ne suffit pas. Il faut encore que les deux rapports soient égaux.',
+            'Non : RU/RS = 0,6 et RV/RT ≈ 1,33',
+            'le second rapport est inversé : 1,33 est une valeur approchée de RT/RV. La conclusion est juste, mais pas pour cette raison : RV/RT = 6 ÷ 8 = 0,75.',
           ],
           [
             'On ne peut pas conclure : les rapports sont différents',
@@ -559,7 +559,7 @@ const reciproqueDeThales = defineExercise({
         'Oui : AM/AB = AN/AC = 2/3',
         'Non : AM/AB ≈ 0,67 et AN/AC ≈ 0,66',
         'Non : AM/AB = 2/3 et AN/AC = 3/2',
-        'On ne peut pas conclure : M n’est pas sur le segment [AB]',
+        'Oui : c’est un papillon, donc (MN) et (BC) sont parallèles',
       ],
       answer: 'Oui : AM/AB = AN/AC = 2/3',
       correction: {
@@ -584,8 +584,8 @@ const reciproqueDeThales = defineExercise({
             'le second rapport est inversé : 3/2 est la valeur de AC/AN. Dans les deux rapports, la longueur qui part de A vers M ou vers N est en haut.',
           ],
           [
-            'On ne peut pas conclure : M n’est pas sur le segment [AB]',
-            'on peut conclure. La réciproque s’applique aussi au papillon, où M et N sont tous les deux de l’autre côté de A.',
+            'Oui : c’est un papillon, donc (MN) et (BC) sont parallèles',
+            'un papillon ne suffit pas : selon les longueurs, les droites (MN) et (BC) peuvent être parallèles ou se couper. Il faut calculer les deux rapports et les comparer. La conclusion est juste, mais pas la justification.',
           ],
         ],
         check: 'les produits en croix sont égaux : 4 × 9 = 36 et 6 × 6 = 36.',
@@ -596,7 +596,7 @@ const reciproqueDeThales = defineExercise({
         'Dans le triangle EFG, K est un point du segment [EF] et L un point du segment [EG]. EK = 4 cm, KF = 6 cm, EL = 6 cm et EG = 15 cm. Les droites (KL) et (FG) sont-elles parallèles ?',
       choices: [
         'Non : EK/KF ≈ 0,67 et EL/EG = 0,4',
-        'On ne peut pas conclure : la longueur EF n’est pas donnée',
+        'Oui : d’après le théorème de Thalès, EK/EF = EL/EG',
         'Oui : EK/EF = EL/EG = 0,4',
         'Non : EK/EG ≈ 0,27 et EL/EF = 0,6',
       ],
@@ -620,8 +620,8 @@ const reciproqueDeThales = defineExercise({
             'le premier rapport utilise KF au lieu de EF. Les deux longueurs d’un rapport partent du point E.',
           ],
           [
-            'On ne peut pas conclure : la longueur EF n’est pas donnée',
-            'on peut la calculer. K est sur le segment [EF] : la longueur EF est la somme de EK et de KF.',
+            'Oui : d’après le théorème de Thalès, EK/EF = EL/EG',
+            'le théorème de Thalès suppose que les droites sont parallèles : il ne peut pas servir à le prouver. On calcule les deux rapports, puis on conclut avec la réciproque. La conclusion est juste, mais pas la justification.',
           ],
           [
             'Non : EK/EG ≈ 0,27 et EL/EF = 0,6',
@@ -637,7 +637,7 @@ const reciproqueDeThales = defineExercise({
       choices: [
         'Oui : AM/AB = AN/AC = 0,67',
         'Non : AM/AB = 2/3 et AN/AC = 67/100',
-        'Oui : d’après le théorème de Thalès, AM/AB = AN/AC',
+        'Non : AM/AB = 1,5 et AN/AC = 0,67',
         'On ne peut pas conclure : les rapports sont trop proches',
       ],
       answer: 'Non : AM/AB = 2/3 et AN/AC = 67/100',
@@ -663,8 +663,8 @@ const reciproqueDeThales = defineExercise({
             '0,67 n’est qu’une valeur arrondie de 2/3, qui vaut 0,666… On ne compare jamais des valeurs arrondies.',
           ],
           [
-            'Oui : d’après le théorème de Thalès, AM/AB = AN/AC',
-            'le théorème suppose que les droites sont parallèles : on ne peut pas s’en servir pour le prouver. Il faut calculer les deux rapports.',
+            'Non : AM/AB = 1,5 et AN/AC = 0,67',
+            'le premier rapport est inversé : 1,5 est la valeur de AB/AM. La conclusion est juste, mais pas pour cette raison : les deux rapports, 2/3 et 67/100, sont très proches, mais différents.',
           ],
           [
             'On ne peut pas conclure : les rapports sont trop proches',
@@ -693,7 +693,7 @@ const reciproqueDeThales = defineExercise({
           ],
           [
             'Non : rapports égaux, mais points alignés dans un ordre différent',
-            'M est entre A et B, mais N n’est pas entre A et C : il est de l’autre côté de A. L’ordre n’est pas le même sur les deux droites, donc la réciproque ne s’applique pas. En fait, la parallèle à (BC) passant par M coupe la droite (AC) en un point N′ du segment [AC], avec AN′ = 4,5 cm d’après le théorème de Thalès. Elle ne passe pas par N : les droites (MN) et (BC) ne sont pas parallèles.',
+            'M est entre A et B, mais N n’est pas entre A et C : il est de l’autre côté de A. L’ordre n’est pas le même sur les deux droites, donc la réciproque ne s’applique pas. En fait, la parallèle à (BC) passant par M coupe la droite (AC) en un point N′ du segment [AC], avec AN′ = 4,5 cm d’après le théorème de Thalès. N′ et N sont à la même distance de A, mais de part et d’autre de A : cette parallèle ne passe pas par N. Les droites (MN) et (BC) ne sont donc pas parallèles.',
           ],
         ],
         traps: [
@@ -753,7 +753,7 @@ const trigonometrieLongueur = defineExercise({
     [
       '1. Repère l’angle connu, puis nomme les deux côtés en jeu : celui que tu connais et celui que tu cherches.',
       '2. Choisis la formule qui contient ces deux côtés.',
-      '3. Isole la longueur cherchée. Au numérateur : multiplie la longueur connue par le cosinus, le sinus ou la tangente. Au dénominateur : divise la longueur connue par ce nombre.',
+      '3. Isole la longueur cherchée. Si elle est au numérateur, multiplie la longueur connue par le cosinus, le sinus ou la tangente. Si elle est au dénominateur, divise la longueur connue par ce nombre.',
       '4. Calcule, la calculatrice réglée en **mode degré**.',
     ].join('\n'),
     'L’angle ABC est l’angle de sommet B, la lettre du milieu. On note cos(ABC) son cosinus.',
@@ -950,8 +950,9 @@ const trigonometrieAngle = defineExercise({
     'Calculer un angle d’un triangle rectangle à partir de deux côtés : choisir le cosinus, le sinus ou la tangente, puis utiliser arccos, arcsin ou arctan. Résultats arrondis au degré, et un problème de toit pour finir. Réponses à saisir.',
   lesson: paragraphs(
     ...TRIANGLE_SIDES,
-    'Trois formules relient l’angle à ces côtés (CAH SOH TOA) :',
+    'Trois formules relient l’angle à ces côtés :',
     TRIGONOMETRY,
+    MNEMONIC,
     'Quand on connaît deux côtés, on peut donc calculer le cosinus, le sinus ou la tangente d’un angle. Pour retrouver l’angle lui-même, on utilise les touches **arccos**, **arcsin** et **arctan** de la calculatrice, souvent notées cos⁻¹, sin⁻¹ et tan⁻¹.',
     [
       '1. Repère l’angle cherché, puis nomme les deux côtés connus.',
@@ -1112,7 +1113,7 @@ const trigonometrieAngle = defineExercise({
           ],
         ],
         mistake:
-          'calculer d’abord la diagonale AC avec le théorème de Pythagore, puis utiliser le cosinus avec sa valeur arrondie, 9,8 cm. C’est plus long, et l’arrondi fausse le résultat : on trouverait 23°. Les deux côtés connus suffisent.',
+          'passer par la diagonale : AC = √97 ≈ 9,8, puis arccos(9/9,8) ≈ 23°. C’est plus long, et l’arrondi de AC fausse le résultat. La tangente n’utilise que les deux côtés donnés par l’énoncé : rien n’est arrondi avant la fin.',
         check:
           'le côté opposé est plus court que le côté adjacent : l’angle doit être inférieur à 45°. C’est bien le cas de 24°.',
       },
@@ -1166,7 +1167,7 @@ const agrandissementsEtTransformations = defineExercise({
       '- **symétrie centrale** de centre O : O est le milieu de [MM′] ;',
       '- **translation** : tous les points glissent dans la même direction, dans le même sens et de la même longueur ;',
       '- **rotation** : tous les points tournent autour d’un centre, du même angle et dans le même sens ;',
-      '- **homothétie** de centre O et de rapport k : M′ est sur la demi-droite [OM) et OM′ = k × OM.',
+      '- **homothétie** de centre O et de rapport k positif : M′ est sur la demi-droite [OM) et OM′ = k × OM.',
     ].join('\n'),
     'Les quatre premières conservent les longueurs, les angles et les aires. L’homothétie est un agrandissement (k > 1) ou une réduction (0 < k < 1) : elle conserve les angles, mais multiplie les longueurs par k et les aires par k².',
   ),

@@ -20,13 +20,13 @@ const volumes = defineExercise({
       '- **Boule de rayon r :** V = 4/3 × π × r³.',
       '- **Sphère de rayon r** (la surface de la boule) : aire = 4 × π × r².',
     ].join('\n'),
-    'Le **rayon** est la moitié du diamètre. La **valeur exacte** garde la lettre π, comme 36π ; la calculatrice ne sert qu’à la fin, pour donner une valeur arrondie.',
+    'Le **rayon** est la moitié du diamètre. La **valeur exacte** garde la lettre π, comme 36π ; la calculatrice ne sert qu’à la fin, pour donner une valeur arrondie. Utilise alors la touche π de la calculatrice, et non 3,14 : avec 3,14, le dernier chiffre de l’arrondi peut changer.',
     'Avec des longueurs en cm, une aire est en cm² et un volume en cm³. Pour les contenances : 1 L = 1 dm³ = 1 000 cm³.',
   ),
   example: [
     {
       statement:
-        'Un cône a pour base un disque de rayon 2 cm ; sa hauteur est 9 cm. Calcule son volume : valeur exacte, puis valeur arrondie au dixième de cm³.',
+        'Un cône a pour base un disque de rayon 2 cm ; sa hauteur est 6 cm. Calcule son volume : valeur exacte, puis valeur arrondie au dixième de cm³.',
       steps: [
         [
           'V = 1/3 × aire de la base × hauteur',
@@ -37,15 +37,15 @@ const volumes = defineExercise({
           'La base est un disque de rayon 2 cm. On garde la lettre π : c’est elle qui rend le résultat exact.',
         ],
         [
-          'V = 1/3 × 4π × 9 = 12π',
-          'On multiplie l’aire de la base par la hauteur, puis on prend le tiers : 4 × 9 = 36 et 36 ÷ 3 = 12.',
+          'V = 1/3 × 4π × 6 = 8π',
+          'On multiplie l’aire de la base par la hauteur, puis on prend le tiers : 4 × 6 = 24 et 24 ÷ 3 = 8.',
         ],
         [
-          '12π ≈ 37,7',
-          'La calculatrice ne sert qu’à cette dernière étape : 12 × π ≈ 37,699. On arrondit au dixième.',
+          '8π ≈ 25,1',
+          'La calculatrice ne sert qu’à cette dernière étape, avec la touche π : 8 × π ≈ 25,133. On arrondit au dixième.',
         ],
       ],
-      conclusion: 'Le volume du cône est 12π cm³, soit environ 37,7 cm³.',
+      conclusion: 'Le volume du cône est 8π cm³, soit environ 25,1 cm³.',
     },
     {
       statement:
@@ -133,7 +133,10 @@ const volumes = defineExercise({
             '15π cm³',
             'le rayon n’a pas été élevé au carré. L’aire d’un disque est π × r², pas π × r.',
           ],
-          ['30π cm³', '5² a été calculé comme 5 × 2 = 10. Or 5² = 5 × 5 = 25.'],
+          [
+            '30π cm³',
+            'l’aire de la base a été prise égale à 10π, puis 1/3 × 10π × 9 = 30π. Deux erreurs y mènent : 5² calculé comme 5 × 2 = 10, ou le périmètre du disque, 2 × π × 5 = 10π, pris pour son aire. Or l’aire du disque est π × 5² = 25π.',
+          ],
         ],
         check: 'avec la calculatrice, 75π ≈ 235,6 : le cône contient environ 236 cm³.',
       },
@@ -235,7 +238,7 @@ const volumes = defineExercise({
           ],
           [
             '5 027 L',
-            'le volume en cm³, environ 502 655, a été divisé par 100. Or 1 L = 1 000 cm³ : on divise par 1 000.',
+            'la hauteur est restée en mètres, alors que le rayon est en centimètres : π × 40² × 1 ≈ 5 027. On convertit d’abord les deux longueurs dans la même unité. En décimètres, le volume est directement en litres, car 1 dm³ = 1 L.',
           ],
         ],
         check: 'en centimètres, π × 40² × 100 ≈ 502 655, et 502 655 ÷ 1 000 ≈ 503.',
@@ -539,18 +542,18 @@ const sections = defineExercise({
     }),
     qcm({
       prompt:
-        'Une pyramide de sommet S a pour base un carré de côté 12 cm ; sa hauteur est 16 cm. On la coupe par un plan parallèle à la base, situé à 4 cm du sommet S. Quelle est la section ?',
+        'Une pyramide de sommet S a pour base un carré de côté 12 cm ; sa hauteur est 24 cm. On la coupe par un plan parallèle à la base, situé à 6 cm du sommet S. Quelle est la section ?',
       choices: [
         'Un carré de côté 3 cm',
         'Un carré de côté 9 cm',
-        'Un carré de côté 8 cm',
+        'Un carré de côté 6 cm',
         'Un carré de côté 12 cm',
       ],
       answer: 'Un carré de côté 3 cm',
       correction: {
         steps: [
           [
-            'k = 4 ÷ 16 = 0,25',
+            'k = 6 ÷ 24 = 0,25',
             'La section d’une pyramide par un plan parallèle à la base est une réduction de la base. Son rapport est la distance du sommet au plan, divisée par la hauteur de la pyramide.',
           ],
           [
@@ -565,11 +568,11 @@ const sections = defineExercise({
         traps: [
           [
             'Un carré de côté 9 cm',
-            'le rapport a été calculé avec la distance du plan à la base : 16 − 4 = 12, puis 12 ÷ 16 = 0,75 et 12 × 0,75 = 9. La distance se mesure à partir du sommet.',
+            'le rapport a été calculé avec la distance du plan à la base : 24 − 6 = 18, puis 18 ÷ 24 = 0,75 et 12 × 0,75 = 9. La distance se mesure à partir du sommet.',
           ],
           [
-            'Un carré de côté 8 cm',
-            'la distance a été retranchée au côté : 12 − 4 = 8. Une réduction multiplie les longueurs, elle ne leur retranche rien.',
+            'Un carré de côté 6 cm',
+            'la distance a été retranchée au côté : 12 − 6 = 6. Une réduction multiplie les longueurs, elle ne leur retranche rien.',
           ],
           [
             'Un carré de côté 12 cm',
@@ -577,7 +580,7 @@ const sections = defineExercise({
           ],
         ],
         check:
-          'le plan est au quart de la hauteur à partir du sommet, et 3 cm est bien le quart de 12 cm.',
+          'le plan est au quart de la hauteur à partir du sommet, car 24 ÷ 4 = 6. Le côté de la section est donc le quart de 12 cm : 12 ÷ 4 = 3.',
       },
     }),
     qcm({
@@ -619,9 +622,9 @@ const sections = defineExercise({
     }),
     qcm({
       prompt:
-        'Un gobelet a la forme d’un cône posé pointe en bas. Sa hauteur est 12 cm et son ouverture est un disque de rayon 6 cm. On y verse de l’eau jusqu’à 8 cm de hauteur, mesurés à partir de la pointe. Quel est le rayon du disque formé par la surface de l’eau ?',
-      choices: ['2 cm', '4 cm', '6 cm', '9 cm'],
-      answer: '4 cm',
+        'Un gobelet a la forme d’un cône posé pointe en bas. Sa hauteur est 12 cm et son ouverture est un disque de rayon 6 cm. On y verse de l’eau jusqu’à 9 cm de hauteur, mesurés à partir de la pointe. Quel est le rayon du disque formé par la surface de l’eau ?',
+      choices: ['1,5 cm', '4,5 cm', '6 cm', '8 cm'],
+      answer: '4,5 cm',
       correction: {
         steps: [
           [
@@ -629,30 +632,30 @@ const sections = defineExercise({
             'On fait un schéma. La surface de l’eau est horizontale, comme l’ouverture du gobelet : c’est la section du cône par un plan parallèle à sa base. Le sommet du cône est la pointe du gobelet, sa base est l’ouverture.',
           ],
           [
-            'k = 8 ÷ 12 = 2/3',
+            'k = 9 ÷ 12 = 0,75',
             'L’eau remplit un petit cône, réduction du gobelet. Le rapport est la distance du sommet au plan, divisée par la hauteur du cône.',
           ],
           [
-            '6 × 2/3 = 4',
-            'On multiplie le rayon de l’ouverture par k : le rayon de la surface de l’eau est 4 cm.',
+            '6 × 0,75 = 4,5',
+            'On multiplie le rayon de l’ouverture par k : le rayon de la surface de l’eau est 4,5 cm.',
           ],
         ],
         traps: [
           [
-            '2 cm',
-            'le rapport a été calculé avec la distance de l’eau au bord du gobelet : 12 − 8 = 4, puis 4 ÷ 12 = 1/3 et 6 × 1/3 = 2. La distance se mesure à partir du sommet, ici la pointe.',
+            '1,5 cm',
+            'le rapport a été calculé avec la distance de l’eau au bord du gobelet : 12 − 9 = 3, puis 3 ÷ 12 = 0,25 et 6 × 0,25 = 1,5. La distance se mesure à partir du sommet, ici la pointe.',
           ],
           [
             '6 cm',
             'c’est le rayon de l’ouverture. La surface de l’eau n’aurait ce rayon que dans un verre cylindrique.',
           ],
           [
-            '9 cm',
-            'le rapport a été inversé : 12 ÷ 8 = 1,5, puis 6 × 1,5 = 9. Ce serait un agrandissement : la surface de l’eau ne peut pas être plus large que l’ouverture.',
+            '8 cm',
+            'le rapport a été inversé : 12 ÷ 9 au lieu de 9 ÷ 12, puis 6 × 12 ÷ 9 = 8. Ce serait un agrandissement : la surface de l’eau ne peut pas être plus large que l’ouverture.',
           ],
         ],
         check:
-          'l’eau monte aux deux tiers de la hauteur : le rayon de sa surface est les deux tiers de 6 cm, soit 4 cm.',
+          'l’eau monte aux trois quarts de la hauteur : le rayon de sa surface est les trois quarts de 6 cm, soit 4,5 cm.',
       },
     }),
   ],

@@ -50,20 +50,20 @@ const programmesDeCalcul = defineExercise({
     },
     {
       statement:
-        'Voici un autre programme : « Choisis un nombre. Multiplie-le par 4. Retranche 7. » Il donne 21. Quel était le nombre de départ ?',
+        'Voici un autre programme : « Choisis un nombre. Multiplie-le par 4. Retranche 5. » Il donne 23. Quel était le nombre de départ ?',
       steps: [
         [
-          '4x − 7 = 21',
-          'On note x le nombre de départ. Le programme donne 4x − 7, et on sait que ce résultat vaut 21 : on obtient une équation.',
+          '4x − 5 = 23',
+          'On note x le nombre de départ. Le programme donne 4x − 5, et on sait que ce résultat vaut 23 : on obtient une équation.',
         ],
-        ['4x = 28', 'On ajoute 7 aux deux membres : 21 + 7 = 28.'],
+        ['4x = 28', 'On ajoute 5 aux deux membres : 23 + 5 = 28.'],
         ['x = 28 ÷ 4 = 7', 'On divise les deux membres par 4.'],
         [
-          '21 + 7 = 28, puis 28 ÷ 4 = 7',
-          'Autre méthode : on remonte le programme. On part du résultat et on défait chaque instruction par l’opération inverse, de la dernière à la première. Ajouter 7 défait « retranche 7 », diviser par 4 défait « multiplie par 4 ».',
+          '23 + 5 = 28, puis 28 ÷ 4 = 7',
+          'Autre méthode : on remonte le programme. On part du résultat et on défait chaque instruction par l’opération inverse, de la dernière à la première. Ajouter 5 défait « retranche 5 », diviser par 4 défait « multiplie par 4 ».',
         ],
       ],
-      conclusion: 'Le nombre de départ était 7. On vérifie : 7 × 4 = 28 et 28 − 7 = 21.',
+      conclusion: 'Le nombre de départ était 7. On vérifie : 7 × 4 = 28 et 28 − 5 = 23.',
     },
   ],
   questions: [
@@ -207,38 +207,38 @@ const programmesDeCalcul = defineExercise({
     }),
     qcm({
       prompt:
-        'Programme A : « Choisis un nombre. Multiplie-le par 5. Retranche 6. » Programme B : « Choisis un nombre. Multiplie-le par 2. Ajoute 9. » Pour quel nombre de départ les deux programmes donnent-ils le même résultat ?',
-      choices: ['5', '1', '15', '12'],
+        'Programme A : « Choisis un nombre. Multiplie-le par 4. Retranche 6. » Programme B : « Choisis un nombre. Multiplie-le par 2. Ajoute 4. » Pour quel nombre de départ les deux programmes donnent-ils le même résultat ?',
+      choices: ['5', '−1', '10', '8'],
       answer: '5',
       correction: {
         steps: [
           [
-            '5x − 6 = 2x + 9',
-            'On note x le nombre de départ. Le programme A donne 5x − 6 et le programme B donne 2x + 9. On cherche x pour que ces deux résultats soient égaux : c’est une équation.',
+            '4x − 6 = 2x + 4',
+            'On note x le nombre de départ. Le programme A donne 4x − 6 et le programme B donne 2x + 4. On cherche x pour que ces deux résultats soient égaux : c’est une équation.',
           ],
           [
-            '3x − 6 = 9',
+            '2x − 6 = 4',
             'On retranche 2x aux deux membres, pour regrouper les termes en x à gauche.',
           ],
-          ['3x = 15', 'On ajoute 6 aux deux membres : 9 + 6 = 15.'],
+          ['2x = 10', 'On ajoute 6 aux deux membres : 4 + 6 = 10.'],
           [
-            'x = 15 ÷ 3 = 5',
-            'On divise les deux membres par 3. Les deux programmes donnent le même résultat quand le nombre de départ est 5.',
+            'x = 10 ÷ 2 = 5',
+            'On divise les deux membres par 2. Les deux programmes donnent le même résultat quand le nombre de départ est 5.',
           ],
         ],
         traps: [
           [
-            '1',
-            'le terme −6 a changé de membre sans changer de signe : on a écrit 3x = 9 − 6, d’où x = 1. Il faut ajouter 6 aux deux membres.',
+            '−1',
+            'le terme −6 a changé de membre sans changer de signe : on a écrit 2x = 4 − 6, d’où x = −1. Il faut ajouter 6 aux deux membres.',
           ],
-          ['15', 'le calcul s’est arrêté à 3x = 15. Il reste à diviser par 3 pour obtenir x.'],
+          ['10', 'le calcul s’est arrêté à 2x = 10. Il reste à diviser par 2 pour obtenir x.'],
           [
-            '12',
-            'à la dernière étape, on a calculé 15 − 3 = 12. Or 3x signifie 3 × x : pour trouver x, on divise 15 par 3.',
+            '8',
+            'à la dernière étape, on a calculé 10 − 2 = 8. Or 2x signifie 2 × x : pour trouver x, on divise 10 par 2.',
           ],
         ],
         check:
-          'avec 5, le programme A donne 5 × 5 − 6 = 19 et le programme B donne 2 × 5 + 9 = 19.',
+          'avec 5, le programme A donne 4 × 5 − 6 = 14 et le programme B donne 2 × 5 + 4 = 14.',
       },
     }),
     qcm({
@@ -565,7 +565,7 @@ const scripts = defineExercise({
           ],
           [
             '7',
-            'un passage de trop a été compté. Dès que total vaut 110, la condition est vraie : la boucle s’arrête, sans septième passage.',
+            'deux erreurs y mènent. Un passage de trop a été compté : dès que total vaut 110, la condition est vraie et la boucle s’arrête, sans septième passage. Ou bien les 20 € de départ ont été oubliés : en partant de 0, il faudrait 7 semaines, car 6 × 15 = 90 ne dépasse pas 100, alors que 7 × 15 = 105 le dépasse.',
           ],
           [
             '110',

@@ -20,7 +20,7 @@ const developper = defineExercise({
       '- Signe moins devant une parenthèse : on la supprime en changeant le signe de chacun de ses termes. Par exemple, −(a − b) = −a + b.',
     ].join('\n'),
     'Dans une somme, on ajoute les termes de même nature : 3x + 5x = 8x. Dans un produit, on multiplie les nombres entre eux et les lettres entre elles : 3x × 5x = 15x². En revanche, 3x + 5 ne se réduit pas : 3x et 5 ne sont pas de même nature.',
-    'Un contrôle rapide : remplace x par un nombre simple dans l’expression de départ et dans ton résultat. Si tu ne trouves pas deux fois la même valeur, il y a une erreur.',
+    'Un contrôle rapide : remplace x par un nombre simple, comme 2, dans l’expression de départ et dans ton résultat. Si tu ne trouves pas deux fois la même valeur, il y a une erreur. Évite 0 et 1, qui cachent certaines erreurs.',
   ),
   example: [
     {
@@ -40,7 +40,7 @@ const developper = defineExercise({
           'On réduit : les termes en x ensemble, 8x − x = 7x, puis les nombres ensemble, 12 + 5 = 17.',
         ],
       ],
-      conclusion: 'P = 7x + 17. On contrôle avec x = 1 : 4 × 5 − (−4) = 24 et 7 + 17 = 24.',
+      conclusion: 'P = 7x + 17. On contrôle avec x = 2 : 4 × 7 − (−3) = 31 et 14 + 17 = 31.',
     },
     {
       statement: 'Développe et réduis Q = (x + 4)(2x − 3).',
@@ -55,7 +55,7 @@ const developper = defineExercise({
         ],
         ['Q = 2x² + 5x − 12', 'On réduit les termes en x : −3x + 8x = 5x.'],
       ],
-      conclusion: 'Q = 2x² + 5x − 12. On contrôle avec x = 1 : 5 × (−1) = −5 et 2 + 5 − 12 = −5.',
+      conclusion: 'Q = 2x² + 5x − 12. On contrôle avec x = 2 : 6 × 1 = 6 et 8 + 10 − 12 = 6.',
     },
   ],
   questions: [
@@ -188,7 +188,7 @@ const developper = defineExercise({
             'le signe moins devant la parenthèse a été oublié : c’est le calcul de 6x + (2x − 5) + 3.',
           ],
         ],
-        check: 'pour x = 1 : 6 − (2 − 5) + 3 = 12 et 4 + 8 = 12.',
+        check: 'pour x = 2 : 12 − (4 − 5) + 3 = 16 et 8 + 8 = 16.',
       },
     }),
     qcm({
@@ -218,7 +218,7 @@ const developper = defineExercise({
           ],
           ['2x² − 5x + 12', 'erreur de signe sur le dernier produit : 3 × (−4) = −12, et non 12.'],
         ],
-        check: 'pour x = 1 : 5 × (−3) = −15 et 2 − 5 − 12 = −15.',
+        check: 'pour x = 2 : 7 × (−2) = −14 et 8 − 10 − 12 = −14.',
       },
     }),
     qcm({
@@ -252,7 +252,7 @@ const developper = defineExercise({
             'dans le premier produit, les termes 3x et 2x ont été oubliés : (x + 2)(x + 3) ne se réduit pas à x² + 6.',
           ],
         ],
-        check: 'pour x = 1 : 3 × 4 − 4 × 0 = 12 et 1 + 1 + 10 = 12.',
+        check: 'pour x = 2 : 4 × 5 − 4 × 1 = 16 et 4 + 2 + 10 = 16.',
       },
     }),
   ],
@@ -274,6 +274,7 @@ const factoriser = defineExercise({
       '4. Vérifie en redéveloppant : tu dois retrouver l’expression de départ.',
     ].join('\n'),
     'Quand un terme est égal au facteur commun, il reste 1 à sa place : 7x + 7 = 7 × x + 7 × 1 = 7(x + 1).',
+    'Factoriser le plus possible, c’est choisir le plus grand facteur commun : dans la parenthèse, il ne reste alors plus aucun facteur commun. Par exemple, 6x² + 4x = 2x(3x + 2), et non 2(3x² + 2x).',
   ),
   example: [
     {

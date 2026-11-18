@@ -289,6 +289,7 @@ const puissances = defineExercise({
   difficulty: 'medium',
   description:
     'Calculer avec les puissances d’un nombre, lire une puissance de 10 d’exposant négatif, passer à l’écriture scientifique, multiplier deux nombres ainsi écrits et estimer un ordre de grandeur.',
+  intro: 'Travaille sans calculatrice : elle sert seulement à vérifier tes résultats.',
   lesson: paragraphs(
     'La **puissance** 2⁵ est le produit de 5 facteurs égaux à 2 : 2⁵ = 2 × 2 × 2 × 2 × 2 = 32. Le nombre 5 est l’**exposant**.',
     [
@@ -302,7 +303,7 @@ const puissances = defineExercise({
       '- puissance de puissance : (2³)² = 2³ × 2³ = 2⁶, car 2 × 3 = 6.',
     ].join('\n'),
     'L’**écriture scientifique** d’un nombre positif est le produit d’un nombre décimal a, tel que 1 ≤ a < 10, par une puissance de 10. Le nombre a s’écrit donc avec un seul chiffre avant la virgule, différent de 0. Par exemple, 5 300 = 5,3 × 10³ et 0,0026 = 2,6 × 10⁻³.',
-    'Un **ordre de grandeur** d’un nombre est une valeur simple, proche de ce nombre. Ici, on prend la puissance de 10 la plus proche : pour 2,1 × 10⁵, c’est 10⁵ ; pour 8,7 × 10⁵, c’est 10⁶.',
+    'Un **ordre de grandeur** d’un nombre est une valeur simple, proche de ce nombre. Dans cet exercice, comme en physique-chimie, on prend la puissance de 10 la plus proche : pour 2,1 × 10⁵, c’est 10⁵ ; pour 8,7 × 10⁵, c’est 10⁶, car 8,7 est plus proche de 10 que de 1.',
   ),
   example: [
     {
@@ -443,7 +444,7 @@ const puissances = defineExercise({
     }),
     qcm({
       prompt:
-        'Le diamètre du Soleil est d’environ 1 390 000 km. Celui d’un globule rouge est d’environ 0,000007 m. Quelles sont les écritures scientifiques de 1 390 000 et de 0,000007 ?',
+        'Le diamètre du Soleil est d’environ 1 390 000 km. Celui d’un globule rouge est d’environ 0,000007 m. Quelles sont, dans cet ordre, les écritures scientifiques de 1 390 000 et de 0,000007 ?',
       choices: [
         '1,39 × 10⁶ et 7 × 10⁻⁶',
         '13,9 × 10⁵ et 7 × 10⁻⁶',
@@ -554,7 +555,7 @@ const puissances = defineExercise({
           ],
         ],
         check:
-          'cette distance s’appelle une année-lumière. Sa valeur précise est d’environ 9 461 milliards de kilomètres, soit près de 10 000 milliards : c’est bien 10¹³ km.',
+          'cette distance s’appelle une année-lumière. Une valeur plus précise est 9 461 milliards de kilomètres, soit près de 10 000 milliards : c’est bien 10¹³ km.',
       },
     }),
   ],
@@ -573,9 +574,9 @@ const racines = defineExercise({
     [
       '- √49 = 7, car 7 est positif et 7² = 49. Attention : (−7)² = 49 aussi, mais −7 est négatif, ce n’est donc pas √49.',
       '- Pour tout nombre positif a : (√a)² = a.',
-      '- Un nombre négatif n’a pas de racine carrée, car un carré n’est jamais négatif.',
+      '- Un nombre strictement négatif, comme −9, n’a pas de racine carrée : le carré d’un nombre est toujours positif.',
     ].join('\n'),
-    'Les **carrés parfaits** sont les carrés des nombres entiers. À connaître, de 1² à 15² : 1 ; 4 ; 9 ; 16 ; 25 ; 36 ; 49 ; 64 ; 81 ; 100 ; 121 ; 144 ; 169 ; 196 ; 225.',
+    'Les **carrés parfaits** sont les carrés des nombres entiers. De 1² à 15² : 1 ; 4 ; 9 ; 16 ; 25 ; 36 ; 49 ; 64 ; 81 ; 100 ; 121 ; 144 ; 169 ; 196 ; 225. Ceux de 1 à 144 sont à connaître par cœur.',
     'Quand un entier n’est pas un carré parfait, sa racine carrée n’est pas un entier. On l’encadre alors entre deux entiers consécutifs, ou on en donne une valeur approchée avec la calculatrice : √2 ≈ 1,41.',
     'Attention : en général, la racine carrée d’une somme n’est pas la somme des racines carrées. On calcule d’abord la somme, puis sa racine carrée.',
   ),
@@ -648,7 +649,7 @@ const racines = defineExercise({
         steps: [
           [
             '14² = 14 × 14 = 196',
-            'On cherche le nombre positif dont le carré est égal à 196. C’est un carré parfait à connaître : celui de 14.',
+            'On cherche le nombre positif dont le carré est égal à 196. C’est un carré parfait de la liste du rappel : celui de 14.',
           ],
           ['√196 = 14', 'Le nombre 14 est positif et son carré vaut 196.'],
         ],
@@ -810,9 +811,9 @@ const premiers = defineExercise({
       '- par 3 : la somme des chiffres est divisible par 3 ;',
       '- par 9 : la somme des chiffres est divisible par 9.',
     ].join('\n'),
-    'Un **nombre premier** est un entier qui a exactement deux diviseurs : 1 et lui-même. Voici les plus petits : 2 ; 3 ; 5 ; 7 ; 11 ; 13 ; 17 ; 19 ; 23… Le nombre 1 n’est pas premier : il n’a qu’un seul diviseur.',
-    'Tout entier supérieur ou égal à 2 se décompose en produit de facteurs premiers, d’une seule façon : 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5. Pour trouver cette décomposition, on divise par 2 autant de fois que possible, puis par 3, puis par 5, et ainsi de suite.',
-    'Une fraction est **irréductible** quand son numérateur et son dénominateur n’ont plus de diviseur commun autre que 1. Pour l’obtenir, on décompose les deux nombres, puis on simplifie par tous leurs facteurs communs. Le produit de ces facteurs communs est le plus grand diviseur commun aux deux nombres.',
+    'Un **nombre premier** est un entier qui a exactement deux diviseurs : 1 et lui-même. Voici les plus petits : 2 ; 3 ; 5 ; 7 ; 11 ; 13 ; 17 ; 19 ; 23… Le nombre 1 n’est pas premier : il n’a qu’un seul diviseur. Pour savoir si un nombre est premier, on essaie de le diviser par 2, 3, 5, 7… Il est inutile d’essayer un nombre dont le carré dépasse le nombre étudié : pour 37, on essaie 2, 3 et 5, mais pas 7, car 7 × 7 = 49.',
+    'Tout entier supérieur ou égal à 2 se décompose en produit de facteurs premiers, d’une seule façon, à l’ordre des facteurs près : 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5. Pour trouver cette décomposition, on divise par 2 autant de fois que possible, puis par 3, puis par 5, et ainsi de suite.',
+    'Une fraction est **irréductible** quand son numérateur et son dénominateur n’ont plus de diviseur commun autre que 1. Pour rendre une fraction irréductible, on décompose son numérateur et son dénominateur, puis on simplifie par tous leurs facteurs communs. Le produit de ces facteurs communs est le plus grand diviseur commun aux deux nombres.',
   ),
   example: {
     statement: 'Rends irréductible la fraction 90/108.',
@@ -877,7 +878,7 @@ const premiers = defineExercise({
       },
     }),
     qcm({
-      prompt: 'Parmi les nombres 2, 3, 5 et 9, lesquels sont des diviseurs de 570 ?',
+      prompt: 'Parmi les nombres 2, 3, 5 et 9, donne tous ceux qui sont des diviseurs de 570.',
       choices: ['2 et 5', '2, 3, 5 et 9', '3 et 5', '2, 3 et 5'],
       answer: '2, 3 et 5',
       correction: {
@@ -926,7 +927,7 @@ const premiers = defineExercise({
           ],
           [
             '59 = 7 × 8 + 3',
-            '59 n’est pas divisible par 7 non plus : il reste 3. Inutile d’essayer 11 ou davantage : si 59 était le produit de deux entiers plus grands que 7, il vaudrait au moins 8 × 8 = 64. Un diviseur autre que 1 et 59 aurait donc déjà été trouvé.',
+            '59 n’est pas divisible par 7 non plus : il reste 3. On peut s’arrêter là. Si 59 était le produit de deux entiers autres que 1 et 59, ils ne pourraient pas dépasser 7 tous les deux : leur produit vaudrait au moins 8 × 8 = 64, ce qui dépasse 59. L’un des deux serait donc compris entre 2 et 7, et 59 serait divisible par 2, 3, 5 ou 7 (un nombre divisible par 4 ou par 6 l’est déjà par 2). Ce n’est pas le cas.',
           ],
           ['59 est un nombre premier', 'Ses seuls diviseurs sont 1 et 59.'],
         ],
