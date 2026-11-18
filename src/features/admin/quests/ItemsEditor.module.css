@@ -61,12 +61,21 @@
   width: 100%;
 }
 
-/* Case « bonne réponse » : 24 px visibles dans une zone tactile de 44 px. */
-.correct {
+/* Case « bonne réponse » : 24 px visibles, au centre d'une zone tactile de 44 px. */
+.correctZone {
+  display: flex;
   flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  cursor: pointer;
+}
+
+.correct {
   width: 24px;
   height: 24px;
-  margin: 10px;
+  margin: 0;
   accent-color: var(--color-accent);
   cursor: pointer;
 }

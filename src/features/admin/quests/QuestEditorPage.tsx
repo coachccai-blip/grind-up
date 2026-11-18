@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import {
-  findDifficulty,
   isAutoCorrected,
   QUEST_CATEGORIES,
   QUEST_DIFFICULTIES,
@@ -11,6 +10,7 @@ import {
   type QuestDifficulty,
   type QuestFormat,
 } from '../../../../shared/rules/quests'
+import type { GameSettings } from '../../../../shared/rules/settings'
 import { QUEST_TITLE_MAX, type AdminQuestDetail } from '../../../../shared/schemas/quests'
 import { RICH_TEXT_MAX_LENGTH } from '../../../../shared/rules/rich-text'
 import { ApiError, errorFields, errorMessage } from '../../../lib/api'
@@ -22,7 +22,9 @@ import { Field, TextArea } from '../../../ui/Field'
 import { Notice } from '../../../ui/Notice'
 import { OptionGroup } from '../../../ui/OptionGroup'
 import { RichText } from '../../../ui/RichText'
+import { TextLink } from '../../../ui/TextLink'
 import { formatXp } from '../../quests/QuestChips'
+import { useSettings } from '../settings/settings-api'
 import { useStudents } from '../students-api'
 import { AssigneePicker } from './AssigneePicker'
 import { ItemsEditor } from './ItemsEditor'
@@ -43,22 +45,26 @@ import { useAdminQuest, useSaveQuest, type ImageChange } from './quests-api'
 export function QuestEditorPage() {
   const { id } = useParams()
   const existing = useAdminQuest(id)
+  // Le barème et les valeurs proposées pour une quête viennent des paramètres.
+  const settings = useSettings()
 
-  if (id === undefined) return <QuestEditor key="new" quest={null} />
+  if (settings.isError) return <Notice tone="error">{errorMessage(settings.error)}</Notice>
+  if (!settings.data) return <p>Chargement de la quête…</p>
+  if (id === undefined) return <QuestEditor key="new" quest={null} settings={settings.data} />
   if (existing.isPending) return <p>Chargement de la quête…</p>
   if (!existing.data) {
     const missing = existing.error instanceof ApiError && existing.error.status === 404
     return missing ? (
       <EmptyState emoji="🧩" title="Quête introuvable" pageTitle>
         <p>
-          <Link to="/admin/quetes">Retour aux quêtes</Link>
+          <TextLink to="/admin/quetes">Retour aux quêtes</TextLink>
         </p>
       </EmptyState>
     ) : (
       <Notice tone="error">{errorMessage(existing.error)}</Notice>
     )
   }
-  return <QuestEditor key={existing.data.id} quest={existing.data} />
+  return <QuestEditor key={existing.data.id} quest={existing.data} settings={settings.data} />
 }
 
 const hasContent = (items: readonly FormItem[]) =>
@@ -69,12 +75,19 @@ const hasContent = (items: readonly FormItem[]) =>
       item.choices.some((choice) => choice.trim() !== ''),
   )
 
-function QuestEditor({ quest }: { quest: AdminQuestDetail | null }) {
+interface QuestEditorProps {
+  quest: AdminQuestDetail | null
+  settings: GameSettings
+}
+
+function QuestEditor({ quest, settings }: QuestEditorProps) {
   const navigate = useNavigate()
   const students = useStudents()
   const save = useSaveQuest(quest?.id)
 
-  const [form, setForm] = useState<QuestForm>(() => (quest ? formFromQuest(quest) : emptyForm()))
+  const [form, setForm] = useState<QuestForm>(() =>
+    quest ? formFromQuest(quest, settings) : emptyForm(settings),
+  )
   // Le contenu saisi pour un format est gardé de côté : revenir à ce format le retrouve.
   const [setAside, setSetAside] = useState<Partial<Record<QuestFormat, FormItem[]>>>({})
   const [formatChosen, setFormatChosen] = useState(quest !== null)
@@ -114,10 +127,11 @@ function QuestEditor({ quest }: { quest: AdminQuestDetail | null }) {
   }
 
   const chooseDifficulty = (difficulty: QuestDifficulty) => {
-    const untouched = form.rewardXp === String(findDifficulty(form.difficulty).defaultReward)
+    // La récompense suit la difficulté tant que l'admin n'a pas saisi la sienne.
+    const untouched = form.rewardXp === String(settings.rewards[form.difficulty])
     set({
       difficulty,
-      ...(untouched ? { rewardXp: String(findDifficulty(difficulty).defaultReward) } : {}),
+      ...(untouched ? { rewardXp: String(settings.rewards[difficulty]) } : {}),
     })
   }
 
@@ -163,9 +177,9 @@ function QuestEditor({ quest }: { quest: AdminQuestDetail | null }) {
   return (
     <form ref={formElement} className={styles.form} onSubmit={onSubmit} noValidate>
       <p>
-        <Link to={quest ? `/admin/quetes/${quest.id}` : '/admin/quetes'}>
+        <TextLink to={quest ? `/admin/quetes/${quest.id}` : '/admin/quetes'}>
           {quest ? 'Retour à la quête' : 'Retour aux quêtes'}
-        </Link>
+        </TextLink>
       </p>
       <h1>{quest ? 'Modifier la quête' : 'Nouvelle quête'}</h1>
 
@@ -295,11 +309,11 @@ function QuestEditor({ quest }: { quest: AdminQuestDetail | null }) {
           value={form.difficulty}
           onChange={chooseDifficulty}
           disabled={locked}
-          options={QUEST_DIFFICULTIES.map(({ id, label, emoji, defaultReward }) => ({
+          options={QUEST_DIFFICULTIES.map(({ id, label, emoji }) => ({
             value: id,
             label,
             emoji,
-            hint: formatXp(defaultReward),
+            hint: formatXp(settings.rewards[id]),
           }))}
         />
         <Field
@@ -335,7 +349,9 @@ function QuestEditor({ quest }: { quest: AdminQuestDetail | null }) {
             className={styles.short}
             value={form.deadlineLocal}
             onChange={(event) => set({ deadlineLocal: event.target.value })}
-            hint="Heure de Paris. Une quête finie plus de 24 h avant rapporte le bonus d’avance."
+            hint={
+              'Heure de Paris. Une quête finie plus de 24\u00A0h avant rapporte le bonus d’avance.'
+            }
             error={fieldErrors.deadlineAt}
           />
         )}

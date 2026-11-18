@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
 import { COMMENT_MAX, type PendingValidation } from '../../../../shared/schemas/quests'
 import { errorFields, errorMessage } from '../../../lib/api'
 import { capitalize, formatRelative } from '../../../lib/dates'
@@ -12,7 +11,9 @@ import { Dialog, DialogActions } from '../../../ui/Dialog'
 import { EmptyState } from '../../../ui/EmptyState'
 import { TextArea } from '../../../ui/Field'
 import { Notice } from '../../../ui/Notice'
+import { TextLink } from '../../../ui/TextLink'
 import { CategoryChip, formatXp } from '../../quests/QuestChips'
+import { useLatePercent } from '../settings/settings-api'
 import { useAssignmentAction, useValidations } from './quests-api'
 import styles from './ValidationsPage.module.css'
 
@@ -64,16 +65,16 @@ export function ValidationsPage() {
                 <div className={styles.who}>
                   <Avatar avatar={entry.student.avatar} decorative />
                   <div>
-                    <Link to={`/admin/eleves/${entry.student.id}`} className={styles.pseudo}>
+                    <TextLink to={`/admin/eleves/${entry.student.id}`} className={styles.pseudo}>
                       {entry.student.pseudo}
-                    </Link>
+                    </TextLink>
                     <p className={styles.when}>{capitalize(formatRelative(entry.submittedAt))}</p>
                   </div>
                 </div>
                 <div>
-                  <Link to={`/admin/quetes/${entry.quest.id}`} className={styles.quest}>
+                  <TextLink to={`/admin/quetes/${entry.quest.id}`} className={styles.quest}>
                     {entry.quest.title}
-                  </Link>
+                  </TextLink>
                   <div className={styles.tags}>
                     <CategoryChip category={entry.quest.category} />
                     <Chip>{formatXp(entry.quest.rewardXp)}</Chip>
@@ -150,6 +151,7 @@ function RejectDialog({ entry, action, onClose, onDone }: RejectDialogProps) {
       entry.quest.deadlineAt !== null && new Date(entry.quest.deadlineAt).getTime() < Date.now(),
   )
   const [reopen, setReopen] = useState(pastDeadline)
+  const latePercent = useLatePercent()
 
   const submit = () => {
     if (comment.trim() === '') {
@@ -181,9 +183,11 @@ function RejectDialog({ entry, action, onClose, onDone }: RejectDialogProps) {
       {pastDeadline && (
         <Checkbox
           label="Rouvrir la quête pour cet élève"
-          hint={
-            'La deadline est passée\u00A0: sans réouverture, la quête sera expirée pour lui. Rouverte, elle rapporte la moitié de sa récompense.'
-          }
+          hint={`La deadline est passée\u00A0: sans réouverture, la quête sera expirée pour lui.${
+            latePercent === null
+              ? ''
+              : ` Rouverte, elle rapporte ${latePercent}\u00A0% de sa récompense.`
+          }`}
           checked={reopen}
           onChange={(event) => setReopen(event.target.checked)}
         />

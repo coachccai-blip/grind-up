@@ -1,7 +1,8 @@
 import { randomInt, randomUUID } from 'node:crypto'
 import { answerKey } from '../../shared/rules/answers.js'
-import { effectiveStatus } from '../../shared/rules/assignment-status.js'
+import { effectiveStatus, isLate } from '../../shared/rules/assignment-status.js'
 import { isAutoCorrected, type AssignmentStatus } from '../../shared/rules/quests.js'
+import { computeReward, type RewardRules } from '../../shared/rules/rewards.js'
 import type {
   AttemptRequest,
   AttemptResult,
@@ -11,6 +12,7 @@ import type {
 } from '../../shared/schemas/quests.js'
 import type { SqlReader, SqlWriter } from '../db/sqlite.js'
 import { ApiError, notFound } from '../http.js'
+import { readRewardRules } from '../settings/service.js'
 import { creditValidation, readReward } from './credit.js'
 import { grade } from './grading.js'
 import { imageUrl } from './images.js'
@@ -62,12 +64,37 @@ function statusOf(quest: QuestRow, assignment: AssignmentFacts, now: Date): Assi
   )
 }
 
+/**
+ * Ce que rapporte une quête rouverte après sa deadline, tant qu'elle reste à
+ * faire : la part de sa récompense fixée dans les paramètres.
+ */
+function lateReward(
+  quest: QuestRow,
+  status: AssignmentStatus,
+  now: Date,
+  rules: RewardRules,
+): number | null {
+  const toDo = status === 'todo' || status === 'in_progress' || status === 'rejected'
+  if (!toDo || !isLate(quest.deadline_at, now)) return null
+  return computeReward(
+    {
+      reward: quest.reward_xp,
+      deadlineAt: quest.deadline_at,
+      completedAt: now,
+      flawlessFirstAttempt: false,
+    },
+    rules,
+  ).base
+}
+
 function toSummary(
   quest: QuestRow,
   assignment: AssignmentFacts,
   attemptsUsed: number,
   now: Date,
+  rules: RewardRules,
 ): StudentQuestSummary {
+  const status = statusOf(quest, assignment, now)
   return {
     id: quest.id,
     title: quest.title,
@@ -76,8 +103,9 @@ function toSummary(
     difficulty: quest.difficulty,
     rewardXp: quest.reward_xp,
     deadlineAt: quest.deadline_at,
-    status: statusOf(quest, assignment, now),
+    status,
     blocked: isBlocked(quest, assignment, attemptsUsed),
+    lateRewardXp: lateReward(quest, status, now, rules),
     assignedAt: assignment.assigned_at,
     submittedAt: assignment.submitted_at,
     validatedAt: assignment.validated_at,
@@ -105,7 +133,8 @@ export function listMyQuests(tx: SqlReader, studentId: string, now: Date): Stude
      ORDER BY quests.deadline_at IS NULL, quests.deadline_at, assignments.assigned_at DESC`,
     [studentId],
   )
-  return rows.map((row) => toSummary(row, row, row.attempts_used, now))
+  const rules = readRewardRules(tx)
+  return rows.map((row) => toSummary(row, row, row.attempts_used, now, rules))
 }
 
 /** La quête et l'assignation de l'élève, s'il a le droit de la voir. */
@@ -228,7 +257,7 @@ export function readMyQuest(
   const validated = assignment.status === 'validated'
 
   return {
-    ...toSummary(quest, assignment, attempts.length, now),
+    ...toSummary(quest, assignment, attempts.length, now, readRewardRules(tx)),
     instructions: quest.instructions,
     imageUrl: imageUrl(quest, 'student'),
     manualValidation: quest.manual_validation === 1,

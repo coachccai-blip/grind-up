@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Link, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { isAutoCorrected } from '../../../shared/rules/quests'
 import { BONUS_LABELS } from '../../../shared/rules/rewards'
 import type { StudentQuestDetail } from '../../../shared/schemas/quests'
@@ -11,6 +11,7 @@ import { Countdown } from '../../ui/Countdown'
 import { EmptyState } from '../../ui/EmptyState'
 import { Notice } from '../../ui/Notice'
 import { RichText } from '../../ui/RichText'
+import { TextLink } from '../../ui/TextLink'
 import { CategoryChip, difficultyLabel, formatXp, StatusChip } from '../quests/QuestChips'
 import { QuestImage } from '../quests/QuestImage'
 import { ExactForm } from './formats/ExactForm'
@@ -59,6 +60,8 @@ export function QuestPage() {
 
   const open =
     quest.status === 'todo' || quest.status === 'in_progress' || quest.status === 'rejected'
+  // Rouverte après sa deadline : elle ne rapporte plus qu'une part de sa récompense.
+  const reopened = quest.lateRewardXp !== null
   // Ce que l'écran montre sous la consigne. Passer de « À faire » à « En cours » n'y change
   // rien : la saisie en cours ne doit pas être perdue quand la quête démarre.
   const view =
@@ -75,17 +78,25 @@ export function QuestPage() {
         <div className={styles.tags}>
           <CategoryChip category={quest.category} withEmoji />
           <Chip>{difficultyLabel(quest.difficulty)}</Chip>
-          <Chip>{formatXp(quest.rewardXp)}</Chip>
+          <Chip>{formatXp(quest.lateRewardXp ?? quest.rewardXp)}</Chip>
         </div>
         <h1>{quest.title}</h1>
         <div className={styles.tags}>
           <StatusChip status={quest.status} blocked={quest.blocked} />
-          {open && quest.deadlineAt && <Countdown deadlineAt={quest.deadlineAt} />}
+          {reopened && <Chip tone="warning">Rouverte</Chip>}
+          {open && !reopened && quest.deadlineAt && <Countdown deadlineAt={quest.deadlineAt} />}
         </div>
         {quest.deadlineAt && (
           <p className={styles.deadline}>Deadline&nbsp;: le {formatDateTime(quest.deadlineAt)}</p>
         )}
       </header>
+
+      {quest.lateRewardXp !== null && (
+        <Notice tone="info">
+          La deadline est passée, mais ton accompagnant a rouvert cette quête pour toi. Elle
+          rapporte maintenant {formatXp(quest.lateRewardXp)} au lieu de {formatXp(quest.rewardXp)}.
+        </Notice>
+      )}
 
       {(quest.instructions.trim() !== '' || quest.imageUrl) && (
         <Card className={styles.instructions}>
@@ -109,7 +120,7 @@ export function QuestPage() {
 
 const BackLink = () => (
   <p>
-    <Link to="/quetes">Retour à mes quêtes</Link>
+    <TextLink to="/quetes">Retour à mes quêtes</TextLink>
   </p>
 )
 

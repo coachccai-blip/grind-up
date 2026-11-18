@@ -1,4 +1,4 @@
-import { Link, useLocation, useSearchParams } from 'react-router'
+import { useLocation, useSearchParams } from 'react-router'
 import {
   LEADERBOARD_PERIODS,
   type LeaderboardPeriod,
@@ -13,6 +13,7 @@ import { Emoji } from '../../ui/Emoji'
 import { EmptyState } from '../../ui/EmptyState'
 import { LinkTabs } from '../../ui/LinkTabs'
 import { Notice } from '../../ui/Notice'
+import { TextLink } from '../../ui/TextLink'
 import { formatXp } from '../quests/QuestChips'
 import styles from './Leaderboard.module.css'
 import { useLeaderboard } from './leaderboard-api'
@@ -80,7 +81,7 @@ export function Leaderboard() {
   const rest = entries.slice(podium.length)
 
   return (
-    <div className={styles.leaderboard}>
+    <div className={styles.leaderboard} aria-busy={query.isPlaceholderData || undefined}>
       <LinkTabs
         label="Période du classement"
         columns={3}
@@ -93,9 +94,13 @@ export function Leaderboard() {
       />
       <p className={styles.sort}>
         <span>{sort === 'missions' ? 'Classé par missions accomplies.' : 'Classé par XP.'}</span>
-        <Link to={address(period, sort === 'missions' ? 'xp' : 'missions')} replace>
+        <TextLink
+          to={address(period, sort === 'missions' ? 'xp' : 'missions')}
+          replace
+          preventScrollReset
+        >
           {sort === 'missions' ? 'Trier par XP' : 'Trier par missions'}
-        </Link>
+        </TextLink>
       </p>
 
       {query.isError && <Notice tone="error">{errorMessage(query.error)}</Notice>}

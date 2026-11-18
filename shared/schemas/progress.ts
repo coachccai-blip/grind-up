@@ -29,13 +29,18 @@ export interface BadgeProgress {
 
 /**
  * Ce que l'élève n'a pas encore vu : ses quêtes validées depuis sa dernière
- * visite, un passage de niveau, de nouveaux badges. L'interface le fête, puis
- * le signale comme vu.
+ * visite, un passage de niveau, son entrée sur le podium, de nouveaux badges.
+ * L'interface le fête, puis le signale comme vu.
  */
 export interface Celebration {
   validations: { questId: string; title: string; xp: number }[]
   xpGained: number
   levelUp: { from: number; to: number } | null
+  /**
+   * Entrée sur le podium de la semaine : la place de l'élève, de 1 à 3. Annoncée
+   * avec la quête qui l'y a mené, une fois par semaine.
+   */
+  podium: { rank: number } | null
   badges: string[]
 }
 
@@ -73,8 +78,8 @@ export const xpAdjustmentRequestSchema = z.object({
   amount: z
     .number('Indiquez un montant en XP.')
     .int('Le montant est un nombre entier.')
-    .min(-XP_ADJUSTMENT_MAX, `De -${XP_ADJUSTMENT_MAX} à ${XP_ADJUSTMENT_MAX} XP.`)
-    .max(XP_ADJUSTMENT_MAX, `De -${XP_ADJUSTMENT_MAX} à ${XP_ADJUSTMENT_MAX} XP.`)
+    .min(-XP_ADJUSTMENT_MAX, `De -${XP_ADJUSTMENT_MAX} à ${XP_ADJUSTMENT_MAX}\u00A0XP.`)
+    .max(XP_ADJUSTMENT_MAX, `De -${XP_ADJUSTMENT_MAX} à ${XP_ADJUSTMENT_MAX}\u00A0XP.`)
     .refine((amount) => amount !== 0, 'Le montant ne peut pas être nul.'),
   reason: z
     .string()

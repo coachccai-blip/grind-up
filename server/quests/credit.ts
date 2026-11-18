@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { computeReward, type BonusKind, type RewardBreakdown } from '../../shared/rules/rewards.js'
 import type { SqlReader, SqlWriter } from '../db/sqlite.js'
 import { awardBadges } from '../progress/service.js'
+import { readRewardRules } from '../settings/service.js'
 import type { AssignmentRow, QuestRow } from './store.js'
 
 /**
@@ -41,12 +42,16 @@ export function creditValidation(tx: SqlWriter, facts: ValidationFacts): RewardB
     throw new Error(`L’assignation ${assignment.id} est déjà créditée.`)
   }
 
-  const reward = computeReward({
-    reward: quest.reward_xp,
-    deadlineAt: quest.deadline_at,
-    completedAt: facts.completedAt,
-    flawlessFirstAttempt: facts.flawlessFirstAttempt,
-  })
+  // Les bonus sont ceux des paramètres au moment de la validation.
+  const reward = computeReward(
+    {
+      reward: quest.reward_xp,
+      deadlineAt: quest.deadline_at,
+      completedAt: facts.completedAt,
+      flawlessFirstAttempt: facts.flawlessFirstAttempt,
+    },
+    readRewardRules(tx),
+  )
   const at = now.toISOString()
 
   tx.run(

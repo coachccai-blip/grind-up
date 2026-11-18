@@ -3,9 +3,17 @@ import { defineConfig, devices } from '@playwright/test'
 const PORT = 5180
 
 /**
+ * Le moteur de Safari n'est pas installé partout : les parcours sur iPhone ne
+ * sont joués que si GRIND_UP_WEBKIT est défini, après
+ * « npx playwright install --with-deps webkit ». C'est le cas sur GitHub.
+ */
+const withSafari = Boolean(process.env.GRIND_UP_WEBKIT)
+
+/**
  * Tests de bout en bout : un vrai navigateur parcourt le site construit, servi
  * en local avec la fonction serveur et le stockage émulés comme sur Netlify.
- * Chaque parcours est joué sur téléphone (360 px de large) et sur ordinateur.
+ * Chaque parcours est joué sur téléphone (360 px de large) et sur ordinateur ;
+ * les parcours complets le sont aussi sur iPhone, avec le moteur de Safari.
  */
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -31,6 +39,16 @@ export default defineConfig({
       name: 'ordinateur',
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } },
     },
+    ...(withSafari
+      ? [
+          {
+            name: 'iphone',
+            use: { ...devices['iPhone 14'] },
+            // Le parcours de bout en bout, et une quête de chaque format.
+            grep: /parcours complet/,
+          },
+        ]
+      : []),
   ],
   webServer: {
     // Le site construit, servi sur un port réservé aux tests, avec une base neuve à chaque série.

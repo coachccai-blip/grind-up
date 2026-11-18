@@ -10,6 +10,7 @@ import { QuestPage } from '../features/student/QuestPage'
 import { DashboardPage, LeaderboardPage } from '../features/student/StudentPages'
 import { AnonymousOnly, RequireUser, SessionGate } from './guards'
 import { NotFoundPage } from './NotFoundPage'
+import { RootLayout } from './RootLayout'
 
 // L'espace admin et le test de déploiement sont chargés à la demande : un élève
 // ne télécharge que ce que montre son propre espace.
@@ -27,59 +28,64 @@ const loading = <p className="page-loading">Chargement…</p>
  * /admin ; chacun est fermé à l'autre rôle.
  */
 export const router = createBrowserRouter([
-  // Test de déploiement : public, pour vérifier une mise en ligne sans compte.
   {
-    path: '/sante',
-    element: (
-      <Suspense fallback={loading}>
-        <DeployCheckPage />
-      </Suspense>
-    ),
-  },
-  {
-    element: <SessionGate />,
+    element: <RootLayout />,
     children: [
+      // Test de déploiement : public, pour vérifier une mise en ligne sans compte.
       {
-        element: <AnonymousOnly />,
-        children: [
-          { path: '/connexion', element: <AuthPage mode="login" /> },
-          { path: '/inscription', element: <AuthPage mode="signup" /> },
-        ],
+        path: '/sante',
+        element: (
+          <Suspense fallback={loading}>
+            <DeployCheckPage />
+          </Suspense>
+        ),
       },
       {
-        element: <RequireUser />,
-        children: [{ path: '/nouveau-mot-de-passe', element: <NewPasswordPage /> }],
-      },
-      {
-        element: <RequireUser role="student" />,
+        element: <SessionGate />,
         children: [
-          { path: '/bienvenue', element: <WelcomePage /> },
           {
-            element: <StudentLayout />,
+            element: <AnonymousOnly />,
             children: [
-              { path: '/', element: <DashboardPage /> },
-              { path: '/quetes', element: <MyQuestsPage /> },
-              { path: '/quetes/:questId', element: <QuestPage /> },
-              { path: '/leaderboard', element: <LeaderboardPage /> },
-              { path: '/profil', element: <ProfilePage /> },
+              { path: '/connexion', element: <AuthPage mode="login" /> },
+              { path: '/inscription', element: <AuthPage mode="signup" /> },
             ],
           },
-        ],
-      },
-      {
-        element: <RequireUser role="admin" />,
-        children: [
           {
-            path: '/admin/*',
-            element: (
-              <Suspense fallback={loading}>
-                <AdminApp />
-              </Suspense>
-            ),
+            element: <RequireUser />,
+            children: [{ path: '/nouveau-mot-de-passe', element: <NewPasswordPage /> }],
           },
+          {
+            element: <RequireUser role="student" />,
+            children: [
+              { path: '/bienvenue', element: <WelcomePage /> },
+              {
+                element: <StudentLayout />,
+                children: [
+                  { path: '/', element: <DashboardPage /> },
+                  { path: '/quetes', element: <MyQuestsPage /> },
+                  { path: '/quetes/:questId', element: <QuestPage /> },
+                  { path: '/leaderboard', element: <LeaderboardPage /> },
+                  { path: '/profil', element: <ProfilePage /> },
+                ],
+              },
+            ],
+          },
+          {
+            element: <RequireUser role="admin" />,
+            children: [
+              {
+                path: '/admin/*',
+                element: (
+                  <Suspense fallback={loading}>
+                    <AdminApp />
+                  </Suspense>
+                ),
+              },
+            ],
+          },
+          { path: '*', element: <NotFoundPage /> },
         ],
       },
-      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ])

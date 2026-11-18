@@ -127,7 +127,7 @@ test.describe('leaderboard', () => {
     await expect(student.getByRole('list', { name: 'Podium' }).getByText(bot)).toBeVisible()
 
     // Pause, reprise, puis réglages.
-    await card.getByRole('button', { name: `Mettre ${bot} en pause` }).click()
+    await card.getByRole('button', { name: `Mettre en pause ${bot}` }).click()
     await expect(page.getByText(`${bot} est en pause.`)).toBeVisible()
     await expect(card).toContainText('En pause')
     await card.getByRole('button', { name: `Reprendre ${bot}` }).click()
@@ -152,37 +152,6 @@ test.describe('leaderboard', () => {
     await student.reload()
     await expect(student.getByRole('heading', { level: 1, name: 'Leaderboard' })).toBeVisible()
     await expect(student.getByText(bot, { exact: true })).toHaveCount(0)
-    await close()
-  })
-
-  test('l’étiquette « Bot » n’est montrée aux élèves que si l’admin le décide', async ({
-    browser,
-    page,
-  }, testInfo) => {
-    // Ce réglage vaut pour tout le site : un seul des deux projets le manipule.
-    test.skip(testInfo.project.name !== 'ordinateur', 'réglage global, testé une seule fois')
-    const { student, close } = await scene(browser, page)
-    const bot = uniquePseudo('Robo')
-    const created = await page.request.post('/api/admin/bots', {
-      data: { pseudo: bot, avatar: 'fox', mode: 'regular' },
-    })
-    expect(created.status()).toBe(201)
-    const { bot: made } = (await created.json()) as { bot: { id: string } }
-    await page.request.post(`/api/admin/bots/${made.id}/adjust`, { data: { missions: 1, xp: 50 } })
-
-    await openStudentScreen(student, 'Leaderboard')
-    const line = student.getByRole('listitem').filter({ hasText: bot })
-    await expect(line).toBeVisible()
-    await expect(line.getByText('Bot', { exact: true })).toHaveCount(0)
-
-    await openAdminScreen(page, 'Bots')
-    await page.getByLabel('Montrer l’étiquette « Bot » aux élèves').check()
-    await expect(page.getByLabel('Montrer l’étiquette « Bot » aux élèves')).toBeChecked()
-    await student.reload()
-    await expect(line.getByText('Bot', { exact: true })).toBeVisible()
-
-    await page.getByLabel('Montrer l’étiquette « Bot » aux élèves').uncheck()
-    await page.request.delete(`/api/admin/bots/${made.id}`)
     await close()
   })
 

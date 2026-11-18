@@ -1,5 +1,6 @@
 import { useId, useState } from 'react'
 import { NavLink, Outlet } from 'react-router'
+import { MAIN_CONTENT_ID, SkipLink } from '../../app/RootLayout'
 import { useCurrentUser, useLogout } from '../../app/session'
 import { Button } from '../../ui/Button'
 import { classes } from '../../ui/classes'
@@ -27,6 +28,7 @@ export function AdminLayout() {
 
   return (
     <div className={styles.shell}>
+      <SkipLink />
       <header className={styles.side}>
         <div className={styles.brand}>
           <p className={styles.wordmark}>Grind up</p>
@@ -74,7 +76,7 @@ export function AdminLayout() {
           </div>
         </nav>
       </header>
-      <main className={styles.main}>
+      <main id={MAIN_CONTENT_ID} tabIndex={-1} className={styles.main}>
         <Outlet />
       </main>
     </div>

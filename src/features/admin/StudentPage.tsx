@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import type { AdminStudent } from '../../../shared/schemas/admin'
 import { pseudoSchema } from '../../../shared/schemas/auth'
 import { errorFields, errorMessage } from '../../lib/api'
@@ -12,6 +12,7 @@ import { Dialog, DialogActions } from '../../ui/Dialog'
 import { Field } from '../../ui/Field'
 import { Identifier } from '../../ui/Identifier'
 import { Notice } from '../../ui/Notice'
+import { TextLink } from '../../ui/TextLink'
 import { StatusChip } from './StatusChip'
 import { StudentProgress } from './StudentProgress'
 import styles from './StudentPage.module.css'
@@ -33,7 +34,7 @@ export function StudentPage() {
   return (
     <>
       <p>
-        <Link to="/admin/eleves">Retour aux élèves</Link>
+        <TextLink to="/admin/eleves">Retour aux élèves</TextLink>
       </p>
       {students.isPending && <p>Chargement de la fiche…</p>}
       {students.isError && <Notice tone="error">{errorMessage(students.error)}</Notice>}

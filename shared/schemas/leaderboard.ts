@@ -106,8 +106,8 @@ export const adjustBotRequestSchema = z
     xp: z
       .number()
       .int()
-      .min(-BOT_ADJUST_XP_MAX, `De -${BOT_ADJUST_XP_MAX} à ${BOT_ADJUST_XP_MAX} XP.`)
-      .max(BOT_ADJUST_XP_MAX, `De -${BOT_ADJUST_XP_MAX} à ${BOT_ADJUST_XP_MAX} XP.`)
+      .min(-BOT_ADJUST_XP_MAX, `De -${BOT_ADJUST_XP_MAX} à ${BOT_ADJUST_XP_MAX}\u00A0XP.`)
+      .max(BOT_ADJUST_XP_MAX, `De -${BOT_ADJUST_XP_MAX} à ${BOT_ADJUST_XP_MAX}\u00A0XP.`)
       .default(0),
   })
   .refine((change) => change.missions !== 0 || change.xp !== 0, {
@@ -141,17 +141,4 @@ export interface AdminBotsResponse {
 
 export interface AdminBotResponse {
   bot: AdminBot
-}
-
-// --- Paramètres globaux ----------------------------------------------------------------------
-
-export interface AdminSettings {
-  /** Montrer l'étiquette « Bot » aux élèves, dans le leaderboard. */
-  showBotLabel: boolean
-}
-
-export const updateSettingsRequestSchema = z.object({ showBotLabel: z.boolean() }).partial()
-
-export interface AdminSettingsResponse {
-  settings: AdminSettings
 }

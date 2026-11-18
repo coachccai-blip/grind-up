@@ -32,6 +32,8 @@ export function LinkTabs({ label, tabs, columns = 2 }: LinkTabsProps) {
             <Link
               to={tab.to}
               replace
+              // Changer d'onglet ne ramène pas en haut de la page.
+              preventScrollReset
               className={classes(styles.tab, tab.active && styles.active)}
               aria-current={tab.active ? 'page' : undefined}
             >

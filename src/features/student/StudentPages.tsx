@@ -1,4 +1,3 @@
-import { Link } from 'react-router'
 import { tabOfStatus } from '../../../shared/rules/assignment-status'
 import { useCurrentUser } from '../../app/session'
 import { errorMessage } from '../../lib/api'
@@ -9,6 +8,7 @@ import { EmptyState } from '../../ui/EmptyState'
 import { Leaderboard } from '../leaderboard/Leaderboard'
 import { useLeaderboard } from '../leaderboard/leaderboard-api'
 import { Notice } from '../../ui/Notice'
+import { TextLink } from '../../ui/TextLink'
 import { XpBar } from '../progress/XpBar'
 import { XpJournal } from '../progress/XpJournal'
 import { formatXp } from '../quests/QuestChips'
@@ -45,7 +45,7 @@ export function DashboardPage() {
       <header className={styles.hero}>
         <Avatar avatar={user.avatar} size="large" decorative />
         <div>
-          <h1>Bonjour, {user.pseudo}&nbsp;!</h1>
+          <h1 data-title="Tableau de bord">Bonjour, {user.pseudo}&nbsp;!</h1>
           {stats && (
             <p className={styles.summary}>
               Niveau {stats.level.level} · {formatXp(stats.xp)}
@@ -128,7 +128,7 @@ export function DashboardPage() {
           </ul>
           {todo.length > DASHBOARD_QUESTS && (
             <p>
-              <Link to="/quetes">Voir mes {todo.length} quêtes à faire</Link>
+              <TextLink to="/quetes">Voir mes {todo.length} quêtes à faire</TextLink>
             </p>
           )}
         </section>

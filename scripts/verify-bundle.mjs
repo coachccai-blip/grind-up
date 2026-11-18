@@ -8,8 +8,8 @@
  * sous une autre forme : un paquet où ne figurent que les fichiers que
  * l'empaqueteur a jugés nécessaires. Ce script décompresse ce paquet dans un
  * dossier vide, le charge comme le fait Netlify et lui fait jouer un parcours
- * complet (test de déploiement, inscriptions, session, droits de l'admin). Un
- * module oublié par l'empaqueteur fait échouer le script.
+ * complet (test de déploiement, inscriptions, session, droits, quête, classement,
+ * paramètres, export). Un module oublié par l'empaqueteur fait échouer le script.
  *
  * Seul le stockage est remplacé : par l'émulateur local de Netlify Blobs.
  */
@@ -99,6 +99,7 @@ async function call(handler, method, path, { body, cookie } = {}) {
   return {
     status: response.status,
     json,
+    text,
     setCookie,
     cookie: setCookie.split(';')[0] ?? '',
     headers: response.headers,
@@ -255,8 +256,50 @@ async function runScenario(handler) {
     entries.every((entry) => entry.isBot === false),
   )
 
-  // 9. Rien de ce que renvoie la fonction ne contient le code admin.
-  const everything = JSON.stringify([health, student, session, refused, admin, asAdmin, wrong])
+  // 9. Finitions : vue d'ensemble, paramètres et export CSV de l'admin.
+  const overview = await call(handler, 'GET', '/api/admin/overview', { cookie: admin.cookie })
+  check(
+    "La vue d'ensemble compte l'élève inscrit",
+    overview.json?.overview?.activeStudents === 1,
+    `statut ${overview.status}`,
+  )
+  const settings = await call(handler, 'PATCH', '/api/admin/settings', {
+    cookie: admin.cookie,
+    body: { latePercent: 40 },
+  })
+  check(
+    'Les paramètres se modifient, le barème du brief reste en place',
+    settings.json?.settings?.latePercent === 40 && settings.json?.settings?.rewards?.medium === 100,
+    `statut ${settings.status}`,
+  )
+  const exported = await call(handler, 'GET', '/api/admin/export/students.csv', {
+    cookie: admin.cookie,
+  })
+  check(
+    "L'export CSV des élèves se télécharge",
+    exported.status === 200 &&
+      (exported.headers.get('content-type') ?? '').startsWith('text/csv') &&
+      exported.text.includes('"EleveDuPaquet"'),
+    `statut ${exported.status}`,
+  )
+  const forbidden = await call(handler, 'GET', '/api/admin/export/students.csv', {
+    cookie: student.cookie,
+  })
+  check('Un élève ne peut rien exporter', forbidden.status === 403, `statut ${forbidden.status}`)
+
+  // 10. Rien de ce que renvoie la fonction ne contient le code admin.
+  const everything = JSON.stringify([
+    health,
+    student,
+    session,
+    refused,
+    admin,
+    asAdmin,
+    wrong,
+    overview,
+    settings,
+    exported,
+  ])
   check('Le code admin ne figure dans aucune réponse', !everything.includes(ADMIN_CODE))
 }
 

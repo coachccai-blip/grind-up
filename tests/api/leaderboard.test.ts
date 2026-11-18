@@ -3,11 +3,11 @@ import type { ApiErrorBody } from '../../shared/schemas/errors.js'
 import type {
   AdminBotResponse,
   AdminBotsResponse,
-  AdminSettingsResponse,
   LeaderboardEntry,
   LeaderboardResponse,
 } from '../../shared/schemas/leaderboard.js'
 import type { ProgressResponse } from '../../shared/schemas/progress.js'
+import type { AdminSettingsResponse } from '../../shared/schemas/settings.js'
 import type { AdminQuestResponse, StudentQuestResponse } from '../../shared/schemas/quests.js'
 import { instantToParisLocal } from '../../shared/time.js'
 import {

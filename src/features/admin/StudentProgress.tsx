@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
 import { isAutoCorrected } from '../../../shared/rules/quests'
 import type { AdminStudent } from '../../../shared/schemas/admin'
 import {
@@ -16,6 +15,7 @@ import { Dialog, DialogActions } from '../../ui/Dialog'
 import { Field, TextArea } from '../../ui/Field'
 import { Notice } from '../../ui/Notice'
 import { OptionGroup } from '../../ui/OptionGroup'
+import { TextLink } from '../../ui/TextLink'
 import { BadgeList } from '../progress/BadgeList'
 import { XpBar } from '../progress/XpBar'
 import { XpJournal } from '../progress/XpJournal'
@@ -99,7 +99,9 @@ export function StudentProgress({ student, onNotice }: StudentProgressProps) {
             {progress.assignments.map((assignment) => (
               <li key={assignment.assignmentId} className={styles.assignment}>
                 <div className={styles.what}>
-                  <Link to={`/admin/quetes/${assignment.quest.id}`}>{assignment.quest.title}</Link>
+                  <TextLink to={`/admin/quetes/${assignment.quest.id}`}>
+                    {assignment.quest.title}
+                  </TextLink>
                   <span className={styles.note}>{details(assignment)}</span>
                 </div>
                 <StatusChip status={assignment.status} blocked={assignment.blocked} />

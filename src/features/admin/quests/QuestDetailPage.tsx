@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
 import { findDifficulty, findFormat, isAutoCorrected } from '../../../../shared/rules/quests'
 import type {
   AdminAssignment,
@@ -15,8 +15,10 @@ import { Dialog, DialogActions } from '../../../ui/Dialog'
 import { EmptyState } from '../../../ui/EmptyState'
 import { Notice } from '../../../ui/Notice'
 import { RichText } from '../../../ui/RichText'
+import { TextLink } from '../../../ui/TextLink'
 import { CategoryChip, formatXp, QuestStateChip, StatusChip } from '../../quests/QuestChips'
 import { QuestImage } from '../../quests/QuestImage'
+import { useLatePercent } from '../settings/settings-api'
 import { useStudents } from '../students-api'
 import { AssigneePicker } from './AssigneePicker'
 import styles from './QuestDetailPage.module.css'
@@ -55,7 +57,7 @@ export function QuestDetailPage() {
 
 const BackLink = () => (
   <p>
-    <Link to="/admin/quetes">Retour aux quêtes</Link>
+    <TextLink to="/admin/quetes">Retour aux quêtes</TextLink>
   </p>
 )
 
@@ -180,7 +182,9 @@ function QuestSheet({ quest }: { quest: AdminQuestDetail }) {
       {incomplete && (
         <Notice tone="error" title="La quête ne peut pas encore être publiée">
           Il lui manque des informations.{' '}
-          <Link to={`/admin/quetes/${quest.id}/modifier`}>Ouvrir la quête pour la compléter</Link>
+          <TextLink to={`/admin/quetes/${quest.id}/modifier`}>
+            Ouvrir la quête pour la compléter
+          </TextLink>
         </Notice>
       )}
       {[publish, duplicate, restore].map(
@@ -271,6 +275,7 @@ interface ProgressProps {
 function Progress({ quest, onNotice }: ProgressProps) {
   const action = useAssignmentAction(quest.id)
   const auto = isAutoCorrected(quest.format)
+  const latePercent = useLatePercent()
 
   if (quest.state === 'draft') {
     const chosen = quest.draftAssignees
@@ -310,9 +315,9 @@ function Progress({ quest, onNotice }: ProgressProps) {
             <li key={assignment.id} className={styles.assignment}>
               <Avatar avatar={assignment.student.avatar} size="small" decorative />
               <div className={styles.who}>
-                <Link to={`/admin/eleves/${assignment.student.id}`}>
+                <TextLink to={`/admin/eleves/${assignment.student.id}`}>
                   {assignment.student.pseudo}
-                </Link>
+                </TextLink>
                 <span className={styles.details}>{details(assignment).join(' · ')}</span>
               </div>
               <StatusChip status={assignment.status} blocked={assignment.blocked} />
@@ -356,11 +361,12 @@ function Progress({ quest, onNotice }: ProgressProps) {
           ))}
         </ul>
       )}
-      {quest.assignments.some((assignment) => assignment.status === 'expired') && (
-        <p className={styles.note}>
-          Une quête rouverte après sa deadline rapporte la moitié de sa récompense.
-        </p>
-      )}
+      {latePercent !== null &&
+        quest.assignments.some((assignment) => assignment.status === 'expired') && (
+          <p className={styles.note}>
+            Une quête rouverte après sa deadline rapporte {latePercent}&nbsp;% de sa récompense.
+          </p>
+        )}
     </Card>
   )
 }

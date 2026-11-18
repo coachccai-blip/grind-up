@@ -136,10 +136,12 @@ export class TestClient {
       this.cookie = value === '' || /max-age=0/i.test(sessionCookie) ? null : value
     }
 
+    // Une réponse JSON est lue comme telle ; toute autre (un fichier CSV) reste du texte.
     const text = await response.text()
+    const isJson = (response.headers.get('content-type') ?? '').includes('application/json')
     return {
       status: response.status,
-      body: (text ? JSON.parse(text) : null) as Body,
+      body: (text === '' ? null : isJson ? JSON.parse(text) : text) as Body,
       headers: response.headers,
       sessionCookie,
     }

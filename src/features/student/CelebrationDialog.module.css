@@ -36,6 +36,7 @@
 
 /* Écran de célébration : l'un des cinq endroits où un dégradé est permis. */
 .levelUp,
+.podium,
 .badge {
   display: flex;
   align-items: center;
@@ -50,12 +51,19 @@
   animation-delay: 150ms;
 }
 
+/* Le podium garde son dégradé « Océan », comme dans le leaderboard. */
+.podium {
+  background: var(--gradient-ocean);
+  animation-delay: 225ms;
+}
+
 .badge {
   background: var(--color-other);
   animation-delay: 300ms;
 }
 
 .levelUp > span,
+.podium > span:last-child,
 .badge > span:last-child {
   display: flex;
   flex-direction: column;

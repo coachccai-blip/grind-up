@@ -4,7 +4,7 @@ import {
   grantAttemptsRequestSchema,
   questImageRequestSchema,
   rejectRequestSchema,
-  saveQuestRequestSchema,
+  saveQuestRequestSchemaWith,
   validateRequestSchema,
   type AdminQuestResponse,
   type AdminQuestsResponse,
@@ -22,6 +22,7 @@ import {
   serveQuestImage,
 } from '../quests/images.js'
 import { findQuest } from '../quests/store.js'
+import { readQuestDefaults } from '../settings/service.js'
 import { cancelValidationRequestSchema } from '../../shared/schemas/progress.js'
 import {
   addAssignees,
@@ -51,7 +52,8 @@ adminQuestRoutes.get('/', async (c) => {
 })
 
 adminQuestRoutes.post('/', async (c) => {
-  const request = await parseBody(c, saveQuestRequestSchema)
+  const defaults = await c.var.storage.database.read(readQuestDefaults)
+  const request = await parseBody(c, saveQuestRequestSchemaWith(defaults))
   const author = signedInUser(c)
   const now = c.var.now()
   const quest = await c.var.storage.database.write((tx) =>
@@ -69,7 +71,8 @@ adminQuestRoutes.get('/:id', async (c) => {
 
 adminQuestRoutes.put('/:id', async (c) => {
   const id = c.req.param('id')
-  const request = await parseBody(c, saveQuestRequestSchema)
+  const defaults = await c.var.storage.database.read(readQuestDefaults)
+  const request = await parseBody(c, saveQuestRequestSchemaWith(defaults))
   const now = c.var.now()
   const quest = await c.var.storage.database.write((tx) => {
     updateQuest(tx, id, request, now)

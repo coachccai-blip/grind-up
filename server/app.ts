@@ -5,8 +5,11 @@ import { loadConfig, type AppConfig } from './config.js'
 import type { AppEnv, Storage } from './context.js'
 import { WriteConflictError } from './db/database.js'
 import { ApiError, notFound } from './http.js'
-import { adminBotRoutes, adminSettingsRoutes } from './routes/admin-bots.js'
+import { adminBotRoutes } from './routes/admin-bots.js'
+import { adminExportRoutes } from './routes/admin-export.js'
+import { adminOverviewRoutes } from './routes/admin-overview.js'
 import { adminQuestRoutes, adminValidationRoutes } from './routes/admin-quests.js'
+import { adminSettingsRoutes } from './routes/admin-settings.js'
 import { adminStudentRoutes } from './routes/admin-students.js'
 import { authRoutes } from './routes/auth.js'
 import { healthRoutes } from './routes/health.js'
@@ -71,10 +74,12 @@ export function createApp(dependencies: AppDependencies) {
 
   const admin = new Hono<AppEnv>()
   admin.use('*', requireRole('admin'))
+  admin.route('/overview', adminOverviewRoutes)
   admin.route('/students', adminStudentRoutes)
   admin.route('/quests', adminQuestRoutes)
   admin.route('/bots', adminBotRoutes)
   admin.route('/settings', adminSettingsRoutes)
+  admin.route('/export', adminExportRoutes)
   admin.route('/', adminValidationRoutes)
   app.route('/admin', admin)
 

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { AVATARS } from '../../../../shared/rules/avatars'
 import {
   BOT_MISSIONS_MAX,
@@ -23,7 +23,9 @@ import { EmptyState } from '../../../ui/EmptyState'
 import { Field } from '../../../ui/Field'
 import { Notice } from '../../../ui/Notice'
 import { OptionGroup } from '../../../ui/OptionGroup'
+import { TextLink } from '../../../ui/TextLink'
 import { formatXp } from '../../quests/QuestChips'
+import { useSettings } from '../settings/settings-api'
 import { useBots, useCreateBot, useUpdateBot, type AdminBot } from './bots-api'
 import styles from './BotEditorPage.module.css'
 
@@ -44,7 +46,7 @@ export function BotEditorPage() {
     ) : (
       <EmptyState emoji="🧩" title="Bot introuvable" pageTitle>
         <p>
-          <Link to="/admin/bots">Retour aux bots</Link>
+          <TextLink to="/admin/bots">Retour aux bots</TextLink>
         </p>
       </EmptyState>
     )
@@ -66,6 +68,8 @@ function BotEditor({ bot, taken }: BotEditorProps) {
   const create = useCreateBot()
   const update = useUpdateBot(bot?.id ?? '')
   const save = bot ? update : create
+  // Le barème des paramètres : c'est là qu'est tirée l'XP de chaque mission.
+  const rewards = useSettings().data?.rewards
 
   const [pseudo, setPseudo] = useState(bot?.pseudo ?? '')
   const [avatar, setAvatar] = useState(() => bot?.avatar ?? pick(AVATARS).id)
@@ -138,7 +142,7 @@ function BotEditor({ bot, taken }: BotEditorProps) {
   return (
     <form className={styles.form} onSubmit={submit} noValidate>
       <p>
-        <Link to="/admin/bots">Retour aux bots</Link>
+        <TextLink to="/admin/bots">Retour aux bots</TextLink>
       </p>
       <h1>{bot ? `Modifier ${bot.pseudo}` : 'Nouveau bot'}</h1>
 
@@ -174,7 +178,7 @@ function BotEditor({ bot, taken }: BotEditorProps) {
             className={styles.short}
             value={missionsPerWeek}
             onChange={(event) => setMissionsPerWeek(event.target.value)}
-            hint={`De ${BOT_MISSIONS_MIN} à ${BOT_MISSIONS_MAX}. Leurs jours et leurs heures sont tirés au sort chaque semaine, entre 8 h et 21 h.`}
+            hint={`De ${BOT_MISSIONS_MIN} à ${BOT_MISSIONS_MAX}. Leurs jours et leurs heures sont tirés au sort chaque semaine, entre 8\u00A0h et 21\u00A0h.`}
             error={errors.missionsPerWeek}
           />
         ) : (
@@ -207,7 +211,11 @@ function BotEditor({ bot, taken }: BotEditorProps) {
           {QUEST_DIFFICULTIES.map((difficulty) => (
             <Field
               key={difficulty.id}
-              label={`${difficulty.label} (${formatXp(difficulty.defaultReward)})`}
+              label={
+                rewards
+                  ? `${difficulty.label} (${formatXp(rewards[difficulty.id])})`
+                  : difficulty.label
+              }
               inputMode="numeric"
               value={mix[difficulty.id]}
               onChange={(event) => setMix({ ...mix, [difficulty.id]: event.target.value })}

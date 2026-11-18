@@ -10,23 +10,16 @@ import { errorMessage } from '../../../lib/api'
 import { Avatar } from '../../../ui/Avatar'
 import { Button, ButtonLink } from '../../../ui/Button'
 import { Card } from '../../../ui/Card'
-import { Checkbox } from '../../../ui/Choice'
 import { Chip } from '../../../ui/Chip'
 import { Dialog, DialogActions } from '../../../ui/Dialog'
 import { EmptyState } from '../../../ui/EmptyState'
 import { Field } from '../../../ui/Field'
 import { Notice } from '../../../ui/Notice'
+import { TextLink } from '../../../ui/TextLink'
 import { Leaderboard } from '../../leaderboard/Leaderboard'
 import { formatXp } from '../../quests/QuestChips'
-import {
-  useAdjustBot,
-  useBots,
-  useDeleteBot,
-  useSettings,
-  useUpdateBot,
-  useUpdateSettings,
-  type AdminBot,
-} from './bots-api'
+import { useSettings } from '../settings/settings-api'
+import { useAdjustBot, useBots, useDeleteBot, useUpdateBot, type AdminBot } from './bots-api'
 import styles from './BotsPage.module.css'
 
 /** Rythme d'un bot, en une phrase. */
@@ -42,10 +35,8 @@ function rhythm(bot: AdminBot): string {
 export function BotsPage() {
   const bots = useBots()
   const settings = useSettings()
-  const updateSettings = useUpdateSettings()
   const arrival = (useLocation().state as { notice?: string } | null)?.notice ?? null
   const [notice, setNotice] = useState<string | null>(arrival)
-  const [chosenLabel, setChosenLabel] = useState<boolean | null>(null)
   const all = bots.data ?? []
 
   return (
@@ -77,30 +68,17 @@ export function BotsPage() {
         </ul>
       )}
 
-      <Card className={styles.section}>
-        <h2>Ce que voient les élèves</h2>
-        <Checkbox
-          label="Montrer l’étiquette « Bot » aux élèves"
-          hint="Sans elle, rien ne distingue un bot d’un élève dans leur leaderboard."
-          // La case suit le geste tout de suite, sans attendre la réponse du serveur ;
-          // en cas d'échec, elle revient à la valeur enregistrée.
-          checked={chosenLabel ?? settings.data?.showBotLabel ?? false}
-          disabled={!settings.isSuccess}
-          onChange={(event) => {
-            setChosenLabel(event.target.checked)
-            updateSettings.mutate(
-              { showBotLabel: event.target.checked },
-              { onError: () => setChosenLabel(null) },
-            )
-          }}
-        />
-        {updateSettings.isError && (
-          <Notice tone="error">{errorMessage(updateSettings.error)}</Notice>
-        )}
-      </Card>
-
       <section className={styles.section} aria-labelledby="bots-leaderboard">
         <h2 id="bots-leaderboard">Classement</h2>
+        {/* L'étiquette « Bot » n'est montrée aux élèves que si l'admin le décide, dans ses paramètres. */}
+        {settings.data && (
+          <p className={styles.figures}>
+            {settings.data.showBotLabel
+              ? 'Vos élèves voient aussi l’étiquette « Bot ».'
+              : 'Vos élèves ne voient pas l’étiquette « Bot ».'}{' '}
+            <TextLink to="/admin/parametres">Changer ce réglage</TextLink>
+          </p>
+        )}
         <Leaderboard />
       </section>
     </>
@@ -152,7 +130,7 @@ function BotCard({ bot, onNotice }: BotCardProps) {
           onClick={togglePause}
           busy={update.isPending}
           busyLabel="…"
-          aria-label={bot.paused ? `Reprendre ${bot.pseudo}` : `Mettre ${bot.pseudo} en pause`}
+          aria-label={bot.paused ? `Reprendre ${bot.pseudo}` : `Mettre en pause ${bot.pseudo}`}
         >
           {bot.paused ? 'Reprendre' : 'Mettre en pause'}
         </Button>

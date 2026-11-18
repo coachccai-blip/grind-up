@@ -1136,14 +1136,22 @@ describe('deadline, bonus d’avance et expiration', () => {
 
     const tooEarly = await admin.post<ApiErrorBody>(`/api/admin/assignments/${assignmentId}/reopen`)
     scene.advance(4 * HOUR)
+    const expired = await readMine(lea, quest.id)
     const reopened = await admin.post<AssignmentResponse>(
       `/api/admin/assignments/${assignmentId}/reopen`,
     )
+    const offered = await readMine(lea, quest.id)
+    const listed = (await lea.get<StudentQuestsResponse>('/api/quests')).body.quests
     const done = await attempt(lea, quest.id, answers)
 
     expect(tooEarly.status).toBe(409)
     expect(tooEarly.body.error.code).toBe('not_expired')
     expect(reopened.body.assignment.status).toBe('todo')
+    // L'élève sait ce que la quête rouverte rapporte désormais : la moitié de sa récompense.
+    expect(expired.lateRewardXp).toBeNull()
+    expect(offered).toMatchObject({ status: 'todo', rewardXp: 100, lateRewardXp: 50 })
+    expect(listed.find((entry) => entry.id === quest.id)?.lateRewardXp).toBe(50)
+    expect(done.body.quest.lateRewardXp).toBeNull()
     // 50 % de la récompense, plus le bonus sans faute calculé sur cette moitié.
     expect(done.body.quest.reward).toEqual({
       base: 50,

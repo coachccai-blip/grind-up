@@ -119,6 +119,8 @@ describe('progression d’un élève', () => {
       validations: [{ questId, title: 'Tables de 6', xp: 110 }],
       xpGained: 110,
       levelUp: { from: 1, to: 2 },
+      // Première mission de la semaine : Léa prend la tête du classement.
+      podium: { rank: 1 },
       badges: ['first_step'],
     })
 
@@ -190,6 +192,73 @@ describe('progression d’un élève', () => {
     ])
     expect(journal.body.entries).toHaveLength(5)
     expect(journal.body.entries.reduce((sum, entry) => sum + entry.amount, 0)).toBe(230)
+  })
+})
+
+describe('entrée sur le podium', () => {
+  it('s’annonce avec la quête qui y mène l’élève, une seule fois par semaine', async () => {
+    const scene = await setup()
+    const { admin, lea, tom } = scene
+    const first = await publish(admin)
+    const second = await publish(admin)
+
+    // Tom valide le premier : il est seul en tête. Léa le rejoint ensuite, à la deuxième place.
+    await answer(tom, first)
+    scene.advance(HOUR)
+    await answer(lea, first)
+    const announced = await progressOf(lea)
+    await lea.post('/api/progress/celebration/seen')
+    // Sa deuxième quête la fait passer première : le podium, lui, a déjà été annoncé.
+    await answer(lea, second)
+    const sameWeek = await progressOf(lea)
+    await lea.post('/api/progress/celebration/seen')
+
+    expect(announced.celebration?.podium).toEqual({ rank: 2 })
+    expect(sameWeek.celebration).toMatchObject({ xpGained: 110, podium: null })
+
+    // La semaine suivante, le classement repart de zéro : une nouvelle entrée s'annonce.
+    scene.advance(7 * DAY)
+    const third = await publish(admin)
+    await answer(lea, third)
+    expect((await progressOf(lea)).celebration?.podium).toEqual({ rank: 1 })
+  })
+
+  it('ne s’annonce pas à un élève qui n’est pas dans les trois premiers', async () => {
+    const scene = await setup()
+    const { admin, lea, tom } = scene
+    const ines = scene.client()
+    const noa = scene.client()
+    await ines.signUpStudent('Inès')
+    await noa.signUpStudent('Noa')
+    const first = await publish(admin)
+    const second = await publish(admin)
+
+    for (const student of [tom, ines, noa]) {
+      await answer(student, first)
+      await answer(student, second)
+    }
+    scene.advance(HOUR)
+    await answer(lea, first)
+    const fourth = await progressOf(lea)
+
+    // Léa est quatrième : sa quête est fêtée, pas le podium.
+    expect(fourth.celebration).toMatchObject({ xpGained: 110, podium: null })
+    expect((await progressOf(tom)).celebration?.podium).toEqual({ rank: 1 })
+  })
+
+  it('ne s’annonce jamais seul, sans quête validée à fêter', async () => {
+    const scene = await setup()
+    const { admin, lea, tom, tomId } = scene
+    const quest = await publish(admin)
+    await answer(tom, quest)
+    scene.advance(HOUR)
+    await answer(lea, quest)
+    await lea.post('/api/progress/celebration/seen')
+
+    // Le compte de Tom est désactivé : Léa passe première sans rien avoir fait.
+    await admin.patch(`/api/admin/students/${tomId}`, { isActive: false })
+
+    expect((await progressOf(lea)).celebration).toBeNull()
   })
 })
 
