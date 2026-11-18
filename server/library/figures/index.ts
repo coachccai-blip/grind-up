@@ -8,6 +8,7 @@ import { geometrieFigures } from './geometrie.js'
 import { modelesFigures } from './modeles.js'
 import { nombresFigures } from './nombres.js'
 import { proportionnaliteFigures } from './proportionnalite.js'
+import { trigonometrieFigures } from './trigonometrie.js'
 import type { FigureDefinition } from './svg.js'
 
 /**
@@ -29,6 +30,7 @@ export const FIGURES: readonly FigureDefinition[] = [
   ...proportionnaliteFigures,
   ...donneesFigures,
   ...geometrieFigures,
+  ...trigonometrieFigures,
   ...espaceFigures,
   ...algorithmiqueFigures,
   ...modelesFigures,

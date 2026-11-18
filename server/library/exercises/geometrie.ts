@@ -1,4 +1,4 @@
-import { defineExercise, exact, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, exact, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
  * Géométrie plane. Les figures sont décrites par leur énoncé : l'élève commence
@@ -727,6 +727,14 @@ const TRIANGLE_SIDES = [
     '- le **côté opposé** est en face de l’angle choisi ;',
     '- le **côté adjacent** est le côté de l’angle choisi qui n’est pas l’hypoténuse.',
   ].join('\n'),
+  figure(
+    'trigonometrie-vocabulaire',
+    'Un triangle ABC rectangle en A, l’angle choisi en B : hypoténuse BC, côté opposé AC, côté adjacent AB.',
+  ),
+  figure(
+    'trigonometrie-vocabulaire-autre-angle',
+    'Le même triangle, l’angle choisi en C : hypoténuse BC, côté opposé AB, côté adjacent AC.',
+  ),
 ] as const
 
 const TRIGONOMETRY = [
@@ -762,6 +770,10 @@ const trigonometrieLongueur = defineExercise({
     {
       statement:
         'Le triangle ABC est rectangle en A. BC = 9 cm et l’angle ABC mesure 40°. Calcule AB, en cm, arrondi au dixième.',
+      figure: {
+        id: 'trigonometrie-longueur-exemple-1',
+        alt: 'Le triangle ABC rectangle en A, l’angle de 40° en B ; BC donnée, AB cherchée.',
+      },
       steps: [
         [
           'cos(ABC) = AB/BC',
@@ -778,6 +790,10 @@ const trigonometrieLongueur = defineExercise({
     {
       statement:
         'Le triangle DEF est rectangle en D. DE = 6 cm et l’angle DFE mesure 47°. Calcule EF, en cm, arrondi au dixième.',
+      figure: {
+        id: 'trigonometrie-longueur-exemple-2',
+        alt: 'Le triangle DEF rectangle en D, l’angle de 47° en F ; DE donnée, EF cherchée.',
+      },
       steps: [
         [
           'sin(DFE) = DE/EF',
@@ -797,11 +813,15 @@ const trigonometrieLongueur = defineExercise({
     },
   ],
   intro:
-    'Prends ta calculatrice et vérifie qu’elle est en mode degré. Pour chaque question, fais d’abord un schéma à main levée.',
+    'Prends ta calculatrice et vérifie qu’elle est en mode degré. Pour chaque question, repère sur la figure l’angle en jeu, puis nomme ses côtés : hypoténuse, côté opposé, côté adjacent.',
   questions: [
     exact({
       prompt:
         'Le triangle RST est rectangle en R. ST = 10 cm et l’angle RST mesure 38°. Calcule RS, en cm, arrondi au dixième.',
+      figure: {
+        id: 'trigonometrie-longueur-q1',
+        alt: 'Le triangle RST rectangle en R, l’angle de 38° en S ; ST donnée, RS cherchée.',
+      },
       answers: ['7,9'],
       correction: {
         steps: [
@@ -824,6 +844,10 @@ const trigonometrieLongueur = defineExercise({
     exact({
       prompt:
         'Le triangle EFG est rectangle en E. FG = 7 cm et l’angle EFG mesure 53°. Calcule EG, en cm, arrondi au dixième.',
+      figure: {
+        id: 'trigonometrie-longueur-q2',
+        alt: 'Le triangle EFG rectangle en E, l’angle de 53° en F ; FG donnée, EG cherchée.',
+      },
       answers: ['5,6'],
       correction: {
         steps: [
@@ -846,6 +870,10 @@ const trigonometrieLongueur = defineExercise({
     exact({
       prompt:
         'Le triangle IJK est rectangle en I. IJ = 6 cm et l’angle IJK mesure 35°. Calcule IK, en cm, arrondi au dixième.',
+      figure: {
+        id: 'trigonometrie-longueur-q3',
+        alt: 'Le triangle IJK rectangle en I, l’angle de 35° en J ; IJ donnée, IK cherchée.',
+      },
       answers: ['4,2'],
       correction: {
         steps: [
@@ -868,6 +896,10 @@ const trigonometrieLongueur = defineExercise({
     exact({
       prompt:
         'Le triangle LMN est rectangle en L. LM = 5 cm et l’angle LMN mesure 46°. Calcule MN, en cm, arrondi au dixième.',
+      figure: {
+        id: 'trigonometrie-longueur-q4',
+        alt: 'Le triangle LMN rectangle en L, l’angle de 46° en M ; LM donnée, MN cherchée.',
+      },
       answers: ['7,2'],
       correction: {
         steps: [
@@ -892,6 +924,10 @@ const trigonometrieLongueur = defineExercise({
     exact({
       prompt:
         'Le triangle PQR est rectangle en Q. QR = 8 cm et l’angle QPR mesure 50°. Calcule PQ, en cm, arrondi au dixième.',
+      figure: {
+        id: 'trigonometrie-longueur-q5',
+        alt: 'Le triangle PQR rectangle en Q, l’angle de 50° en P ; QR donnée, PQ cherchée.',
+      },
       answers: ['6,7'],
       correction: {
         steps: [
@@ -917,6 +953,10 @@ const trigonometrieLongueur = defineExercise({
     exact({
       prompt:
         'Une rampe de chargement [AB] relie le sol, horizontal, au plateau d’un camion : A est au sol, B au bord du plateau. Le point H du sol est à la verticale de B : le triangle ABH est rectangle en H, et BH = 1,2 m. La rampe fait avec le sol un angle BAH de 20°. Calcule la longueur AB de la rampe, en m, arrondie au dixième.',
+      figure: {
+        id: 'trigonometrie-longueur-q6-rampe',
+        alt: 'Une rampe AB monte du sol au plateau d’un camion ; BH vaut 1,2 m, l’angle en A 20°, AB est cherchée.',
+      },
       answers: ['3,5'],
       correction: {
         steps: [
@@ -954,6 +994,10 @@ const trigonometrieAngle = defineExercise({
     TRIGONOMETRY,
     MNEMONIC,
     'Quand on connaît deux côtés, on peut donc calculer le cosinus, le sinus ou la tangente d’un angle. Pour retrouver l’angle lui-même, on utilise les touches **arccos**, **arcsin** et **arctan** de la calculatrice, souvent notées cos⁻¹, sin⁻¹ et tan⁻¹.',
+    figure(
+      'trigonometrie-arccos',
+      'La touche cos va de l’angle 60° au quotient 0,5 ; la touche arccos fait le chemin inverse.',
+    ),
     [
       '1. Repère l’angle cherché, puis nomme les deux côtés connus.',
       '2. Choisis la formule qui contient ces deux côtés.',
@@ -966,6 +1010,10 @@ const trigonometrieAngle = defineExercise({
     {
       statement:
         'Le triangle ABC est rectangle en A. AB = 3 cm et BC = 5 cm. Calcule la mesure de l’angle ABC, en degrés, arrondie à l’unité.',
+      figure: {
+        id: 'trigonometrie-angle-exemple-1',
+        alt: 'Le triangle ABC rectangle en A ; AB et BC données, l’angle en B cherché.',
+      },
       steps: [
         [
           'cos(ABC) = AB/BC',
@@ -982,6 +1030,10 @@ const trigonometrieAngle = defineExercise({
     {
       statement:
         'Le triangle DEF est rectangle en D. DE = 9 cm et DF = 5 cm. Calcule la mesure de l’angle DEF, en degrés, arrondie à l’unité.',
+      figure: {
+        id: 'trigonometrie-angle-exemple-2',
+        alt: 'Le triangle DEF rectangle en D ; DE et DF données, l’angle en E cherché.',
+      },
       steps: [
         [
           'tan(DEF) = DF/DE',
@@ -1000,11 +1052,15 @@ const trigonometrieAngle = defineExercise({
     },
   ],
   intro:
-    'Prends ta calculatrice et vérifie qu’elle est en mode degré. Pour chaque question, fais d’abord un schéma à main levée.',
+    'Prends ta calculatrice et vérifie qu’elle est en mode degré. Pour chaque question, repère sur la figure l’angle en jeu, puis nomme ses côtés : hypoténuse, côté opposé, côté adjacent.',
   questions: [
     exact({
       prompt:
         'Le triangle RST est rectangle en R. RS = 9 cm et ST = 10 cm. Calcule la mesure de l’angle RST, en degrés, arrondie à l’unité.',
+      figure: {
+        id: 'trigonometrie-angle-q1',
+        alt: 'Le triangle RST rectangle en R ; RS et ST données, l’angle en S cherché.',
+      },
       answers: ['26'],
       correction: {
         steps: [
@@ -1026,6 +1082,10 @@ const trigonometrieAngle = defineExercise({
     exact({
       prompt:
         'Le triangle EFG est rectangle en E. EG = 3 cm et FG = 8 cm. Calcule la mesure de l’angle EFG, en degrés, arrondie à l’unité.',
+      figure: {
+        id: 'trigonometrie-angle-q2',
+        alt: 'Le triangle EFG rectangle en E ; EG et FG données, l’angle en F cherché.',
+      },
       answers: ['22'],
       correction: {
         steps: [
@@ -1047,6 +1107,10 @@ const trigonometrieAngle = defineExercise({
     exact({
       prompt:
         'Le triangle IJK est rectangle en I. IJ = 5 cm et IK = 8 cm. Calcule la mesure de l’angle IJK, en degrés, arrondie à l’unité.',
+      figure: {
+        id: 'trigonometrie-angle-q3',
+        alt: 'Le triangle IJK rectangle en I ; IJ et IK données, l’angle en J cherché.',
+      },
       answers: ['58'],
       correction: {
         steps: [
@@ -1072,6 +1136,10 @@ const trigonometrieAngle = defineExercise({
     exact({
       prompt:
         'Le triangle LMN est rectangle en M. LN = 7 cm et MN = 4 cm. Calcule la mesure de l’angle MLN, en degrés, arrondie à l’unité.',
+      figure: {
+        id: 'trigonometrie-angle-q4',
+        alt: 'Le triangle LMN rectangle en M ; LN et MN données, l’angle en L cherché.',
+      },
       answers: ['35'],
       correction: {
         steps: [
@@ -1096,6 +1164,10 @@ const trigonometrieAngle = defineExercise({
     exact({
       prompt:
         'ABCD est un rectangle : AB = 9 cm et BC = 4 cm. Calcule la mesure de l’angle BAC, entre le côté [AB] et la diagonale [AC], en degrés, arrondie à l’unité.',
+      figure: {
+        id: 'trigonometrie-angle-q5-rectangle',
+        alt: 'Le rectangle ABCD et sa diagonale AC ; AB et BC données, l’angle BAC cherché.',
+      },
       answers: ['24'],
       correction: {
         steps: [
@@ -1121,6 +1193,10 @@ const trigonometrieAngle = defineExercise({
     exact({
       prompt:
         'Un garage est vu de profil : son toit est le segment [AC]. Le triangle ABC est rectangle en B. Le côté [AB] est horizontal et mesure 4 m ; le côté [BC] est vertical et mesure 2,6 m. Calcule la mesure de l’angle BAC, que fait le toit avec l’horizontale, en degrés, arrondie à l’unité.',
+      figure: {
+        id: 'trigonometrie-angle-q6-garage',
+        alt: 'Un garage de profil, son toit AC ; AB vaut 4 m, BC 2,6 m, l’angle BAC est cherché.',
+      },
       answers: ['33'],
       correction: {
         steps: [
@@ -1175,6 +1251,10 @@ const agrandissementsEtTransformations = defineExercise({
     {
       statement:
         'Un rectangle mesure 5 cm sur 2 cm. On l’agrandit avec le rapport 3. Calcule le périmètre et l’aire du rectangle agrandi.',
+      figure: {
+        id: 'agrandissement-exemple-rectangle',
+        alt: 'Un rectangle de 5 cm sur 2 cm et son agrandissement de rapport 3, dont le périmètre et l’aire sont cherchés.',
+      },
       steps: [
         [
           '5 × 3 = 15 et 2 × 3 = 6',
@@ -1195,6 +1275,10 @@ const agrandissementsEtTransformations = defineExercise({
     {
       statement:
         'Une figure F a pour image la figure F′ par une transformation. Chaque point M de F a pour image le point M′ tel que O est le milieu du segment [MM′]. Quelle est cette transformation ? Que conserve-t-elle ?',
+      figure: {
+        id: 'transformations-exemple-symetrie-centrale',
+        alt: 'Une figure F, son image F′, un point M, son image M′ et le point O, milieu du segment MM′.',
+      },
       steps: [
         [
           'O est le milieu de [MM′]',
@@ -1216,6 +1300,10 @@ const agrandissementsEtTransformations = defineExercise({
       prompt:
         'Les triangles ABC et DEF sont semblables : DEF est un agrandissement de ABC, dans lequel [DE] correspond à [AB] et [EF] à [BC]. AB = 4 cm, DE = 10 cm et BC = 6 cm. Combien mesure [EF] ?',
       choices: ['12 cm', '2,4 cm', '15 cm', '60 cm'],
+      figure: {
+        id: 'agrandissement-q1-triangles',
+        alt: 'Le triangle ABC et son agrandissement DEF ; AB, BC et DE données, EF cherchée.',
+      },
       answer: '15 cm',
       correction: {
         steps: [
@@ -1308,6 +1396,10 @@ const agrandissementsEtTransformations = defineExercise({
       prompt:
         'Une bouteille a un volume de 800 mL. Un échantillon a exactement la même forme : c’est une réduction de la bouteille, de rapport 0,5. Quel est le volume de l’échantillon ?',
       choices: ['400 mL', '100 mL', '200 mL', '1 600 mL'],
+      figure: {
+        id: 'agrandissement-q4-bouteille',
+        alt: 'Une bouteille de 800 mL et un échantillon de même forme, réduction de rapport 0,5, de volume cherché.',
+      },
       answer: '100 mL',
       correction: {
         steps: [
@@ -1375,6 +1467,10 @@ const agrandissementsEtTransformations = defineExercise({
       prompt:
         'ABCD est un carré de centre O. Ses sommets A, B, C, D se suivent dans le sens des aiguilles d’une montre. Quelle est l’image du point A par la rotation de centre O et d’angle 90°, dans le sens des aiguilles d’une montre ?',
       choices: ['Le point D', 'Le point C', 'Le point B', 'Le point A'],
+      figure: {
+        id: 'transformations-q6-carre',
+        alt: 'Le carré ABCD de centre O, ses sommets dans le sens des aiguilles d’une montre ; rotation de 90° dans ce sens.',
+      },
       answer: 'Le point B',
       correction: {
         steps: [
@@ -1448,6 +1544,10 @@ const agrandissementsEtTransformations = defineExercise({
       prompt:
         'Le triangle A′B′C′ est l’image du triangle ABC par l’homothétie de centre O et de rapport 4. Le triangle ABC a un périmètre de 12 cm et une aire de 6 cm². Que valent le périmètre et l’aire du triangle A′B′C′ ?',
       choices: ['48 cm et 24 cm²', '48 cm et 96 cm²', '16 cm et 10 cm²', '192 cm et 96 cm²'],
+      figure: {
+        id: 'transformations-q8-homothetie',
+        alt: 'Le triangle ABC et son image A′B′C′ par l’homothétie de centre O et de rapport 4.',
+      },
       answer: '48 cm et 96 cm²',
       correction: {
         steps: [
