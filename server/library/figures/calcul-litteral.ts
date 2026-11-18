@@ -1,5 +1,6 @@
 import {
   ACCENT,
+  arrow,
   brace,
   defineFigure,
   drawing,
@@ -181,8 +182,173 @@ function differenceCarres() {
 
 const differenceCarresFigure = defineFigure('difference-carres', differenceCarres())
 
+/** Un rectangle découpé en cases : leurs largeurs, leurs hauteurs, leurs aires et leurs aplats. */
+interface AreaGrid {
+  columns: readonly { size: number; name: string }[]
+  rows: readonly { size: number; name: string }[]
+  /** Les aires, ligne par ligne. */
+  areas: readonly (readonly string[])[]
+  fills: readonly (readonly string[])[]
+  left: number
+  top: number
+  /** Le nom du côté entier, sous l'accolade du bas ; rien si absent. */
+  wholeWidth?: string
+  /** Le nom du côté entier, à droite ; rien si absent. */
+  wholeHeight?: string
+  /** Couleur des noms des lignes (le facteur commun en accent). */
+  rowColor?: string
+  /** Séparations en pointillés, quand les morceaux ont été recollés. */
+  dashedCuts?: boolean
+}
+
+/**
+ * Le modèle des aires : un rectangle dont les côtés sont des sommes, découpé
+ * en autant de rectangles que de produits. Même style que le carré a + b.
+ */
+function areaGrid(options: AreaGrid): Part[] {
+  const { columns, rows, areas, fills, left, top, wholeWidth, wholeHeight } = options
+  const rowColor = options.rowColor ?? GREY
+  const width = columns.reduce((total, column) => total + column.size, 0)
+  const height = rows.reduce((total, row) => total + row.size, 0)
+  const xs = columns.map((_, index) =>
+    columns.slice(0, index).reduce((total, column) => total + column.size, left),
+  )
+  const ys = rows.map((_, index) =>
+    rows.slice(0, index).reduce((total, row) => total + row.size, top),
+  )
+  const cut = { color: INK, width: options.dashedCuts ? 1.5 : 2, dashed: options.dashedCuts }
+  return [
+    ...rows.flatMap((row, r) =>
+      columns.flatMap((column, c) => [
+        rect([xs[c]!, ys[r]!], column.size, row.size, { fill: fills[r]![c]!, width: 0 }),
+        area([xs[c]! + column.size / 2, ys[r]! + row.size / 2], areas[r]![c]!),
+      ]),
+    ),
+    rect([left, top], width, height),
+    ...xs.slice(1).map((x) => segment([x, top], [x, top + height], cut)),
+    ...ys.slice(1).map((y) => segment([left, y], [left + width, y], cut)),
+    ...columns.map(
+      (column, c) => column.name && side([xs[c]! + column.size / 2, top - 12], column.name),
+    ),
+    ...rows.map((row, r) =>
+      text([left - 10, ys[r]! + row.size / 2], row.name, {
+        weight: 700,
+        color: rowColor,
+        anchor: 'end',
+      }),
+    ),
+    wholeWidth &&
+      brace([left, top + height], [left + width, top + height], wholeWidth, {
+        outside: [left, top],
+      }),
+    wholeHeight &&
+      brace([left + width, top], [left + width, top + height], wholeHeight, {
+        outside: [left, top],
+      }),
+  ]
+}
+
+/** Simple distributivité : le rectangle k × (a + b) se découpe en ka et kb. */
+const distributiviteSimple = defineFigure(
+  'distributivite-simple',
+  drawing(
+    146,
+    ...areaGrid({
+      columns: [
+        { size: 132, name: 'a' },
+        { size: 80, name: 'b' },
+      ],
+      rows: [{ size: 70, name: 'k' }],
+      areas: [['ka', 'kb']],
+      fills: [[PASTEL.lilas, PASTEL.peche]],
+      left: 62,
+      top: 30,
+      wholeWidth: 'a + b',
+    }),
+  ),
+)
+
+/** Double distributivité : le rectangle (a + b)(c + d) se découpe en quatre. */
+const distributiviteDouble = defineFigure(
+  'distributivite-double',
+  drawing(
+    206,
+    ...areaGrid({
+      columns: [
+        { size: 124, name: 'a' },
+        { size: 72, name: 'b' },
+      ],
+      rows: [
+        { size: 80, name: 'c' },
+        { size: 52, name: 'd' },
+      ],
+      areas: [
+        ['ac', 'bc'],
+        ['ad', 'bd'],
+      ],
+      fills: [
+        [PASTEL.lilas, PASTEL.peche],
+        [PASTEL.menthe, PASTEL.citron],
+      ],
+      left: 54,
+      top: 30,
+      wholeWidth: 'a + b',
+      wholeHeight: 'c + d',
+    }),
+  ),
+)
+
+/**
+ * Factoriser, c'est lire le modèle des aires dans l'autre sens : deux
+ * rectangles ka et kb de même hauteur k se recollent le long de ce côté commun
+ * en un seul rectangle k × (a + b).
+ */
+function factorisationAires() {
+  const a = 112
+  const b = 70
+  const k = 52
+  const left = 74
+  const piece = (x: number, size: number, name: string, label: string, fill: string) =>
+    areaGrid({
+      columns: [{ size, name }],
+      rows: [{ size: k, name: 'k' }],
+      areas: [[label]],
+      fills: [[fill]],
+      left: x,
+      top: 30,
+      rowColor: ACCENT,
+    })
+  return drawing(
+    232,
+    ...piece(50, a, 'a', 'ka', PASTEL.lilas),
+    ...piece(214, b, 'b', 'kb', PASTEL.peche),
+    text([182, 56], '+', { size: 17, weight: 700, color: GREY }),
+    arrow([160, 92], [160, 122], { color: GREY, width: 1.75 }),
+    text([172, 107], 'on recolle le long de k', { size: 13, color: GREY, anchor: 'start' }),
+    ...areaGrid({
+      columns: [
+        { size: a, name: '' },
+        { size: b, name: '' },
+      ],
+      rows: [{ size: k, name: 'k' }],
+      areas: [['ka', 'kb']],
+      fills: [[PASTEL.lilas, PASTEL.peche]],
+      left,
+      top: 136,
+      wholeWidth: 'a + b',
+      rowColor: ACCENT,
+      dashedCuts: true,
+    }),
+  )
+}
+
+const factorisationAiresFigure = defineFigure('factorisation-aires', factorisationAires())
+
 export const calculLitteralFigures: readonly FigureDefinition[] = [
   carreSomme,
   differenceCarresFigure,
   carreDeDeuxX,
+  distributiviteSimple,
+  distributiviteDouble,
+  factorisationAiresFigure,
 ]

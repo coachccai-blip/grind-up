@@ -1,4 +1,4 @@
-import { defineExercise, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
  * Calcul littéral : développer et réduire, puis factoriser avec un facteur
@@ -19,6 +19,15 @@ const developper = defineExercise({
       '- Double distributivité : (a + b)(c + d) = ac + ad + bc + bd. Chaque terme de la première parenthèse multiplie chaque terme de la seconde.',
       '- Signe moins devant une parenthèse : on la supprime en changeant le signe de chacun de ses termes. Par exemple, −(a − b) = −a + b.',
     ].join('\n'),
+    'Pourquoi ? Un rectangle de côtés k et a + b se découpe en deux rectangles, d’aires ka et kb. Un rectangle de côtés a + b et c + d se découpe en quatre : un produit pour chaque case.',
+    figure(
+      'distributivite-simple',
+      'Un rectangle de côtés k et a + b, découpé en deux rectangles d’aires ka et kb.',
+    ),
+    figure(
+      'distributivite-double',
+      'Un rectangle de côtés a + b et c + d, découpé en quatre rectangles d’aires ac, bc, ad et bd.',
+    ),
     'Dans une somme, on ajoute les termes de même nature : 3x + 5x = 8x. Dans un produit, on multiplie les nombres entre eux et les lettres entre elles : 3x × 5x = 15x². En revanche, 3x + 5 ne se réduit pas : 3x et 5 ne sont pas de même nature.',
     'Un contrôle rapide : remplace x par un nombre simple, comme 2, dans l’expression de départ et dans ton résultat. Si tu ne trouves pas deux fois la même valeur, il y a une erreur. Évite 0 et 1, qui cachent certaines erreurs.',
   ),
@@ -267,6 +276,11 @@ const factoriser = defineExercise({
     'Mettre en facteur un nombre, une lettre, les deux à la fois, puis une parenthèse entière, y compris quand il reste le facteur 1 ou qu’un signe moins sépare les deux produits. On vérifie en redéveloppant.',
   lesson: paragraphs(
     '**Factoriser**, c’est transformer une somme en produit : c’est le chemin inverse du développement. On utilise la distributivité dans l’autre sens : ka + kb = k(a + b) et ka − kb = k(a − b). Le facteur k, présent dans chaque terme, est le **facteur commun**.',
+    'Avec des aires : deux rectangles ka et kb ont le même côté k. On les recolle le long de ce côté : on obtient un seul rectangle, de côtés k et a + b.',
+    figure(
+      'factorisation-aires',
+      'Deux rectangles d’aires ka et kb, de même hauteur k, recollés en un seul rectangle de côtés k et a + b.',
+    ),
     [
       '1. Repère le facteur commun à tous les termes : un nombre, une lettre, les deux à la fois, ou une parenthèse entière.',
       '2. Écris chaque terme comme un produit dont l’un des facteurs est ce facteur commun.',

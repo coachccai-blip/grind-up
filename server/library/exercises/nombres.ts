@@ -1,4 +1,4 @@
-import { defineExercise, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
  * Nombres et calculs : fractions, puissances, racines carrées, nombres premiers.
@@ -23,6 +23,15 @@ const fractions = defineExercise({
       '- **Diviser** : a/b ÷ c/d = a/b × d/c. Diviser par une fraction, c’est multiplier par son inverse. L’inverse de 3/4 est 4/3.',
       '- **Prendre une fraction d’une quantité**, c’est multiplier : les 2/3 de 60 valent 2/3 × 60 = 40.',
     ].join('\n'),
+    'Pourquoi un dénominateur commun ? Pour ajouter 1/2 et 1/3, on redécoupe les deux bandes en parts de même taille, des sixièmes : 1/2 + 1/3 = 3/6 + 2/6 = 5/6.',
+    figure(
+      'fractions-meme-denominateur',
+      'Deux bandes redécoupées en sixièmes : 1/2 devient 3/6, 1/3 devient 2/6, et leur somme couvre 5/6 de la bande.',
+    ),
+    figure(
+      'fractions-d-une-quantite',
+      'Une bande de 60 partagée en trois parts de 20 ; deux parts coloriées font les 2/3 de 60, soit 40.',
+    ),
     '**Priorités** : sans parenthèses, les multiplications et les divisions se font avant les additions et les soustractions.',
     'Une fraction est **irréductible** quand son numérateur et son dénominateur n’ont plus de diviseur commun autre que 1. On termine toujours un calcul en simplifiant le résultat.',
   ),
@@ -244,6 +253,10 @@ const fractions = defineExercise({
     qcm({
       prompt:
         'Léa reçoit de l’argent pour son anniversaire. Elle en dépense 1/4 pour un livre, puis 2/5 de ce qui lui reste pour un jeu. Quelle fraction de la somme de départ lui reste-t-il à la fin ?',
+      figure: {
+        id: 'fractions-lea-barre',
+        alt: 'Une barre : 1/4 pour le livre ; le reste, partagé en cinq, dont 2/5 pour le jeu ; ce qui reste à la fin est cherché.',
+      },
       choices: ['7/20', '9/20', '3/10', '11/20'],
       answer: '9/20',
       correction: {
@@ -296,6 +309,10 @@ const puissances = defineExercise({
       '- Exposant négatif : 2⁻³ est l’inverse de 2³, donc 2⁻³ = 1/2³ = 1/8.',
       '- Puissances de 10 : 10⁴ = 10 000 (un 1 suivi de 4 zéros) et 10⁻⁴ = 0,0001 (le 1 est le quatrième chiffre après la virgule).',
     ].join('\n'),
+    figure(
+      'puissances-echelle-de-10',
+      'L’échelle des puissances de 10, de 10⁻³ à 10⁶, avec leurs écritures décimales ; on monte d’une marche en multipliant par 10.',
+    ),
     'Pour calculer avec des puissances d’un même nombre, on revient à la définition et on compte les facteurs :',
     [
       '- produit : 2³ × 2⁴ = 2⁷, car 3 + 4 = 7 ;',
@@ -303,6 +320,10 @@ const puissances = defineExercise({
       '- puissance de puissance : (2³)² = 2³ × 2³ = 2⁶, car 2 × 3 = 6.',
     ].join('\n'),
     'L’**écriture scientifique** d’un nombre positif est le produit d’un nombre décimal a, tel que 1 ≤ a < 10, par une puissance de 10. Le nombre a s’écrit donc avec un seul chiffre avant la virgule, différent de 0. Par exemple, 5 300 = 5,3 × 10³ et 0,0026 = 2,6 × 10⁻³.',
+    figure(
+      'puissances-decalage-virgule',
+      'Multiplier par 10³ décale la virgule de 3 rangs vers la droite ; multiplier par 10⁻³ la décale de 3 rangs vers la gauche.',
+    ),
     'Un **ordre de grandeur** d’un nombre est une valeur simple, proche de ce nombre. Dans cet exercice, comme en physique-chimie, on prend la puissance de 10 la plus proche : pour 2,1 × 10⁵, c’est 10⁵ ; pour 8,7 × 10⁵, c’est 10⁶, car 8,7 est plus proche de 10 que de 1.',
   ),
   example: [
@@ -445,6 +466,10 @@ const puissances = defineExercise({
     qcm({
       prompt:
         'Le diamètre du Soleil est d’environ 1 390 000 km. Celui d’un globule rouge est d’environ 0,000007 m. Quelles sont, dans cet ordre, les écritures scientifiques de 1 390 000 et de 0,000007 ?',
+      figure: {
+        id: 'puissances-soleil-globule',
+        alt: 'Le Soleil, de diamètre 1 390 000 km, et un globule rouge, de diamètre 0,000007 m ; schéma pas à l’échelle.',
+      },
       choices: [
         '1,39 × 10⁶ et 7 × 10⁻⁶',
         '13,9 × 10⁵ et 7 × 10⁻⁶',
@@ -523,6 +548,10 @@ const puissances = defineExercise({
     qcm({
       prompt:
         'La lumière parcourt environ 3 × 10⁵ km par seconde. Une année dure environ 3,2 × 10⁷ secondes. Quel est l’ordre de grandeur, en km, de la distance que la lumière parcourt en une année ? On attend la puissance de 10 la plus proche.',
+      figure: {
+        id: 'puissances-annee-lumiere',
+        alt: 'La lumière d’une étoile : 3 × 10⁵ km en 1 s ; en 1 an, soit 3,2 × 10⁷ s, la distance parcourue est cherchée.',
+      },
       choices: ['10¹²', '10¹³', '10³⁵', '10²'],
       answer: '10¹³',
       correction: {
@@ -576,6 +605,11 @@ const racines = defineExercise({
       '- Pour tout nombre positif a : (√a)² = a.',
       '- Un nombre strictement négatif, comme −9, n’a pas de racine carrée : le carré d’un nombre est toujours positif.',
     ].join('\n'),
+    'Pour le voir : un carré d’aire a a pour côté √a. Un carré d’aire 49 a pour côté 7.',
+    figure(
+      'racines-carre-aire',
+      'Un carré d’aire a, de côté √a, et un carré d’aire 49, de côté 7.',
+    ),
     'Les **carrés parfaits** sont les carrés des nombres entiers. De 1² à 15² : 1 ; 4 ; 9 ; 16 ; 25 ; 36 ; 49 ; 64 ; 81 ; 100 ; 121 ; 144 ; 169 ; 196 ; 225. Ceux de 1 à 144 sont à connaître par cœur.',
     'Quand un entier n’est pas un carré parfait, sa racine carrée n’est pas un entier. On l’encadre alors entre deux entiers consécutifs, ou on en donne une valeur approchée avec la calculatrice : √2 ≈ 1,41.',
     'Attention : en général, la racine carrée d’une somme n’est pas la somme des racines carrées. On calcule d’abord la somme, puis sa racine carrée.',
@@ -583,6 +617,10 @@ const racines = defineExercise({
   example: [
     {
       statement: 'Encadre √40 entre deux entiers consécutifs.',
+      figure: {
+        id: 'racines-encadrement-40',
+        alt: 'Deux droites graduées : 40 se place entre 36 et 49, donc √40 se place entre 6 et 7.',
+      },
       steps: [
         [
           '6² = 36 et 7² = 49',
@@ -598,6 +636,10 @@ const racines = defineExercise({
     },
     {
       statement: 'Calcule √(36 + 64).',
+      figure: {
+        id: 'racines-somme-triangle',
+        alt: 'Un triangle rectangle de côtés 6 et 8 : son hypoténuse mesure 10, moins que le détour 6 + 8.',
+      },
       steps: [
         [
           '36 + 64 = 100',
@@ -757,6 +799,10 @@ const racines = defineExercise({
     qcm({
       prompt:
         'Un carré a une aire de 30 cm². Avec la calculatrice, calcule la longueur de son côté, arrondie au dixième de centimètre.',
+      figure: {
+        id: 'racines-carre-aire-30',
+        alt: 'Un carré d’aire 30 cm² ; la longueur de son côté est cherchée.',
+      },
       choices: ['15 cm', '5,5 cm', '7,5 cm', '5,4 cm'],
       answer: '5,5 cm',
       correction: {
@@ -813,6 +859,10 @@ const premiers = defineExercise({
     ].join('\n'),
     'Un **nombre premier** est un entier qui a exactement deux diviseurs : 1 et lui-même. Voici les plus petits : 2 ; 3 ; 5 ; 7 ; 11 ; 13 ; 17 ; 19 ; 23… Le nombre 1 n’est pas premier : il n’a qu’un seul diviseur. Pour savoir si un nombre est premier, on essaie de le diviser par 2, 3, 5, 7… Il est inutile d’essayer un nombre dont le carré dépasse le nombre étudié : pour 37, on essaie 2, 3 et 5, mais pas 7, car 7 × 7 = 49.',
     'Tout entier supérieur ou égal à 2 se décompose en produit de facteurs premiers, d’une seule façon, à l’ordre des facteurs près : 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5. Pour trouver cette décomposition, on divise par 2 autant de fois que possible, puis par 3, puis par 5, et ainsi de suite.',
+    figure(
+      'premiers-arbre-60',
+      'L’arbre de décomposition de 60 : 60 donne 2 et 30, 30 donne 2 et 15, 15 donne 3 et 5.',
+    ),
     'Une fraction est **irréductible** quand son numérateur et son dénominateur n’ont plus de diviseur commun autre que 1. Pour rendre une fraction irréductible, on décompose son numérateur et son dénominateur, puis on simplifie par tous leurs facteurs communs. Le produit de ces facteurs communs est le plus grand diviseur commun aux deux nombres.',
   ),
   example: {
@@ -1019,6 +1069,10 @@ const premiers = defineExercise({
     qcm({
       prompt:
         'Pour une kermesse, on répartit 72 sucettes et 120 bonbons dans des sachets identiques : tous contiennent le même nombre de sucettes et le même nombre de bonbons. Toutes les friandises sont utilisées. Quel est le plus grand nombre de sachets possible ?',
+      figure: {
+        id: 'premiers-kermesse-sachets',
+        alt: '72 sucettes et 120 bonbons à répartir dans des sachets identiques, en nombre cherché.',
+      },
       choices: ['6', '72', '360', '24'],
       answer: '24',
       correction: {
