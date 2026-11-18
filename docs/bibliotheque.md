@@ -133,3 +133,12 @@ ou « ≈ », le test cherche un calcul et compare les deux valeurs. Pour qu'il 
 
 Une lettre autre que x, un mot ou une unité ne se calculent pas : l'égalité est laissée de côté,
 et c'est la relecture humaine qui la contrôle.
+
+## Le catalogue du README
+
+Le README liste les exercices de la bibliothèque. Un test compare ce tableau aux exercices livrés.
+Après avoir ajouté, renommé ou retiré un exercice, le tableau se récrit ainsi :
+
+```bash
+MAJ_CATALOGUE=1 npx vitest run tests/unit/library-catalogue.test.ts
+```

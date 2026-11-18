@@ -85,7 +85,44 @@ Chaque exercice suit le même plan :
 _Utiliser cet exercice_ ouvre une nouvelle quête déjà remplie. Rien n'est enregistré à ce stade et
 tout reste modifiable : il reste à choisir les élèves (tous, ou quelques-uns), puis à publier.
 
-<!-- catalogue -->
+<!-- catalogue : début -->
+
+**30 exercices, 9 thèmes.**
+
+| Thème                            | Exercice                                        | Difficulté | Questions            |
+| -------------------------------- | ----------------------------------------------- | ---------- | -------------------- |
+| Nombres et calculs               | Fractions : les quatre opérations               | Moyen      | 6, QCM               |
+| Nombres et calculs               | Puissances et notation scientifique             | Moyen      | 6, QCM               |
+| Nombres et calculs               | Racines carrées                                 | Facile     | 6, QCM               |
+| Nombres et calculs               | Nombres premiers et fractions irréductibles     | Moyen      | 6, QCM               |
+| Calcul littéral                  | Développer et réduire                           | Facile     | 6, QCM               |
+| Calcul littéral                  | Factoriser avec un facteur commun               | Moyen      | 6, QCM               |
+| Calcul littéral                  | Identités remarquables : cas simples            | Facile     | 6, QCM               |
+| Calcul littéral                  | Identités remarquables : cas difficiles         | Difficile  | 8, QCM               |
+| Équations                        | Équations du premier degré                      | Moyen      | 6, réponses à saisir |
+| Équations                        | Équations produit nul et équations x² = a       | Moyen      | 6, QCM               |
+| Équations                        | Résoudre un problème avec une équation          | Difficile  | 6, réponses à saisir |
+| Fonctions                        | Notion de fonction : image et antécédent        | Facile     | 6, QCM               |
+| Fonctions                        | Fonctions linéaires et proportionnalité         | Moyen      | 6, QCM               |
+| Fonctions                        | Fonctions affines                               | Moyen      | 6, QCM               |
+| Proportionnalité et pourcentages | Pourcentages et évolutions                      | Moyen      | 6, réponses à saisir |
+| Proportionnalité et pourcentages | Vitesse, durée, distance                        | Moyen      | 6, réponses à saisir |
+| Proportionnalité et pourcentages | Ratios, partages et échelles                    | Facile     | 6, QCM               |
+| Statistiques et probabilités     | Statistiques : moyenne, médiane, étendue        | Moyen      | 6, réponses à saisir |
+| Statistiques et probabilités     | Probabilités : calculer une probabilité         | Facile     | 6, QCM               |
+| Statistiques et probabilités     | Probabilités : expériences à deux épreuves      | Difficile  | 6, QCM               |
+| Géométrie plane                  | Théorème de Pythagore et sa réciproque          | Moyen      | 7, réponses à saisir |
+| Géométrie plane                  | Théorème de Thalès : calculer une longueur      | Moyen      | 6, réponses à saisir |
+| Géométrie plane                  | Réciproque de Thalès : des droites parallèles ? | Difficile  | 6, QCM               |
+| Géométrie plane                  | Trigonométrie : calculer une longueur           | Moyen      | 6, réponses à saisir |
+| Géométrie plane                  | Trigonométrie : calculer un angle               | Moyen      | 6, réponses à saisir |
+| Géométrie plane                  | Agrandissements, réductions et transformations  | Moyen      | 8, QCM               |
+| Espace et grandeurs              | Volumes : pyramide, cône, boule                 | Moyen      | 6, QCM               |
+| Espace et grandeurs              | Sections de solides et repérage dans l'espace   | Moyen      | 8, QCM               |
+| Algorithmique                    | Programmes de calcul                            | Moyen      | 6, QCM               |
+| Algorithmique                    | Algorithmes : variables, boucles et conditions  | Moyen      | 6, QCM               |
+
+<!-- catalogue : fin -->
 
 Les figures de géométrie sont décrites par l'énoncé : l'élève commence par un schéma à main levée.
 
