@@ -26,6 +26,14 @@ const BREAKABLE_UNIT_AFTER_VALUE = /^ (?:h|%|XP|min)(?![\p{L}\p{N}])/u
 /** Une apostrophe droite entre deux lettres : « l'élève » au lieu de « l’élève ». */
 const STRAIGHT_APOSTROPHE = /\p{L}'\p{L}/u
 
+/**
+ * Les exercices de la bibliothèque s'écrivent avec des espaces ordinaires : leur
+ * typographie est appliquée à la construction, et contrôlée sur le texte que
+ * lit l'élève (tests/unit/library.test.ts), pas sur leur source.
+ */
+const isLibraryExercise = (path: string) =>
+  relative(projectRoot, path).startsWith(join('server', 'library', 'exercises'))
+
 function sourceFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = join(directory, entry.name)
@@ -97,7 +105,7 @@ describe('typographie française', () => {
       ...sourceFiles(join(projectRoot, 'src')),
       ...sourceFiles(join(projectRoot, 'shared')),
       ...sourceFiles(join(projectRoot, 'server')),
-    ]
+    ].filter((file) => !isLibraryExercise(file))
 
     const offences = files.flatMap((file) =>
       displayedTexts(file)
@@ -135,7 +143,7 @@ describe('typographie française', () => {
       ...sourceFiles(join(projectRoot, 'src')),
       ...sourceFiles(join(projectRoot, 'shared')),
       ...sourceFiles(join(projectRoot, 'server')),
-    ]
+    ].filter((file) => !isLibraryExercise(file))
 
     const offences = files.flatMap((file) =>
       displayedTexts(file)

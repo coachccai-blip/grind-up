@@ -13,6 +13,7 @@ import { Notice } from '../../ui/Notice'
 import { RichText } from '../../ui/RichText'
 import { TextLink } from '../../ui/TextLink'
 import { CategoryChip, difficultyLabel, formatXp, StatusChip } from '../quests/QuestChips'
+import { ExampleTitle, LessonTitle } from '../quests/LessonTitles'
 import { QuestImage } from '../quests/QuestImage'
 import { ExactForm } from './formats/ExactForm'
 import { Flashcards } from './formats/Flashcards'
@@ -40,6 +41,19 @@ export function QuestPage() {
       startQuest()
     }
   }, [status, startQuest])
+
+  // Après une réponse, son résultat est amené à l'écran : l'élève vient de toucher le
+  // bouton tout en bas de la quête, et le verdict s'affiche plus haut.
+  const result = useRef<HTMLDivElement>(null)
+  const attemptsSeen = useRef<number | null>(null)
+  const attemptsUsed = quest?.attemptsUsed
+  useEffect(() => {
+    if (attemptsUsed === undefined) return
+    if (attemptsSeen.current !== null && attemptsUsed > attemptsSeen.current) {
+      result.current?.scrollIntoView({ block: 'start' })
+    }
+    attemptsSeen.current = attemptsUsed
+  }, [attemptsUsed])
 
   if (query.isPending) return <p>Chargement de la quête…</p>
   if (!quest) {
@@ -98,6 +112,18 @@ export function QuestPage() {
         </Notice>
       )}
 
+      {quest.lesson.trim() !== '' && (
+        <Card className={styles.instructions}>
+          <LessonTitle />
+          <RichText text={quest.lesson} />
+        </Card>
+      )}
+      {quest.example.trim() !== '' && (
+        <Card className={styles.instructions}>
+          <ExampleTitle />
+          <RichText text={quest.example} />
+        </Card>
+      )}
       {(quest.instructions.trim() !== '' || quest.imageUrl) && (
         <Card className={styles.instructions}>
           <h2>Consigne</h2>
@@ -106,14 +132,16 @@ export function QuestPage() {
         </Card>
       )}
 
-      <QuestBody
-        // Une nouvelle correction repart d'un formulaire rempli avec les dernières réponses.
-        key={`${view}-${quest.attemptsUsed}`}
-        quest={quest}
-        busy={attempt.isPending}
-        onSubmit={(body: AttemptBody) => attempt.mutate(body)}
-        error={attempt.isError ? attempt.error : null}
-      />
+      <div ref={result} className={styles.body}>
+        <QuestBody
+          // Une nouvelle correction repart d'un formulaire rempli avec les dernières réponses.
+          key={`${view}-${quest.attemptsUsed}`}
+          quest={quest}
+          busy={attempt.isPending}
+          onSubmit={(body: AttemptBody) => attempt.mutate(body)}
+          error={attempt.isError ? attempt.error : null}
+        />
+      </div>
     </>
   )
 }

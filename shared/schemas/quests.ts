@@ -21,9 +21,11 @@ import { RICH_TEXT_MAX_LENGTH } from '../rules/rich-text.js'
  * toutes les saisies) et l'interface (qui signale les erreurs avant l'envoi).
  */
 export const QUEST_TITLE_MAX = 80
-export const ITEM_PROMPT_MAX = 500
+export const ITEM_PROMPT_MAX = 600
 export const ANSWER_MAX = 200
 export const MAX_ITEMS = 50
+/** Longueur maximale de la correction détaillée d'une question. */
+export const EXPLANATION_MAX = 2000
 export const MAX_ACCEPTED_ANSWERS = 5
 export const MIN_CHOICES = 2
 export const MAX_CHOICES = 6
@@ -41,6 +43,10 @@ const TOO_LONG = (max: number) => `${max} caractères au maximum.`
  * Élément d'une quête. Selon le format : une question et ses réponses acceptées,
  * une question de QCM avec ses choix et les positions des bonnes réponses, ou une
  * carte (question au recto, réponse au verso).
+ *
+ * `explanation` est la correction détaillée d'une question, facultative et mise en
+ * forme comme une consigne. Elle fait partie du corrigé : l'élève ne la reçoit
+ * qu'une fois la quête validée.
  */
 export const questItemInputSchema = z.object({
   prompt: z.string().trim().max(ITEM_PROMPT_MAX, TOO_LONG(ITEM_PROMPT_MAX)),
@@ -62,6 +68,7 @@ export const questItemInputSchema = z.object({
     )
     .max(MAX_CHOICES)
     .default([]),
+  explanation: z.string().max(EXPLANATION_MAX, TOO_LONG(EXPLANATION_MAX)).default(''),
 })
 export type QuestItemInput = z.infer<typeof questItemInputSchema>
 
@@ -91,6 +98,10 @@ export const questInputSchema = z.object({
     .min(1, 'Donnez un titre à la quête.')
     .max(QUEST_TITLE_MAX, TOO_LONG(QUEST_TITLE_MAX)),
   instructions: z.string().max(RICH_TEXT_MAX_LENGTH, TOO_LONG(RICH_TEXT_MAX_LENGTH)).default(''),
+  /** Bref rappel du cours, facultatif : l'élève le lit avant la consigne. */
+  lesson: z.string().max(RICH_TEXT_MAX_LENGTH, TOO_LONG(RICH_TEXT_MAX_LENGTH)).default(''),
+  /** Exemple expliqué de la méthode, facultatif : l'élève le lit après le rappel du cours. */
+  example: z.string().max(RICH_TEXT_MAX_LENGTH, TOO_LONG(RICH_TEXT_MAX_LENGTH)).default(''),
   category: z.enum(QUEST_CATEGORY_IDS),
   format: z.enum(QUEST_FORMAT_IDS),
   difficulty: z.enum(QUEST_DIFFICULTY_IDS),
@@ -120,6 +131,8 @@ export const saveQuestRequestSchema = questInputSchema.extend({
   publish: z.boolean().default(false),
 })
 export type SaveQuestRequest = z.infer<typeof saveQuestRequestSchema>
+/** La requête telle qu'elle est envoyée : tout champ qui a une valeur par défaut est facultatif. */
+export type SaveQuestRequestBody = z.input<typeof saveQuestRequestSchema>
 
 /** Valeurs proposées par l'admin, dans ses paramètres, pour une quête corrigée automatiquement. */
 export interface QuestDefaults {
@@ -153,7 +166,8 @@ function distinctAnswers(answers: readonly string[]): string[] {
  * Met une quête sous sa forme enregistrée : chaque élément ne garde que ce qui
  * sert à son format, les choix vides d'un QCM sont retirés (les positions des
  * bonnes réponses suivent), et les réglages sans objet reprennent leur valeur
- * par défaut.
+ * par défaut. Seules les questions (réponse exacte, QCM) gardent leur correction
+ * détaillée : une carte se corrige par son verso.
  */
 export function normalizeQuestInput(input: QuestInput): QuestInput {
   const items = input.items.map((item): QuestItemInput => {
@@ -164,6 +178,7 @@ export function normalizeQuestInput(input: QuestInput): QuestInput {
           answers: distinctAnswers(item.answers),
           choices: [],
           correct: [],
+          explanation: item.explanation.trim(),
         }
       case 'flashcards':
         return {
@@ -171,6 +186,7 @@ export function normalizeQuestInput(input: QuestInput): QuestInput {
           answers: item.answers.filter((answer) => answer !== '').slice(0, 1),
           choices: [],
           correct: [],
+          explanation: '',
         }
       case 'qcm': {
         const kept = item.choices
@@ -184,16 +200,19 @@ export function normalizeQuestInput(input: QuestInput): QuestInput {
           answers: [],
           choices: kept.map(({ choice }) => choice),
           correct,
+          explanation: item.explanation.trim(),
         }
       }
       default:
-        return { prompt: item.prompt, answers: [], choices: [], correct: [] }
+        return { prompt: item.prompt, answers: [], choices: [], correct: [], explanation: '' }
     }
   })
 
   const auto = isAutoCorrected(input.format)
   return {
     ...input,
+    lesson: input.lesson.trim(),
+    example: input.example.trim(),
     items: auto ? items : [],
     manualValidation: input.format === 'declarative' ? input.manualValidation : !auto,
     passThreshold: auto ? input.passThreshold : DEFAULT_PASS_THRESHOLD,
@@ -385,6 +404,8 @@ export interface AdminQuestItem extends QuestItemInput {
 /** Une quête complète, réponses attendues comprises : réservée à l'admin. */
 export interface AdminQuestDetail extends AdminQuestSummary {
   instructions: string
+  lesson: string
+  example: string
   manualValidation: boolean
   passThreshold: number
   maxAttempts: number
@@ -492,6 +513,9 @@ export interface AttemptResult {
 
 export interface StudentQuestDetail extends StudentQuestSummary {
   instructions: string
+  /** Rappel du cours et exemple expliqué : ils préparent la quête, sans aucune réponse attendue. */
+  lesson: string
+  example: string
   /** Adresse de l'image de la consigne, ou null. Elle change quand l'image change. */
   imageUrl: string | null
   manualValidation: boolean
@@ -508,6 +532,11 @@ export interface StudentQuestDetail extends StudentQuestSummary {
    * (réponse exacte) ou les choix justes (QCM).
    */
   corrections: Record<string, string[]> | null
+  /**
+   * Corrections détaillées, une fois la quête validée : par élément, le texte mis
+   * en forme rédigé par l'admin. Seules les questions qui en ont une y figurent.
+   */
+  explanations: Record<string, string> | null
 }
 
 export interface StudentQuestsResponse {

@@ -76,9 +76,12 @@ export function QuestsPage() {
     <>
       <div className={styles.heading}>
         <h1>Quêtes</h1>
-        <ButtonLink to="/admin/quetes/nouvelle" variant="primary">
-          Nouvelle quête
-        </ButtonLink>
+        <div className={styles.headingActions}>
+          <ButtonLink to="/admin/quetes/bibliotheque">Bibliothèque</ButtonLink>
+          <ButtonLink to="/admin/quetes/nouvelle" variant="primary">
+            Nouvelle quête
+          </ButtonLink>
+        </div>
       </div>
       {notice && <Notice tone="success">{notice}</Notice>}
       {quests.isError && <Notice tone="error">{errorMessage(quests.error)}</Notice>}
@@ -86,7 +89,10 @@ export function QuestsPage() {
 
       {quests.isSuccess && all.length === 0 && (
         <EmptyState emoji="🎯" title="Aucune quête pour l’instant">
-          <p>Créez votre première quête, puis donnez-la à vos élèves.</p>
+          <p>
+            Créez votre première quête, ou partez d’un exercice de la bibliothèque, puis donnez-la à
+            vos élèves.
+          </p>
         </EmptyState>
       )}
 

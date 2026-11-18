@@ -1,12 +1,16 @@
+import { useState } from 'react'
+import { splitPrompt } from '../../../../shared/rules/figures'
 import type { QuestFormat } from '../../../../shared/rules/quests'
 import {
   ANSWER_MAX,
+  EXPLANATION_MAX,
   ITEM_PROMPT_MAX,
   MAX_CHOICES,
   MAX_ITEMS,
 } from '../../../../shared/schemas/quests'
 import { Button } from '../../../ui/Button'
-import { Field } from '../../../ui/Field'
+import { Field, TextArea } from '../../../ui/Field'
+import { Figures } from '../../../ui/Figure'
 import styles from './ItemsEditor.module.css'
 import { newItem, type FormItem } from './quest-form'
 
@@ -56,6 +60,8 @@ export function ItemsEditor({ format, items, onChange, errors, disabled }: Items
       <ol className={styles.items}>
         {items.map((item, index) => {
           const error = (field: string) => errors[`items.${index}.${field}`]
+          // Aperçu des illustrations qui terminent l'énoncé (exercices de la bibliothèque).
+          const figures = format === 'flashcards' ? [] : splitPrompt(item.prompt).figures
           return (
             <li key={item.key} className={styles.item}>
               <div className={styles.itemHeader}>
@@ -80,6 +86,12 @@ export function ItemsEditor({ format, items, onChange, errors, disabled }: Items
                 error={error('prompt')}
                 disabled={disabled}
               />
+              {figures.length > 0 && (
+                <div className={styles.figures}>
+                  <p className={styles.hint}>Ce que l’élève voit sous l’énoncé&nbsp;:</p>
+                  <Figures figures={figures} />
+                </div>
+              )}
               {format === 'exact' && (
                 <Field
                   label="Réponses acceptées"
@@ -114,6 +126,14 @@ export function ItemsEditor({ format, items, onChange, errors, disabled }: Items
                   disabled={disabled}
                 />
               )}
+              {format !== 'flashcards' && (
+                <ExplanationField
+                  value={item.explanation}
+                  onChange={(explanation) => update(index, { explanation })}
+                  error={error('explanation')}
+                  disabled={disabled}
+                />
+              )}
             </li>
           )
         })}
@@ -127,6 +147,37 @@ export function ItemsEditor({ format, items, onChange, errors, disabled }: Items
         <Button onClick={() => onChange([...items, newItem(format)])}>{wording.add}</Button>
       )}
     </div>
+  )
+}
+
+interface ExplanationFieldProps {
+  value: string
+  onChange: (explanation: string) => void
+  error: string | undefined
+  disabled: boolean
+}
+
+/**
+ * Correction détaillée d'une question. Repliée tant qu'elle est vide : le
+ * formulaire reste court pour qui n'en écrit pas.
+ */
+function ExplanationField({ value, onChange, error, disabled }: ExplanationFieldProps) {
+  // L'état de départ ne change plus ensuite : effacer le texte ne replie pas la zone en pleine saisie.
+  const [startsOpen] = useState(value !== '' || error !== undefined)
+  return (
+    <details className={styles.explanation} open={startsOpen}>
+      <summary>Correction détaillée</summary>
+      <TextArea
+        label="Texte de la correction"
+        rows={Math.min(14, Math.max(4, value.split('\n').length + 1))}
+        maxLength={EXPLANATION_MAX}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        hint="Facultative. L’élève la lit une fois la quête validée, sous la bonne réponse. Même mise en forme que la consigne."
+        error={error}
+        disabled={disabled}
+      />
+    </details>
   )
 }
 

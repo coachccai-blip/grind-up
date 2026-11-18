@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
 import {
   isAutoCorrected,
   QUEST_CATEGORIES,
@@ -11,6 +11,7 @@ import {
   type QuestFormat,
 } from '../../../../shared/rules/quests'
 import type { GameSettings } from '../../../../shared/rules/settings'
+import type { LibraryExercise } from '../../../../shared/schemas/library'
 import { QUEST_TITLE_MAX, type AdminQuestDetail } from '../../../../shared/schemas/quests'
 import { RICH_TEXT_MAX_LENGTH } from '../../../../shared/rules/rich-text'
 import { ApiError, errorFields, errorMessage } from '../../../lib/api'
@@ -31,6 +32,7 @@ import { ItemsEditor } from './ItemsEditor'
 import {
   checkForm,
   emptyForm,
+  formFromExercise,
   formFromQuest,
   initialItems,
   toRequest,
@@ -39,18 +41,50 @@ import {
 } from './quest-form'
 import styles from './QuestEditorPage.module.css'
 import { ImagePicker } from './ImagePicker'
+import { useLibraryExercise } from './library-api'
 import { useAdminQuest, useSaveQuest, type ImageChange } from './quests-api'
 
-/** Création d'une quête, ou modification d'une quête existante. */
+/**
+ * Création d'une quête, ou modification d'une quête existante. Une quête neuve
+ * peut partir d'un exercice de la bibliothèque : /admin/quetes/nouvelle?modele=…
+ */
 export function QuestEditorPage() {
   const { id } = useParams()
+  const [search] = useSearchParams()
+  const exerciseId = id === undefined ? search.get('modele') : null
   const existing = useAdminQuest(id)
+  const exercise = useLibraryExercise(exerciseId)
   // Le barème et les valeurs proposées pour une quête viennent des paramètres.
   const settings = useSettings()
 
   if (settings.isError) return <Notice tone="error">{errorMessage(settings.error)}</Notice>
   if (!settings.data) return <p>Chargement de la quête…</p>
-  if (id === undefined) return <QuestEditor key="new" quest={null} settings={settings.data} />
+  if (id === undefined && exerciseId === null) {
+    return <QuestEditor key="new" quest={null} exercise={null} settings={settings.data} />
+  }
+  if (id === undefined) {
+    if (exercise.isPending) return <p>Chargement de l’exercice…</p>
+    if (!exercise.data) {
+      const missing = exercise.error instanceof ApiError && exercise.error.status === 404
+      return missing ? (
+        <EmptyState emoji="🧩" title="Exercice introuvable" pageTitle>
+          <p>
+            <TextLink to="/admin/quetes/bibliotheque">Retour à la bibliothèque</TextLink>
+          </p>
+        </EmptyState>
+      ) : (
+        <Notice tone="error">{errorMessage(exercise.error)}</Notice>
+      )
+    }
+    return (
+      <QuestEditor
+        key={`modele-${exercise.data.id}`}
+        quest={null}
+        exercise={exercise.data}
+        settings={settings.data}
+      />
+    )
+  }
   if (existing.isPending) return <p>Chargement de la quête…</p>
   if (!existing.data) {
     const missing = existing.error instanceof ApiError && existing.error.status === 404
@@ -64,7 +98,14 @@ export function QuestEditorPage() {
       <Notice tone="error">{errorMessage(existing.error)}</Notice>
     )
   }
-  return <QuestEditor key={existing.data.id} quest={existing.data} settings={settings.data} />
+  return (
+    <QuestEditor
+      key={existing.data.id}
+      quest={existing.data}
+      exercise={null}
+      settings={settings.data}
+    />
+  )
 }
 
 const hasContent = (items: readonly FormItem[]) =>
@@ -72,25 +113,33 @@ const hasContent = (items: readonly FormItem[]) =>
     (item) =>
       item.prompt.trim() !== '' ||
       item.answersText.trim() !== '' ||
+      item.explanation.trim() !== '' ||
       item.choices.some((choice) => choice.trim() !== ''),
   )
 
 interface QuestEditorProps {
   quest: AdminQuestDetail | null
+  /** Exercice de la bibliothèque dont une quête neuve reprend le contenu. */
+  exercise: LibraryExercise | null
   settings: GameSettings
 }
 
-function QuestEditor({ quest, settings }: QuestEditorProps) {
+function QuestEditor({ quest, exercise, settings }: QuestEditorProps) {
   const navigate = useNavigate()
   const students = useStudents()
   const save = useSaveQuest(quest?.id)
 
   const [form, setForm] = useState<QuestForm>(() =>
-    quest ? formFromQuest(quest, settings) : emptyForm(settings),
+    quest
+      ? formFromQuest(quest, settings)
+      : exercise
+        ? formFromExercise(exercise, settings)
+        : emptyForm(settings),
   )
   // Le contenu saisi pour un format est gardé de côté : revenir à ce format le retrouve.
   const [setAside, setSetAside] = useState<Partial<Record<QuestFormat, FormItem[]>>>({})
-  const [formatChosen, setFormatChosen] = useState(quest !== null)
+  // Le format d'une quête existante ou d'un exercice est déjà choisi : il ne suit plus la catégorie.
+  const [formatChosen, setFormatChosen] = useState(quest !== null || exercise !== null)
   const [image, setImage] = useState<ImageChange>({ kind: 'keep' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submissions, setSubmissions] = useState(0)
@@ -177,19 +226,44 @@ function QuestEditor({ quest, settings }: QuestEditorProps) {
   return (
     <form ref={formElement} className={styles.form} onSubmit={onSubmit} noValidate>
       <p>
-        <TextLink to={quest ? `/admin/quetes/${quest.id}` : '/admin/quetes'}>
-          {quest ? 'Retour à la quête' : 'Retour aux quêtes'}
+        <TextLink
+          to={
+            quest
+              ? `/admin/quetes/${quest.id}`
+              : exercise
+                ? '/admin/quetes/bibliotheque'
+                : '/admin/quetes'
+          }
+        >
+          {quest
+            ? 'Retour à la quête'
+            : exercise
+              ? 'Retour à la bibliothèque'
+              : 'Retour aux quêtes'}
         </TextLink>
       </p>
       <h1>{quest ? 'Modifier la quête' : 'Nouvelle quête'}</h1>
+
+      {exercise && (
+        <Notice tone="info">
+          Cette quête reprend l’exercice «&nbsp;{exercise.title}&nbsp;» de la bibliothèque&nbsp;:
+          rappel du cours, exemple expliqué, questions et correction détaillée de chacune. Tout
+          reste modifiable. Choisissez les élèves en bas de la page, puis publiez la quête.
+          <p className={styles.shortcut}>
+            <Button variant="quiet" onClick={() => goToStudents(formElement.current)}>
+              Aller au choix des élèves
+            </Button>
+          </p>
+        </Notice>
+      )}
 
       {isArchived && (
         <Notice tone="warning">Cette quête est archivée. Restaurez-la pour la modifier.</Notice>
       )}
       {locked && !isArchived && (
         <Notice tone="info">
-          Un élève a déjà répondu à cette quête&nbsp;: seuls le titre, la consigne et la deadline
-          peuvent encore changer.
+          Un élève a déjà répondu à cette quête&nbsp;: seuls le titre, le rappel du cours,
+          l’exemple, la consigne et la deadline peuvent encore changer.
         </Notice>
       )}
 
@@ -224,6 +298,12 @@ function QuestEditor({ quest, settings }: QuestEditorProps) {
           onChange={(event) => set({ title: event.target.value })}
           hint={`${form.title.length} sur ${QUEST_TITLE_MAX} caractères. Les emojis sont acceptés.`}
           error={fieldErrors.title}
+        />
+        <LessonFields
+          lesson={form.lesson}
+          example={form.example}
+          onChange={set}
+          errors={fieldErrors}
         />
         <TextArea
           label="Consigne"
@@ -359,8 +439,8 @@ function QuestEditor({ quest, settings }: QuestEditorProps) {
 
       {/* Une quête publiée reçoit de nouveaux élèves depuis sa fiche, pas depuis ce formulaire. */}
       {!isPublished && (
-        <Card className={styles.section}>
-          <h2>Élèves</h2>
+        <Card className={styles.section} data-section="students">
+          <h2 tabIndex={-1}>Élèves</h2>
           {students.isError && <Notice tone="error">{errorMessage(students.error)}</Notice>}
           {students.isPending && <p>Chargement des élèves…</p>}
           {students.isSuccess && (
@@ -398,6 +478,76 @@ function QuestEditor({ quest, settings }: QuestEditorProps) {
         </div>
       )}
     </form>
+  )
+}
+
+/**
+ * Amène à l'écran le choix des élèves, tout en bas d'un formulaire que la
+ * bibliothèque a rempli : il ne reste souvent que cela à faire avant de publier.
+ */
+function goToStudents(form: HTMLFormElement | null): void {
+  const section = form?.querySelector<HTMLElement>('[data-section="students"]')
+  section?.scrollIntoView({ block: 'start' })
+  section?.querySelector<HTMLElement>('h2')?.focus({ preventScroll: true })
+}
+
+interface LessonFieldsProps {
+  lesson: string
+  example: string
+  onChange: (changes: Pick<Partial<QuestForm>, 'lesson' | 'example'>) => void
+  errors: Record<string, string>
+}
+
+const rowsFor = (text: string) => Math.min(14, Math.max(4, text.split('\n').length + 1))
+
+/**
+ * Rappel du cours et exemple expliqué : ce que l'élève lit avant la consigne.
+ * Facultatifs, donc repliés tant qu'ils sont vides.
+ */
+function LessonFields({ lesson, example, onChange, errors }: LessonFieldsProps) {
+  // L'état de départ ne change plus ensuite : effacer le texte ne replie pas la zone en pleine saisie.
+  const [startsOpen] = useState(lesson !== '' || example !== '')
+  return (
+    <details className={styles.preview} open={startsOpen}>
+      <summary>Rappel du cours et exemple expliqué</summary>
+      <div className={styles.lesson}>
+        <TextArea
+          label="Rappel du cours"
+          rows={rowsFor(lesson)}
+          maxLength={RICH_TEXT_MAX_LENGTH}
+          value={lesson}
+          onChange={(event) => onChange({ lesson: event.target.value })}
+          hint="Facultatif. Les définitions et les formules utiles, que l’élève lit avant la consigne."
+          error={errors.lesson}
+        />
+        <TextArea
+          label="Exemple expliqué"
+          rows={rowsFor(example)}
+          maxLength={RICH_TEXT_MAX_LENGTH}
+          value={example}
+          onChange={(event) => onChange({ example: event.target.value })}
+          hint="Facultatif. Une question du même genre, résolue pas à pas. Même mise en forme que la consigne."
+          error={errors.example}
+        />
+        {(lesson.trim() !== '' || example.trim() !== '') && (
+          <details className={styles.lessonPreview}>
+            <summary>Aperçu du rappel et de l’exemple</summary>
+            {lesson.trim() !== '' && (
+              <>
+                <h3>Rappel du cours</h3>
+                <RichText text={lesson} />
+              </>
+            )}
+            {example.trim() !== '' && (
+              <>
+                <h3>Exemple expliqué</h3>
+                <RichText text={example} />
+              </>
+            )}
+          </details>
+        )}
+      </div>
+    </details>
   )
 }
 

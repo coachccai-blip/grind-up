@@ -6,6 +6,12 @@
   gap: var(--space-3);
 }
 
+.headingActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 /* Téléphone : deux filtres par ligne ; minmax(0, …) laisse les listes rétrécir sans déborder. */
 .filters {
   display: grid;

@@ -3,13 +3,15 @@
 Plateforme de quêtes gamifiée pour élèves : un accompagnant donne des quêtes, les élèves les
 réalisent, gagnent de l'XP, montent de niveau et se comparent sur un leaderboard.
 
-**État : version 1.0.0, les six étapes du brief sont livrées.** L'admin crée des quêtes dans
-cinq formats, les donne à ses élèves et valide les réalisations. Chaque quête validée crédite de
-l'XP : niveau, série, badges. Le leaderboard classe les élèves par missions accomplies, puis par
-XP, sur la semaine, le mois ou depuis toujours ; l'admin peut l'animer avec des bots. Une vue
-d'ensemble lui montre ce qui demande son attention, et ses paramètres règlent le barème, les
-bonus et l'export des données. Le site s'installe sur l'écran d'accueil d'un téléphone. Les choix
-faits là où le brief ne tranchait pas sont consignés dans [docs/decisions.md](docs/decisions.md).
+**État : version 1.1.0.** Les six étapes du brief sont livrées ; la version 1.1 y ajoute une
+bibliothèque d'exercices de mathématiques de 3e, prêts à être donnés aux élèves. L'admin crée des
+quêtes dans cinq formats, ou reprend un exercice de la bibliothèque, les donne à ses élèves et
+valide les réalisations. Chaque quête validée crédite de l'XP : niveau, série, badges. Le
+leaderboard classe les élèves par missions accomplies, puis par XP, sur la semaine, le mois ou
+depuis toujours ; l'admin peut l'animer avec des bots. Une vue d'ensemble lui montre ce qui
+demande son attention, et ses paramètres règlent le barème, les bonus et l'export des données. Le
+site s'installe sur l'écran d'accueil d'un téléphone. Les choix faits là où le brief ne tranchait
+pas sont consignés dans [docs/decisions.md](docs/decisions.md).
 
 ## Mise en ligne sur Netlify
 
@@ -65,6 +67,82 @@ fonctionne. En cas d'échec, le bouton _Copier le détail_ de la page copie le d
    _Paramètres_.
 7. **Mot de passe oublié.** Dans _Élèves_, ouvrir la fiche de l'élève et choisir _Mot de passe
    temporaire_. L'élève se connecte avec, puis choisit aussitôt le sien.
+
+### Bibliothèque d'exercices
+
+Dans _Quêtes_, le bouton _Bibliothèque_ ouvre des exercices de mathématiques prêts à l'emploi,
+qui suivent le programme de la classe de 3e. Ils sont rangés par thème ; un filtre et une
+recherche aident à retrouver une notion.
+
+Chaque exercice suit le même plan :
+
+1. **un bref rappel du cours** : les définitions et les formules utiles ;
+2. **un exemple expliqué** : une question du même genre, résolue pas à pas ;
+3. **des questions pour pratiquer**, de la plus simple à la plus difficile ;
+4. **la correction détaillée de chaque question**, que l'élève lit une fois sa quête validée.
+   Dans un QCM, chaque mauvais choix correspond à une erreur courante, que la correction nomme.
+
+_Utiliser cet exercice_ ouvre une nouvelle quête déjà remplie. Rien n'est enregistré à ce stade et
+tout reste modifiable : il reste à choisir les élèves (tous, ou quelques-uns), puis à publier.
+
+<!-- catalogue : début -->
+
+**30 exercices, 9 thèmes.**
+
+| Thème                            | Exercice                                        | Difficulté | Questions            |
+| -------------------------------- | ----------------------------------------------- | ---------- | -------------------- |
+| Nombres et calculs               | Fractions : les quatre opérations               | Moyen      | 6, QCM               |
+| Nombres et calculs               | Puissances et notation scientifique             | Moyen      | 6, QCM               |
+| Nombres et calculs               | Racines carrées                                 | Facile     | 6, QCM               |
+| Nombres et calculs               | Nombres premiers et fractions irréductibles     | Moyen      | 6, QCM               |
+| Calcul littéral                  | Développer et réduire                           | Facile     | 6, QCM               |
+| Calcul littéral                  | Factoriser avec un facteur commun               | Moyen      | 6, QCM               |
+| Calcul littéral                  | Identités remarquables : cas simples            | Facile     | 6, QCM               |
+| Calcul littéral                  | Identités remarquables : cas difficiles         | Difficile  | 8, QCM               |
+| Équations                        | Équations du premier degré                      | Moyen      | 6, réponses à saisir |
+| Équations                        | Équations produit nul et équations x² = a       | Moyen      | 6, QCM               |
+| Équations                        | Résoudre un problème avec une équation          | Difficile  | 6, réponses à saisir |
+| Fonctions                        | Notion de fonction : image et antécédent        | Facile     | 6, QCM               |
+| Fonctions                        | Fonctions linéaires et proportionnalité         | Moyen      | 6, QCM               |
+| Fonctions                        | Fonctions affines                               | Moyen      | 6, QCM               |
+| Proportionnalité et pourcentages | Pourcentages et évolutions                      | Moyen      | 6, réponses à saisir |
+| Proportionnalité et pourcentages | Vitesse, durée, distance                        | Moyen      | 6, réponses à saisir |
+| Proportionnalité et pourcentages | Ratios, partages et échelles                    | Facile     | 6, QCM               |
+| Statistiques et probabilités     | Statistiques : moyenne, médiane, étendue        | Moyen      | 6, réponses à saisir |
+| Statistiques et probabilités     | Probabilités : calculer une probabilité         | Facile     | 6, QCM               |
+| Statistiques et probabilités     | Probabilités : expériences à deux épreuves      | Difficile  | 6, QCM               |
+| Géométrie plane                  | Théorème de Pythagore et sa réciproque          | Moyen      | 7, réponses à saisir |
+| Géométrie plane                  | Théorème de Thalès : calculer une longueur      | Moyen      | 6, réponses à saisir |
+| Géométrie plane                  | Réciproque de Thalès : des droites parallèles ? | Difficile  | 6, QCM               |
+| Géométrie plane                  | Trigonométrie : calculer une longueur           | Moyen      | 6, réponses à saisir |
+| Géométrie plane                  | Trigonométrie : calculer un angle               | Moyen      | 6, réponses à saisir |
+| Géométrie plane                  | Agrandissements, réductions et transformations  | Moyen      | 8, QCM               |
+| Espace et grandeurs              | Volumes : pyramide, cône, boule                 | Moyen      | 6, QCM               |
+| Espace et grandeurs              | Sections de solides et repérage dans l'espace   | Moyen      | 8, QCM               |
+| Algorithmique                    | Programmes de calcul                            | Moyen      | 6, QCM               |
+| Algorithmique                    | Algorithmes : variables, boucles et conditions  | Moyen      | 6, QCM               |
+
+<!-- catalogue : fin -->
+
+Des illustrations accompagnent le cours et certains énoncés (un carré découpé pour comprendre le
+double produit, par exemple) ; elles ne montrent jamais une réponse attendue. Une situation de
+géométrie reste décrite entièrement par son énoncé, et l'exemple commence par un schéma à main
+levée. Les illustrations sont des fichiers SVG servis par le site lui-même (`public/figures/`).
+
+### Rappel du cours, exemple et corrections dans vos propres quêtes
+
+Ces éléments ne sont pas réservés à la bibliothèque. Dans le formulaire d'une quête :
+
+- _Rappel du cours et exemple expliqué_ : deux textes facultatifs, que l'élève lit avant la
+  consigne ;
+- _Correction détaillée_, sous chaque question d'une quête à réponse exacte ou d'un QCM : l'élève
+  la lit une fois sa quête validée, sous la bonne réponse ; la correction d'une réponse fausse est
+  déjà dépliée.
+
+Tous s'écrivent avec la même mise en forme que la consigne.
+
+Pour ajouter un exercice à la bibliothèque, suivre le guide [docs/bibliotheque.md](docs/bibliotheque.md).
+Des tests relisent chaque exercice et recalculent toutes les égalités qu'ils savent lire.
 
 ### Paramètres et export
 
@@ -215,7 +293,7 @@ Sur Netlify, la fonction ne tourne pas à partir du code source mais d'un paquet
 mise en ligne. À chaque demande de fusion, l'action _Tests_ construit le zip avec l'outil de
 Netlify, puis `scripts/verify-bundle.mjs` charge ce paquet seul et lui fait jouer un parcours
 complet : test de déploiement, inscriptions, session, droits, quête, classement, paramètres,
-export. Pour le lancer à la main, depuis un dossier où le zip a été décompressé et ses dépendances installées :
+export, bibliothèque. Pour le lancer à la main, depuis un dossier où le zip a été décompressé et ses dépendances installées :
 
 ```bash
 npx netlify-cli@27.20.0 build --offline
@@ -258,7 +336,9 @@ attache le zip. L'action _Tests_ vérifie chaque demande de fusion.
 - **Export :** réservé à l'admin. Les fichiers ne contiennent ni mot de passe ni identifiant
   interne, et un texte saisi par un utilisateur ne peut pas y devenir une formule de tableur.
 - **Réponses attendues :** elles restent sur le serveur, qui corrige ; l'élève ne reçoit le
-  corrigé qu'une fois sa quête validée.
+  corrigé, corrections détaillées comprises, qu'une fois sa quête validée.
+- **Bibliothèque :** servie à l'admin seulement. Son contenu fait partie du code du serveur et
+  ne figure pas dans le code envoyé au navigateur.
 - **XP :** une quête est validée et créditée dans la même transaction, une seule fois, même en
   cas de double clic ou de requête rejouée.
 - **Tentatives :** connexions, inscriptions et essais du code admin sont limités par adresse IP.
@@ -280,7 +360,7 @@ index.html, src/           interface (React)
   features/                un dossier par espace : auth, student, admin, quests, progress,
                            leaderboard, install, deploy-check
   styles/                  palette et règles de la section 8
-public/                    manifeste web et icônes de l'application
+public/                    manifeste web, icônes de l'application, illustrations (figures/, engendrées)
 shared/                    code commun à l'interface et au serveur
   rules/                   pseudo, identifiant, palette, avatars, quêtes, statuts, calcul de
                            l'XP, niveaux, série, badges, classement, bots, paramètres
@@ -289,6 +369,7 @@ server/                    logique serveur
   app.ts                   assemblage des routes ; tout ce qui est sous /admin exige un admin
   auth/                    mots de passe, sessions, limitation des tentatives, comptes
   quests/                  quêtes : création, correction automatique, validation, crédit de l'XP
+  library/                 bibliothèque : exercices de 3e par thème, outils de rédaction et de dessin
   progress/                progression : XP, niveau, série, badges, journal
   leaderboard/             classement par période, mouvement depuis la veille, podium
   bots/                    bots : réglages, progression calculée à la demande
@@ -303,6 +384,7 @@ dev/                       Netlify en local pour `npm run dev` ; installation de
 scripts/                   zip, vérification de la fonction empaquetée, démonstration, icônes
 tests/                     unit/, api/, e2e/
 docs/decisions.md          choix faits là où le brief ne tranchait pas
+docs/bibliotheque.md       guide de rédaction et d'illustration des exercices de la bibliothèque
 .github/workflows/         tests et publication des versions
 ```
 

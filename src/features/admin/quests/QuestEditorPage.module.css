@@ -8,6 +8,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  /* Une section amenée à l'écran par un raccourci se place sous l'en-tête du téléphone. */
+  scroll-margin-top: 88px;
 }
 
 .pair {
@@ -38,6 +40,25 @@
   cursor: pointer;
 }
 
+/* Raccourci vers le choix des élèves, sous le message d'une quête reprise de la bibliothèque. */
+.shortcut {
+  margin-top: var(--space-2);
+  margin-left: calc(-1 * var(--space-3));
+}
+
+/* Le titre « Élèves » reçoit le focus quand le raccourci y mène, sans s'entourer d'un contour. */
+.section h2:focus {
+  outline: none;
+}
+
+/* Rappel du cours et exemple expliqué : deux zones de texte dans une zone qui se déplie. */
+.lesson {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-bottom: var(--space-2);
+}
+
 /* Téléphone : boutons empilés sur toute la largeur, l'action qui fait avancer en dernier. */
 .actions {
   display: flex;
@@ -54,4 +75,23 @@
     flex-direction: row;
     justify-content: flex-end;
   }
+}
+
+/* Aperçu du rappel et de l'exemple, tels que l'élève les lit, illustrations comprises. */
+.lessonPreview {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-card);
+}
+
+.lessonPreview summary {
+  min-height: var(--touch-target);
+  padding-block: 10px;
+  color: var(--color-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lessonPreview > * + * {
+  margin-top: var(--space-3);
 }

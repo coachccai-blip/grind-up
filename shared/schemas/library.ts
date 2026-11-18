@@ -1,0 +1,52 @@
+import type { FigureRef } from '../rules/figures.js'
+import type { QuestCategory, QuestDifficulty, QuestFormat } from '../rules/quests.js'
+import type { QuestItemInput } from './quests.js'
+
+/**
+ * Bibliothèque d'exercices prêts à l'emploi, réservée à l'admin. Un exercice est
+ * le contenu d'une quête : rappel du cours, exemple expliqué, consigne, questions
+ * et correction détaillée de chacune. L'admin le reprend dans une nouvelle quête,
+ * qu'il peut modifier avant de la donner à ses élèves.
+ */
+export interface LibraryTheme {
+  id: string
+  label: string
+  /** Emoji décoratif, montré devant le nom du thème. */
+  emoji: string
+}
+
+export interface LibraryExerciseSummary {
+  /** Identifiant lisible, qui figure dans l'adresse de l'écran. */
+  id: string
+  title: string
+  /** Identifiant du thème du programme auquel l'exercice appartient. */
+  theme: string
+  /** Classe visée, telle qu'elle s'affiche : « 3e ». */
+  level: string
+  /** Ce que l'exercice fait travailler, en une ou deux phrases. */
+  description: string
+  category: QuestCategory
+  format: QuestFormat
+  difficulty: QuestDifficulty
+  itemCount: number
+  /** La première illustration du rappel du cours, montrée en vignette ; null s'il n'en a pas. */
+  figure: FigureRef | null
+}
+
+/** Un exercice complet, réponses attendues et corrections comprises. */
+export interface LibraryExercise extends Omit<LibraryExerciseSummary, 'figure'> {
+  lesson: string
+  example: string
+  instructions: string
+  items: QuestItemInput[]
+}
+
+export interface LibraryResponse {
+  /** Les thèmes, dans l'ordre du programme. */
+  themes: LibraryTheme[]
+  exercises: LibraryExerciseSummary[]
+}
+
+export interface LibraryExerciseResponse {
+  exercise: LibraryExercise
+}

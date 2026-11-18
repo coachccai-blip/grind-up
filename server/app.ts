@@ -7,6 +7,7 @@ import { WriteConflictError } from './db/database.js'
 import { ApiError, notFound } from './http.js'
 import { adminBotRoutes } from './routes/admin-bots.js'
 import { adminExportRoutes } from './routes/admin-export.js'
+import { adminLibraryRoutes } from './routes/admin-library.js'
 import { adminOverviewRoutes } from './routes/admin-overview.js'
 import { adminQuestRoutes, adminValidationRoutes } from './routes/admin-quests.js'
 import { adminSettingsRoutes } from './routes/admin-settings.js'
@@ -77,6 +78,7 @@ export function createApp(dependencies: AppDependencies) {
   admin.route('/overview', adminOverviewRoutes)
   admin.route('/students', adminStudentRoutes)
   admin.route('/quests', adminQuestRoutes)
+  admin.route('/library', adminLibraryRoutes)
   admin.route('/bots', adminBotRoutes)
   admin.route('/settings', adminSettingsRoutes)
   admin.route('/export', adminExportRoutes)

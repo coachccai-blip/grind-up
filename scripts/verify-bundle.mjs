@@ -9,7 +9,8 @@
  * l'empaqueteur a jugés nécessaires. Ce script décompresse ce paquet dans un
  * dossier vide, le charge comme le fait Netlify et lui fait jouer un parcours
  * complet (test de déploiement, inscriptions, session, droits, quête, classement,
- * paramètres, export). Un module oublié par l'empaqueteur fait échouer le script.
+ * paramètres, export, bibliothèque d'exercices). Un module oublié par l'empaqueteur
+ * fait échouer le script.
  *
  * Seul le stockage est remplacé : par l'émulateur local de Netlify Blobs.
  */
@@ -287,7 +288,87 @@ async function runScenario(handler) {
   })
   check('Un élève ne peut rien exporter', forbidden.status === 403, `statut ${forbidden.status}`)
 
-  // 10. Rien de ce que renvoie la fonction ne contient le code admin.
+  // 10. Bibliothèque d'exercices et corrections détaillées : le contenu est bien dans le paquet,
+  //     réservé à l'admin, et l'élève ne lit les corrections qu'une fois la quête validée.
+  const library = await call(handler, 'GET', '/api/admin/library', { cookie: admin.cookie })
+  check(
+    "L'admin lit la bibliothèque d'exercices",
+    library.status === 200 && (library.json?.exercises?.length ?? 0) >= 2,
+    `statut ${library.status}`,
+  )
+  const libraryAsStudent = await call(handler, 'GET', '/api/admin/library', {
+    cookie: student.cookie,
+  })
+  check('Un élève ne lit pas la bibliothèque', libraryAsStudent.status === 403)
+  const exercise = await call(
+    handler,
+    'GET',
+    `/api/admin/library/${library.json?.exercises?.[0]?.id}`,
+    { cookie: admin.cookie },
+  )
+  const exerciseItems = exercise.json?.exercise?.items ?? []
+  check(
+    'Un exercice arrive avec ses questions et la correction de chacune',
+    exerciseItems.length > 0 && exerciseItems.every((item) => item.explanation.length > 0),
+    `${exerciseItems.length} questions`,
+  )
+  check(
+    'Un exercice commence par un rappel du cours et un exemple expliqué',
+    (exercise.json?.exercise?.lesson ?? '').length > 0 &&
+      (exercise.json?.exercise?.example ?? '').includes('Énoncé'),
+  )
+  check(
+    'La bibliothèque couvre plusieurs thèmes du programme',
+    (library.json?.themes?.length ?? 0) >= 2,
+    `${library.json?.themes?.length} thèmes, ${library.json?.exercises?.length} exercices`,
+  )
+  const { title, lesson, example, instructions, category, format, difficulty } =
+    exercise.json?.exercise ?? {}
+  const fromLibrary = await call(handler, 'POST', '/api/admin/quests', {
+    cookie: admin.cookie,
+    body: {
+      title,
+      lesson,
+      example,
+      instructions,
+      category,
+      format,
+      difficulty,
+      rewardXp: 50,
+      items: exerciseItems,
+      assignees: 'all',
+      publish: true,
+    },
+  })
+  const libraryQuest = fromLibrary.json?.quest
+  check("L'exercice devient une quête publiée", fromLibrary.status === 201)
+  const unsolved = await call(handler, 'GET', `/api/quests/${libraryQuest?.id}`, {
+    cookie: student.cookie,
+  })
+  check(
+    "L'élève reçoit la quête avec son rappel du cours, sans ses corrections",
+    unsolved.status === 200 &&
+      unsolved.json?.quest?.lesson === lesson &&
+      unsolved.json?.quest?.explanations === null &&
+      !unsolved.text.includes('Les pièges'),
+    `statut ${unsolved.status}`,
+  )
+  const solved = await call(handler, 'POST', `/api/quests/${libraryQuest?.id}/attempts`, {
+    cookie: student.cookie,
+    body: {
+      answers: Object.fromEntries(
+        (libraryQuest?.items ?? []).map((item) => [item.id, item.correct]),
+      ),
+    },
+  })
+  check(
+    'Une fois la quête validée, chaque question a sa correction détaillée',
+    solved.json?.quest?.status === 'validated' &&
+      Object.keys(solved.json?.quest?.explanations ?? {}).length === exerciseItems.length,
+    `statut ${solved.status}`,
+  )
+
+  // 11. Rien de ce que renvoie la fonction ne contient le code admin.
   const everything = JSON.stringify([
     health,
     student,
@@ -299,6 +380,9 @@ async function runScenario(handler) {
     overview,
     settings,
     exported,
+    library,
+    exercise,
+    solved,
   ])
   check('Le code admin ne figure dans aucune réponse', !everything.includes(ADMIN_CODE))
 }

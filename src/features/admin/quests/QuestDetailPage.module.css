@@ -66,6 +66,19 @@
   font-weight: 700;
 }
 
+/* Correction détaillée d'une question : repliée, pour que la fiche reste courte. */
+.explanation summary {
+  min-height: var(--touch-target);
+  padding-block: 10px;
+  color: var(--color-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.explanation[open] {
+  padding-bottom: var(--space-2);
+}
+
 .progress {
   display: flex;
   flex-direction: column;

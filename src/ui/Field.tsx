@@ -11,6 +11,8 @@ import { classes } from './classes'
 
 interface FieldLabels {
   label: string
+  /** Illustration placée entre le libellé et le champ (énoncé illustré d'une question). */
+  media?: ReactNode
   /** Aide affichée sous le champ. */
   hint?: ReactNode
   /** Message d'erreur, sans emoji. */
@@ -30,7 +32,7 @@ interface ShellProps extends FieldLabels {
 }
 
 /** Habillage commun des champs : libellé, aide et erreur, reliés au champ pour les lecteurs d'écran. */
-function FieldShell({ label, hint, error, id, className, trailing, children }: ShellProps) {
+function FieldShell({ label, media, hint, error, id, className, trailing, children }: ShellProps) {
   const generatedId = useId()
   const fieldId = id ?? generatedId
   const hintId = `${fieldId}-hint`
@@ -42,6 +44,7 @@ function FieldShell({ label, hint, error, id, className, trailing, children }: S
       <label htmlFor={fieldId} className={styles.label}>
         {label}
       </label>
+      {media}
       <div className={styles.control}>
         {children({
           id: fieldId,
@@ -69,10 +72,20 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement>, FieldLabels 
 }
 
 /** Champ de saisie avec son libellé, son aide et son erreur. Texte en 16 px au minimum. */
-export function Field({ label, hint, error, trailing, id, className, ...input }: FieldProps) {
+export function Field({
+  label,
+  media,
+  hint,
+  error,
+  trailing,
+  id,
+  className,
+  ...input
+}: FieldProps) {
   return (
     <FieldShell
       label={label}
+      media={media}
       hint={hint}
       error={error}
       id={id}

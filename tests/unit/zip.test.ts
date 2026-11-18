@@ -41,6 +41,8 @@ describe('npm run zip', () => {
       'server/app.ts',
       'server/db/migrations/index.ts',
       'netlify/functions/api.mts',
+      // Les illustrations de la bibliothèque, servies telles quelles par le site.
+      'public/figures/carre-somme.svg',
     ]) {
       expect(paths).toContain(expected)
     }
