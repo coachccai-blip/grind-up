@@ -1,4 +1,4 @@
-import { defineExercise, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
  * Algorithmique. Les programmes de calcul et les scripts sont écrits en toutes
@@ -21,11 +21,19 @@ const programmesDeCalcul = defineExercise({
       '- **Retrouver le nombre de départ** : on résout une équation, ou on remonte le programme en défaisant chaque instruction par l’opération inverse, de la dernière à la première. Remonter n’est possible que si le nombre de départ ne sert qu’une fois.',
       '- **Prouver** qu’un résultat est vrai pour tous les nombres : on calcule avec x. Des essais, même nombreux, ne prouvent rien.',
     ].join('\n'),
+    figure(
+      'programmes-calcul-remonter',
+      'Le programme × 4 puis − 5 mène de 7 à 23 ; on le remonte de 23 à 7 avec + 5 puis ÷ 4.',
+    ),
   ),
   example: [
     {
       statement:
         'Voici un programme de calcul : « Choisis un nombre. Ajoute 3. Multiplie le résultat par 2. Retranche le double du nombre de départ. » Applique-le au nombre 5, puis prouve qu’il donne le même résultat pour tous les nombres.',
+      figure: {
+        id: 'programmes-calcul-exemple',
+        alt: 'La chaîne du programme appliqué à 5 : 8 après + 3, 16 après × 2, 6 à la fin.',
+      },
       steps: [
         [
           '5 + 3 = 8',
@@ -70,6 +78,10 @@ const programmesDeCalcul = defineExercise({
     qcm({
       prompt:
         'Voici un programme de calcul : « Choisis un nombre. Ajoute 6. Multiplie le résultat par 3. Retranche 10. » Quel résultat obtient-on en choisissant 4 ?',
+      figure: {
+        id: 'programmes-calcul-q1',
+        alt: 'La chaîne du programme : 4, puis + 6, × 3 et − 10 ; le résultat est cherché.',
+      },
       choices: ['12', '20', '8', '−20'],
       answer: '20',
       correction: {
@@ -104,6 +116,10 @@ const programmesDeCalcul = defineExercise({
     qcm({
       prompt:
         'Voici un programme de calcul : « Choisis un nombre. Élève-le au carré. Retranche 10. Multiplie le résultat par 2. » Quel résultat obtient-on en choisissant −3 ?',
+      figure: {
+        id: 'programmes-calcul-q2',
+        alt: 'La chaîne du programme : −3, puis au carré, − 10 et × 2 ; le résultat est cherché.',
+      },
       choices: ['−38', '2', '−2', '−32'],
       answer: '−2',
       correction: {
@@ -135,6 +151,10 @@ const programmesDeCalcul = defineExercise({
     qcm({
       prompt:
         'Voici un programme de calcul : « Choisis un nombre. Ajoute 5. Multiplie le résultat par 4. Retranche 8. » On note x le nombre de départ. Quelle expression donne le résultat du programme ?',
+      figure: {
+        id: 'programmes-calcul-q3',
+        alt: 'La chaîne du programme : x, puis + 5, × 4 et − 8 ; l’expression du résultat est cherchée.',
+      },
       choices: ['4x − 3', 'x + 12', '4x + 28', '4x + 12'],
       answer: '4x + 12',
       correction: {
@@ -171,6 +191,10 @@ const programmesDeCalcul = defineExercise({
     qcm({
       prompt:
         'Voici un programme de calcul : « Choisis un nombre. Multiplie-le par 3. Retranche 9. Divise le résultat par 2. » Le résultat final est 15. Quel était le nombre de départ ?',
+      figure: {
+        id: 'programmes-calcul-q4',
+        alt: 'La chaîne du programme : × 3, − 9 et ÷ 2 mènent à 15 ; le nombre de départ est cherché.',
+      },
       choices: ['18', '16', '13', '7'],
       answer: '13',
       correction: {
@@ -208,6 +232,10 @@ const programmesDeCalcul = defineExercise({
     qcm({
       prompt:
         'Programme A : « Choisis un nombre. Multiplie-le par 4. Retranche 6. » Programme B : « Choisis un nombre. Multiplie-le par 2. Ajoute 4. » Pour quel nombre de départ les deux programmes donnent-ils le même résultat ?',
+      figure: {
+        id: 'programmes-calcul-q5',
+        alt: 'Les chaînes des programmes A (× 4, − 6) et B (× 2, + 4), partant du même nombre inconnu.',
+      },
       choices: ['5', '−1', '10', '8'],
       answer: '5',
       correction: {
@@ -244,6 +272,10 @@ const programmesDeCalcul = defineExercise({
     qcm({
       prompt:
         'Programme A : « Choisis un nombre. Ajoute 3. Élève le résultat au carré. » Programme B : « Choisis un nombre. Ajoute 6. Multiplie le résultat par le nombre de départ. Ajoute 9. » Pour quels nombres de départ les deux programmes donnent-ils le même résultat ?',
+      figure: {
+        id: 'programmes-calcul-q6',
+        alt: 'Les chaînes des programmes A (+ 3, au carré) et B (+ 6, × le nombre de départ, + 9).',
+      },
       choices: [
         'Seulement pour le nombre 0',
         'Pour tous les nombres',
@@ -301,14 +333,26 @@ const scripts = defineExercise({
       '- Une **boucle** répète un bloc d’instructions : un nombre de fois fixé (« répéter 3 fois »), ou jusqu’à ce qu’une condition, testée avant chaque passage, devienne vraie (« répéter jusqu’à ce que n > 20 »).',
       '- Une **instruction conditionnelle** (« si … alors … sinon … ») teste une condition : si elle est vraie, le script exécute ce qui suit « alors » ; si elle est fausse, ce qui suit « sinon ».',
     ].join('\n'),
+    figure(
+      'scripts-variable-boite',
+      'Le bloc mettre score à 10 range 10 dans la boîte score ; le bloc ajouter 3 à score la fait passer à 13.',
+    ),
     'Pour suivre un script, on note la valeur de chaque variable après chaque instruction. L’instruction « dire » fait afficher un message par le lutin, le personnage qui exécute le script.',
     'Pour tracer une figure, le lutin avance, puis tourne. Il tourne de l’**angle extérieur** : pour un polygone régulier, c’est 360° divisé par le nombre de côtés, soit 90° pour un carré et 120° pour un triangle équilatéral.',
+    figure(
+      'scripts-angle-exterieur',
+      'Le lutin avance, puis tourne : il tourne de l’angle entre le côté suivant et le prolongement du côté, pas de l’angle de la figure.',
+    ),
     'Dans cet exercice, les scripts sont écrits entre guillemets : chaque phrase est une instruction. Une boucle répète tout ce qui suit ses deux-points, jusqu’au point.',
   ),
   example: [
     {
       statement:
         'Voici un script : « Mettre n à 2. Répéter 4 fois : ajouter 3 à n. Si n > 12 alors dire Grand, sinon dire Petit. » Que dit le lutin ?',
+      figure: {
+        id: 'scripts-exemple-condition',
+        alt: 'Le script en blocs : mettre n à 2, répéter 4 fois ajouter 3 à n, puis si n > 12 alors dire Grand, sinon dire Petit.',
+      },
       steps: [
         [
           'n vaut 2',
@@ -329,6 +373,10 @@ const scripts = defineExercise({
     {
       statement:
         'Voici un script : « Répéter 4 fois : avancer de 50 pas, puis tourner de 90 degrés à droite. » Quelle figure le lutin trace-t-il, et quelle distance parcourt-il ?',
+      figure: {
+        id: 'scripts-exemple-carre',
+        alt: 'Le script en blocs, répéter 4 fois avancer de 50 pas et tourner de 90 degrés, à côté du carré tracé par le lutin.',
+      },
       steps: [
         [
           '4 côtés de 50 pas',
@@ -350,6 +398,10 @@ const scripts = defineExercise({
     qcm({
       prompt:
         'Voici un script : « Mettre n à 5. Répéter 3 fois : ajouter 4 à n. » Quelle est la valeur de n à la fin du script ?',
+      figure: {
+        id: 'scripts-q1-boucle',
+        alt: 'Le script en blocs : mettre n à 5, puis répéter 3 fois ajouter 4 à n.',
+      },
       choices: ['9', '12', '17', '27'],
       answer: '17',
       correction: {
@@ -383,6 +435,10 @@ const scripts = defineExercise({
     qcm({
       prompt:
         'Voici un script : « Demander un nombre et mettre n à la réponse. Multiplier n par 2. Ajouter 4 à n. Si n > 20 alors dire Gagné, sinon dire Perdu. » Que dit le lutin si on répond 8 ?',
+      figure: {
+        id: 'scripts-q2-condition',
+        alt: 'Le script en blocs : demander un nombre, mettre n à la réponse, multiplier n par 2, ajouter 4 à n, puis si n > 20 alors dire Gagné, sinon dire Perdu.',
+      },
       choices: [
         'Gagné, car n vaut 24',
         'Gagné, car n vaut 20',
@@ -426,6 +482,10 @@ const scripts = defineExercise({
     qcm({
       prompt:
         'Voici un script où une boucle est placée dans une autre : « Mettre n à 0. Répéter 3 fois : répéter 4 fois : ajouter 2 à n. » Combien de fois l’instruction « ajouter 2 à n » est-elle exécutée ?',
+      figure: {
+        id: 'scripts-q3-boucles-imbriquees',
+        alt: 'Le script en blocs : mettre n à 0, puis un bloc répéter 3 fois qui contient répéter 4 fois ajouter 2 à n.',
+      },
       choices: ['7', '12', '24', '4'],
       answer: '12',
       correction: {
@@ -460,6 +520,10 @@ const scripts = defineExercise({
     qcm({
       prompt:
         'Voici un script : « Répéter 3 fois : avancer de 80 pas, puis tourner de 120 degrés à gauche. » Quelle figure le lutin trace-t-il ?',
+      figure: {
+        id: 'scripts-q4-figure',
+        alt: 'Le script en blocs : répéter 3 fois avancer de 80 pas, puis tourner de 120 degrés à gauche.',
+      },
       choices: [
         'Un triangle équilatéral',
         'Un hexagone régulier',
@@ -505,6 +569,10 @@ const scripts = defineExercise({
     qcm({
       prompt:
         'Voici un script : « Répéter 2 fois : avancer de 120 pas, tourner de 90 degrés à droite, avancer de 70 pas, puis tourner de 90 degrés à droite. » Quelle distance le lutin parcourt-il en tout ?',
+      figure: {
+        id: 'scripts-q5-distance',
+        alt: 'Le script en blocs : répéter 2 fois avancer de 120 pas, tourner de 90 degrés, avancer de 70 pas, tourner de 90 degrés.',
+      },
       choices: ['190 pas', '380 pas', '740 pas', '8 400 pas'],
       answer: '380 pas',
       correction: {
@@ -537,6 +605,10 @@ const scripts = defineExercise({
     qcm({
       prompt:
         'Lina a 20 € dans sa tirelire et y ajoute 15 € chaque semaine. Ce script compte les semaines qu’il lui faut pour dépasser 100 € : « Mettre total à 20. Mettre semaines à 0. Répéter jusqu’à ce que total > 100 : ajouter 15 à total, puis ajouter 1 à semaines. Dire semaines. » Que dit le lutin ?',
+      figure: {
+        id: 'scripts-q6-jusqua',
+        alt: 'Le script en blocs : mettre total à 20 et semaines à 0, répéter jusqu’à ce que total > 100 ajouter 15 à total et 1 à semaines, puis dire semaines.',
+      },
       choices: ['5', '7', '110', '6'],
       answer: '6',
       correction: {

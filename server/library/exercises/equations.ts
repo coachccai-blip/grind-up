@@ -1,4 +1,4 @@
-import { defineExercise, exact, paragraphs, qcm } from '../authoring.js'
+import { defineExercise, exact, figure, paragraphs, qcm } from '../authoring.js'
 
 /**
  * Équations. Trois exercices : résoudre une équation du premier degré, résoudre
@@ -21,6 +21,11 @@ const premierDegre = defineExercise({
       '- on peut ajouter ou soustraire le même nombre aux deux membres ;',
       '- on peut multiplier ou diviser les deux membres par un même nombre non nul.',
     ].join('\n'),
+    'Une équation est comme une balance en équilibre : elle le reste si l’on fait la même opération sur les deux plateaux.',
+    figure(
+      'equations-balance',
+      'Deux balances en équilibre : 3x − 5 et 13 sur les plateaux, puis 3x et 18 une fois 5 ajouté de chaque côté.',
+    ),
     'La méthode :',
     [
       '1. Développe et réduis chaque membre, s’il y a des parenthèses.',
@@ -204,12 +209,20 @@ const produitNul = defineExercise({
     'Résoudre une équation produit nul, une équation x² = a, puis une équation à factoriser par un facteur commun. Les mauvais choix : solution oubliée, signes inversés, division par x.',
   lesson: paragraphs(
     '**Équation produit nul.** Un produit est nul si, et seulement si, l’un au moins de ses facteurs est nul. Pour résoudre (ax + b)(cx + d) = 0, tu résous donc deux équations du premier degré : ax + b = 0, puis cx + d = 0. Les solutions s’écrivent avec « ou ».',
+    figure(
+      'equations-produit-nul-schema',
+      'Schéma : si le produit A × B est nul, alors A est nul ou B est nul.',
+    ),
     '**Équation x² = a.** Le nombre de solutions dépend du signe de a :',
     [
       '- si a > 0, deux solutions opposées : √a et −√a. Ainsi, les solutions de x² = 9 sont 3 et −3 ;',
       '- si a = 0, une seule solution : 0 ;',
       '- si a < 0, aucune solution, car un carré n’est jamais négatif.',
     ].join('\n'),
+    figure(
+      'equations-carre-deux-solutions',
+      'Une droite graduée : 3 et −3, à 3 unités de 0 de part et d’autre, ont tous deux pour carré 9.',
+    ),
     '**Si le membre de gauche n’est pas un produit.** Il te faut d’abord un produit nul : regroupe tous les termes dans le membre de gauche, pour que celui de droite soit 0, puis factorise. Par exemple, x² − 5x = x(x − 5) : x est un facteur commun aux deux termes.',
   ),
   example: [
@@ -490,6 +503,10 @@ const problemes = defineExercise({
   example: {
     statement:
       'Au cinéma, une place adulte coûte 4 € de plus qu’une place enfant. Pour 2 adultes et 3 enfants, une famille paie 43 €. Quel est le prix d’une place enfant ?',
+    figure: {
+      id: 'problemes-exemple-cinema',
+      alt: 'Deux places adulte et trois places enfant, 43 € en tout ; une place adulte coûte 4 € de plus.',
+    },
     steps: [
       [
         'x désigne le prix d’une place enfant, en euros',
@@ -514,6 +531,10 @@ const problemes = defineExercise({
     exact({
       prompt:
         'La somme de trois nombres entiers consécutifs est 114. Quel est le plus petit de ces trois nombres ?',
+      figure: {
+        id: 'problemes-nombres-consecutifs',
+        alt: 'Trois cases qui se suivent de 1 en 1, de somme 114 ; la première, la plus petite, est cherchée.',
+      },
       answers: ['37'],
       correction: {
         steps: [
@@ -540,6 +561,10 @@ const problemes = defineExercise({
     exact({
       prompt:
         'Un rectangle a un périmètre de 54 cm. Sa longueur mesure 7 cm de plus que sa largeur. Calcule sa longueur, en cm.',
+      figure: {
+        id: 'problemes-rectangle-perimetre',
+        alt: 'Un rectangle de périmètre 54 cm ; sa longueur, cherchée, vaut la largeur plus 7 cm.',
+      },
       answers: ['17'],
       correction: {
         steps: [
@@ -571,6 +596,10 @@ const problemes = defineExercise({
     exact({
       prompt:
         'Une salle d’escalade propose deux tarifs. Tarif A : 11 € la séance. Tarif B : un abonnement annuel de 60 €, puis 6 € la séance. Pour combien de séances dans l’année les deux tarifs coûtent-ils le même prix ?',
+      figure: {
+        id: 'problemes-deux-tarifs',
+        alt: 'Deux cartes : tarif A, 11 € la séance ; tarif B, 60 € par an plus 6 € la séance.',
+      },
       answers: ['12'],
       correction: {
         steps: [
@@ -601,6 +630,10 @@ const problemes = defineExercise({
     exact({
       prompt:
         'Trois amis se partagent 150 €. Bilal reçoit 10 € de plus qu’Anaïs, et Chloé reçoit le double de la part d’Anaïs. Combien Chloé reçoit-elle, en euros ?',
+      figure: {
+        id: 'problemes-partage',
+        alt: 'Trois barres : la part d’Anaïs, la même plus 10 € pour Bilal, le double pour Chloé ; 150 € en tout.',
+      },
       answers: ['70'],
       correction: {
         steps: [
@@ -626,6 +659,10 @@ const problemes = defineExercise({
     exact({
       prompt:
         'Programme A : choisir un nombre, le multiplier par 5, puis soustraire 3. Programme B : choisir un nombre, lui ajouter 6, puis multiplier le résultat par 2. On applique les deux programmes au même nombre de départ. Quel doit être ce nombre pour que les deux résultats soient égaux ?',
+      figure: {
+        id: 'problemes-deux-programmes',
+        alt: 'Les programmes A (× 5, puis − 3) et B (+ 6, puis × 2), partant du même nombre inconnu.',
+      },
       answers: ['5'],
       correction: {
         steps: [
@@ -654,6 +691,10 @@ const problemes = defineExercise({
     exact({
       prompt:
         'Aujourd’hui, Nadia a 12 ans et sa mère a 40 ans. Dans combien d’années l’âge de sa mère sera-t-il le double de l’âge de Nadia ?',
+      figure: {
+        id: 'problemes-ages-frise',
+        alt: 'Une frise : aujourd’hui Nadia a 12 ans et sa mère 40 ans ; plus tard, la mère aura le double.',
+      },
       answers: ['16'],
       correction: {
         steps: [
