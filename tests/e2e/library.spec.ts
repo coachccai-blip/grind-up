@@ -73,7 +73,7 @@ test('parcours complet d’un exercice de la bibliothèque : repris dans une qu�
   await expect(card).toHaveCount(0)
   await expect(admin.getByRole('heading', { level: 3, name: /Pythagore/ })).toBeVisible()
   await admin.getByLabel('Thème').selectOption({ label: 'Tous les thèmes' })
-  await admin.getByLabel('Rechercher un exercice').fill('identites remarquables')
+  await admin.getByLabel('Rechercher un exercice').fill('identites remarquables : cas')
   await expect(admin.getByText(/^2 sur \d+ exercices$/)).toBeVisible()
   await expect(admin.getByRole('heading', { level: 3 })).toHaveCount(2)
   await expect(admin.getByRole('heading', { level: 2, name: 'Géométrie plane' })).toHaveCount(0)

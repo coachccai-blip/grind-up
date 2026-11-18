@@ -4,14 +4,14 @@ Plateforme de quêtes gamifiée pour élèves : un accompagnant donne des quête
 réalisent, gagnent de l'XP, montent de niveau et se comparent sur un leaderboard.
 
 **État : version 1.1.0.** Les six étapes du brief sont livrées ; la version 1.1 y ajoute une
-bibliothèque d'exercices prêts à l'emploi et la correction détaillée des questions. L'admin crée
-des quêtes dans cinq formats, ou reprend un exercice de la bibliothèque, les donne à ses élèves
-et valide les réalisations. Chaque quête validée crédite de
-l'XP : niveau, série, badges. Le leaderboard classe les élèves par missions accomplies, puis par
-XP, sur la semaine, le mois ou depuis toujours ; l'admin peut l'animer avec des bots. Une vue
-d'ensemble lui montre ce qui demande son attention, et ses paramètres règlent le barème, les
-bonus et l'export des données. Le site s'installe sur l'écran d'accueil d'un téléphone. Les choix
-faits là où le brief ne tranchait pas sont consignés dans [docs/decisions.md](docs/decisions.md).
+bibliothèque d'exercices de mathématiques de 3e, prêts à être donnés aux élèves. L'admin crée des
+quêtes dans cinq formats, ou reprend un exercice de la bibliothèque, les donne à ses élèves et
+valide les réalisations. Chaque quête validée crédite de l'XP : niveau, série, badges. Le
+leaderboard classe les élèves par missions accomplies, puis par XP, sur la semaine, le mois ou
+depuis toujours ; l'admin peut l'animer avec des bots. Une vue d'ensemble lui montre ce qui
+demande son attention, et ses paramètres règlent le barème, les bonus et l'export des données. Le
+site s'installe sur l'écran d'accueil d'un téléphone. Les choix faits là où le brief ne tranchait
+pas sont consignés dans [docs/decisions.md](docs/decisions.md).
 
 ## Mise en ligne sur Netlify
 
@@ -68,29 +68,41 @@ fonctionne. En cas d'échec, le bouton _Copier le détail_ de la page copie le d
 7. **Mot de passe oublié.** Dans _Élèves_, ouvrir la fiche de l'élève et choisir _Mot de passe
    temporaire_. L'élève se connecte avec, puis choisit aussitôt le sien.
 
-### Bibliothèque et corrections détaillées
+### Bibliothèque d'exercices
 
-Dans _Quêtes_, le bouton _Bibliothèque_ ouvre des exercices prêts à l'emploi. _Utiliser cet
-exercice_ ouvre une nouvelle quête déjà remplie : titre, consigne, questions, bonnes réponses,
-correction détaillée de chaque question, difficulté. Rien n'est enregistré à ce stade et tout
-reste modifiable : il reste à choisir les élèves (tous, ou quelques-uns), puis à publier.
+Dans _Quêtes_, le bouton _Bibliothèque_ ouvre des exercices de mathématiques prêts à l'emploi,
+qui suivent le programme de la classe de 3e. Ils sont rangés par thème ; un filtre et une
+recherche aident à retrouver une notion.
 
-| Exercice                                | Niveau | Contenu                           |
-| --------------------------------------- | ------ | --------------------------------- |
-| Identités remarquables : cas simples    | 3e     | QCM de 6 questions, « Facile »    |
-| Identités remarquables : cas difficiles | 3e     | QCM de 8 questions, « Difficile » |
+Chaque exercice suit le même plan :
 
-Dans ces QCM, chaque mauvais choix correspond à une erreur courante, que la correction nomme.
+1. **un bref rappel du cours** : les définitions et les formules utiles ;
+2. **un exemple expliqué** : une question du même genre, résolue pas à pas ;
+3. **des questions pour pratiquer**, de la plus simple à la plus difficile ;
+4. **la correction détaillée de chaque question**, que l'élève lit une fois sa quête validée.
+   Dans un QCM, chaque mauvais choix correspond à une erreur courante, que la correction nomme.
 
-Toute question d'une quête à réponse exacte ou d'un QCM peut porter une **correction détaillée**,
-y compris dans vos propres quêtes : elle s'écrit dans le formulaire de la quête, sous la
-question, avec la même mise en forme que la consigne. L'élève la lit une fois sa quête validée,
-sous la bonne réponse ; la correction d'une réponse fausse est déjà dépliée.
+_Utiliser cet exercice_ ouvre une nouvelle quête déjà remplie. Rien n'est enregistré à ce stade et
+tout reste modifiable : il reste à choisir les élèves (tous, ou quelques-uns), puis à publier.
 
-Pour ajouter un exercice à la bibliothèque : créer un fichier dans `server/library/exercises/`,
-sur le modèle de `identites-remarquables.ts`, puis l'ajouter à la liste de
-`server/library/index.ts`. Les tests de `tests/unit/library.test.ts` relisent le contenu : ils
-recalculent chaque énoncé, chaque bonne réponse et chaque égalité écrite dans une correction.
+<!-- catalogue -->
+
+Les figures de géométrie sont décrites par l'énoncé : l'élève commence par un schéma à main levée.
+
+### Rappel du cours, exemple et corrections dans vos propres quêtes
+
+Ces éléments ne sont pas réservés à la bibliothèque. Dans le formulaire d'une quête :
+
+- _Rappel du cours et exemple expliqué_ : deux textes facultatifs, que l'élève lit avant la
+  consigne ;
+- _Correction détaillée_, sous chaque question d'une quête à réponse exacte ou d'un QCM : l'élève
+  la lit une fois sa quête validée, sous la bonne réponse ; la correction d'une réponse fausse est
+  déjà dépliée.
+
+Tous s'écrivent avec la même mise en forme que la consigne.
+
+Pour ajouter un exercice à la bibliothèque, suivre le guide [docs/bibliotheque.md](docs/bibliotheque.md).
+Des tests relisent chaque exercice et recalculent toutes les égalités qu'ils savent lire.
 
 ### Paramètres et export
 
@@ -317,7 +329,7 @@ server/                    logique serveur
   app.ts                   assemblage des routes ; tout ce qui est sous /admin exige un admin
   auth/                    mots de passe, sessions, limitation des tentatives, comptes
   quests/                  quêtes : création, correction automatique, validation, crédit de l'XP
-  library/                 bibliothèque : exercices prêts à l'emploi et leurs corrections
+  library/                 bibliothèque : exercices de 3e par thème, outils de rédaction
   progress/                progression : XP, niveau, série, badges, journal
   leaderboard/             classement par période, mouvement depuis la veille, podium
   bots/                    bots : réglages, progression calculée à la demande
@@ -332,6 +344,7 @@ dev/                       Netlify en local pour `npm run dev` ; installation de
 scripts/                   zip, vérification de la fonction empaquetée, démonstration, icônes
 tests/                     unit/, api/, e2e/
 docs/decisions.md          choix faits là où le brief ne tranchait pas
+docs/bibliotheque.md       guide de rédaction des exercices de la bibliothèque
 .github/workflows/         tests et publication des versions
 ```
 

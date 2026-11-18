@@ -11,8 +11,9 @@ import { TextLink } from '../../../ui/TextLink'
 import { newQuestFromExercise, useLibrary } from './library-api'
 import styles from './LibraryPage.module.css'
 
-/** Texte comparable d'une recherche : sans majuscules ni accents. */
-const searchable = (text: string) => text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
+/** Texte comparable d'une recherche : sans majuscules ni accents, espaces insécables comprises. */
+const searchable = (text: string) =>
+  text.normalize('NFD').replace(/\p{M}/gu, '').replace(/\s+/g, ' ').toLowerCase()
 
 /**
  * Bibliothèque : des exercices prêts à l'emploi, rangés par thème du programme.
