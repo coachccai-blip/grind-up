@@ -1,0 +1,59 @@
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1);
+  margin-bottom: var(--space-5);
+  padding: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-page);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-target);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Onglet actif : blanc sur le fond bleuté, texte en bleu nuit et libellé en gras. */
+.activeTab {
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text);
+  font-weight: 800;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.title {
+  font-size: 1.5rem;
+}
+
+.help {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+.specialCode summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  color: var(--color-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.specialCode[open] summary {
+  margin-bottom: var(--space-2);
+}

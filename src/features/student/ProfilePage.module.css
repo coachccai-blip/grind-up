@@ -1,0 +1,44 @@
+.identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.identity > div {
+  flex: 1;
+  min-width: 160px;
+}
+
+.identifierLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.caption {
+  color: var(--color-text-secondary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.form > * {
+  width: 100%;
+}
+
+.form > button {
+  width: auto;
+}
+
+/* Pleine largeur sur téléphone, largeur naturelle au-delà. */
+@media (min-width: 640px) {
+  .logout {
+    align-self: flex-start;
+  }
+}

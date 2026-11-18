@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import type { HealthReport } from '../../../shared/health'
 import { APP_VERSION } from '../../../shared/version'
-import { ApiUnavailableError, fetchHealth } from '../../lib/api'
+import { fetchHealth, HealthUnavailableError } from './health-api'
+import { Button } from '../../ui/Button'
+import { Card, type CardTone } from '../../ui/Card'
 import './deploy-check.css'
 
 /**
@@ -69,7 +71,7 @@ export function DeployCheckPage() {
       (error: unknown) => {
         if (run.signal.aborted) return
         const reason =
-          error instanceof ApiUnavailableError
+          error instanceof HealthUnavailableError
             ? error.message
             : 'Une erreur inattendue est survenue pendant le test.'
         setState({ status: 'unreachable', reason })
@@ -95,28 +97,24 @@ export function DeployCheckPage() {
       await navigator.clipboard.writeText(detail)
       setCopyFeedback('Détail copié.')
     } catch {
-      setCopyFeedback('Copie impossible : ouvrez /api/sante et copiez son contenu.')
+      setCopyFeedback('Copie impossible\u00A0: ouvrez /api/sante et copiez son contenu.')
     }
   }
 
   const checks = toDisplayedChecks(state)
   const running = state.status === 'running'
   const succeeded = state.status === 'done' && state.report.ok
-  const resultModifier = running
-    ? ''
-    : succeeded
-      ? 'deploy-check__result--ok'
-      : 'deploy-check__result--ko'
+  const resultTone: CardTone = running ? 'plain' : succeeded ? 'success' : 'urgent'
 
   return (
-    <div className="page">
+    <div className="deploy-check">
       <header>
         <h1 className="deploy-check__title">Grind up</h1>
         <p className="deploy-check__subtitle">Test de déploiement · étape 1 sur 6</p>
       </header>
 
       <main className="deploy-check__main">
-        <section className={`card deploy-check__result ${resultModifier}`} aria-live="polite">
+        <Card tone={resultTone} aria-live="polite">
           <h2 className="deploy-check__result-title">
             {running ? 'Vérification en cours…' : succeeded ? 'Test réussi' : 'Test en échec'}
           </h2>
@@ -125,11 +123,11 @@ export function DeployCheckPage() {
               ? 'Le site interroge sa fonction serveur et sa base.'
               : state.status === 'done'
                 ? state.report.message
-                : 'La fonction serveur ne répond pas : voir le détail ci-dessous.'}
+                : 'La fonction serveur ne répond pas\u00A0: voir le détail ci-dessous.'}
           </p>
-        </section>
+        </Card>
 
-        <section className="card" aria-labelledby="checks-title">
+        <Card aria-labelledby="checks-title">
           <h2 id="checks-title" className="deploy-check__section-title">
             Vérifications
           </h2>
@@ -150,15 +148,13 @@ export function DeployCheckPage() {
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
 
         <div className="deploy-check__actions">
-          <button className="button button--primary" onClick={runAgain} disabled={running}>
+          <Button variant="primary" onClick={runAgain} disabled={running}>
             Relancer le test
-          </button>
-          <button className="button button--secondary" onClick={() => void copyDetail()}>
-            Copier le détail
-          </button>
+          </Button>
+          <Button onClick={() => void copyDetail()}>Copier le détail</Button>
         </div>
         <p className="deploy-check__hint" role="status">
           {copyFeedback || 'En cas d’échec, copiez le détail et transmettez-le pour diagnostic.'}

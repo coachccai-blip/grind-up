@@ -1,0 +1,28 @@
+.notice {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+}
+
+.title {
+  font-weight: 800;
+}
+
+/* Information : carte blanche soulignée d'un trait bleu soutenu. */
+.info {
+  background: var(--color-card);
+  box-shadow:
+    inset 4px 0 0 var(--color-accent),
+    var(--shadow-card);
+}
+
+.success {
+  background: var(--color-success);
+}
+
+.warning {
+  background: var(--color-warning);
+}
+
+.error {
+  background: var(--color-urgent);
+}

@@ -33,9 +33,13 @@
   to = "/index.html"
   status = 200
 
+# En-têtes des pages et des fichiers statiques. La fonction pose elle-même ceux
+# de l'API (voir server/app.ts).
 [[headers]]
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
     Referrer-Policy = "same-origin"
+    # Outil privé : les moteurs de recherche ne doivent pas le référencer.
+    X-Robots-Tag = "noindex, nofollow"

@@ -1,4 +1,5 @@
-import { createApp, type Storage } from './app.js'
+import { createApp } from './app.js'
+import type { Storage } from './context.js'
 import { NetlifyBlobStore } from './db/blob-store.js'
 import { SqliteBlobDatabase } from './db/database.js'
 import { migrations } from './db/migrations/index.js'

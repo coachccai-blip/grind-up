@@ -1,0 +1,19 @@
+.card {
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* Fonds pastel : le texte y reste en bleu nuit. */
+.success {
+  background: var(--color-success);
+}
+
+.warning {
+  background: var(--color-warning);
+}
+
+.urgent {
+  background: var(--color-urgent);
+}

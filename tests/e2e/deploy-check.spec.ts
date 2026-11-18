@@ -10,12 +10,12 @@ async function shownWriteNumber(page: Page): Promise<number> {
 
 test.describe('test de déploiement', () => {
   test('la page confirme que la fonction lit et écrit dans la base', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/sante')
 
     await expect(page.getByRole('heading', { level: 1, name: 'Grind up' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Test réussi' })).toBeVisible()
     await expect(
-      page.getByText('Tout fonctionne : la fonction lit et écrit dans la base.'),
+      page.getByText('Tout fonctionne\u00A0: la fonction lit et écrit dans la base.'),
     ).toBeVisible()
 
     // Chaque vérification est listée avec son libellé et son résultat.
@@ -36,7 +36,7 @@ test.describe('test de déploiement', () => {
   })
 
   test('relancer le test enregistre une nouvelle écriture', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/sante')
     await expect(page.getByRole('heading', { name: 'Test réussi' })).toBeVisible()
     const before = await shownWriteNumber(page)
 
@@ -57,12 +57,12 @@ test.describe('test de déploiement', () => {
       }),
     )
 
-    await page.goto('/')
+    await page.goto('/sante')
 
     await expect(page.getByRole('heading', { name: 'Test en échec' })).toBeVisible()
     const apiCheck = page.getByRole('listitem').filter({ hasText: 'Appel de la fonction serveur' })
     await expect(apiCheck.getByText('Échec')).toBeVisible()
-    await expect(apiCheck).toContainText("La fonction serveur n'est pas publiée")
+    await expect(apiCheck).toContainText('La fonction serveur n’est pas publiée')
   })
 
   test('affiche le détail renvoyé quand une vérification échoue', async ({ page }) => {
@@ -72,7 +72,7 @@ test.describe('test de déploiement', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           ok: false,
-          message: 'Le test a échoué : voir le détail des vérifications.',
+          message: 'Le test a échoué\u00A0: voir le détail des vérifications.',
           version: '0.1.0',
           checkedAt: '2026-11-17T10:00:00.000Z',
           checks: [
@@ -87,7 +87,7 @@ test.describe('test de déploiement', () => {
               id: 'database_write',
               label: 'Écriture dans la base',
               ok: false,
-              detail: 'Error : stockage indisponible',
+              detail: 'Error\u00A0: stockage indisponible',
               durationMs: 12,
             },
           ],
@@ -95,7 +95,7 @@ test.describe('test de déploiement', () => {
       }),
     )
 
-    await page.goto('/')
+    await page.goto('/sante')
 
     await expect(page.getByRole('heading', { name: 'Test en échec' })).toBeVisible()
     const writeCheck = page.getByRole('listitem').filter({ hasText: 'Écriture dans la base' })
@@ -104,7 +104,7 @@ test.describe('test de déploiement', () => {
   })
 
   test("tient dans la largeur de l'écran, sans défilement horizontal", async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/sante')
     await expect(page.getByRole('heading', { name: 'Test réussi' })).toBeVisible()
 
     const overflow = await page.evaluate(
@@ -128,13 +128,16 @@ test.describe('test de déploiement', () => {
     const unknown = await request.get('/api/inconnue')
     expect(unknown.status()).toBe(404)
     expect(await unknown.json()).toEqual({
-      error: { code: 'not_found', message: "Cette adresse n'existe pas." },
+      error: { code: 'not_found', message: 'Cette adresse n’existe pas.' },
     })
   })
 
-  test("une adresse inconnue du site renvoie l'interface", async ({ page }) => {
+  test('une adresse inconnue affiche une page « introuvable » avec un retour à l’accueil', async ({
+    page,
+  }) => {
     await page.goto('/une/adresse/inconnue')
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Grind up' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Page introuvable' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Revenir à l’accueil' })).toBeVisible()
   })
 })

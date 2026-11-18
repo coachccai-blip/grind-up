@@ -16,7 +16,7 @@ export default defineConfig([
   },
   {
     // Serveur, scripts, tests et configuration : code exécuté par Node.
-    files: ['server/**', 'netlify/**', 'scripts/**', 'tests/**', '*.config.{js,ts}'],
+    files: ['server/**', 'netlify/**', 'scripts/**', 'dev/**', 'tests/**', '*.config.{js,ts}'],
     languageOptions: { globals: globals.node },
   },
 ])

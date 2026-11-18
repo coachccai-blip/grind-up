@@ -2,6 +2,8 @@
  * Palette de la section 8 du brief. Thème clair uniquement.
  * Règle : sur un fond pastel ou un dégradé, le texte est toujours en bleu nuit ;
  * le texte secondaire et le bleu soutenu ne s'emploient que sur le blanc et le fond de page.
+ * Les couleurs sont aussi déclarées dans shared/rules/palette.ts : un test vérifie
+ * que les deux fichiers concordent et que les contrastes sont suffisants.
  */
 :root {
   color-scheme: only light;
@@ -12,8 +14,14 @@
   --color-text-secondary: #5b6b8a;
   --color-accent: #2a66d9;
 
-  --gradient-sky: linear-gradient(135deg, #cfe8ff, #a9ccff);
-  --gradient-ocean: linear-gradient(135deg, #9cc7ff, #7aa5f7);
+  --color-sky-from: #cfe8ff;
+  --color-sky-to: #a9ccff;
+  --color-ocean-from: #9cc7ff;
+  --color-ocean-to: #7aa5f7;
+  /* Dégradés réservés à cinq endroits : en-tête du tableau de bord, barre d'XP,
+     bouton principal, podium, écrans de célébration. */
+  --gradient-sky: linear-gradient(135deg, var(--color-sky-from), var(--color-sky-to));
+  --gradient-ocean: linear-gradient(135deg, var(--color-ocean-from), var(--color-ocean-to));
 
   --color-maths: #e4e1ff;
   --color-memorisation: #d5f3ea;
@@ -24,9 +32,30 @@
   --color-warning: #ffe8cc;
   --color-urgent: #ffdde1;
 
-  --radius-card: 16px;
-  --shadow-card: 0 1px 3px rgb(31 42 68 / 8%);
-  --touch-target: 44px;
+  /* Traits : contour des champs (contraste 3:1 sur blanc) et séparateurs discrets. */
+  --color-field-border: #7f8daa;
+  --color-divider: #e3eaf6;
 
-  --font-family: 'Nunito', ui-rounded, 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 3px rgb(31 42 68 / 8%);
+  --shadow-bar: 0 0 8px rgb(31 42 68 / 10%);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Zones tactiles d'au moins 44 px ; champs en 16 px pour éviter le zoom automatique sur iPhone. */
+  --touch-target: 44px;
+  --font-family:
+    'Nunito Variable', 'Nunito', ui-rounded, 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --content-width: 640px;
+  --wide-content-width: 960px;
+  --bottom-bar-height: 64px;
 }
