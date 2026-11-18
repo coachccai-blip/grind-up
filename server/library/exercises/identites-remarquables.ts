@@ -21,7 +21,7 @@ const simpleQuestions = [
       steps: [
         ['A = (x + 3)²', 'On reconnaît le carré d’une somme, (a + b)², avec a = x et b = 3.'],
         ['A = x² + 2 × x × 3 + 3²', 'On applique a² + 2ab + b², en remplaçant a par x et b par 3.'],
-        ['A = x² + 6x + 9', 'On calcule chaque terme\u00A0: 2 × x × 3 = 6x et 3² = 9.'],
+        ['A = x² + 6x + 9', 'On calcule chaque terme : 2 × x × 3 = 6x et 3² = 9.'],
       ],
       traps: [
         [
@@ -45,11 +45,11 @@ const simpleQuestions = [
           'B = x² − 2 × x × 5 + 5²',
           'On applique a² − 2ab + b². Seul le double produit prend le signe moins.',
         ],
-        ['B = x² − 10x + 25', 'On calcule chaque terme\u00A0: 2 × x × 5 = 10x et 5² = 25.'],
+        ['B = x² − 10x + 25', 'On calcule chaque terme : 2 × x × 5 = 10x et 5² = 25.'],
       ],
       traps: [
         ['x² − 25', 'le double produit est oublié. Ce résultat est celui de (x + 5)(x − 5).'],
-        ['x² − 10x − 25', 'le dernier terme est b², un carré\u00A0: il est toujours positif.'],
+        ['x² − 10x − 25', 'le dernier terme est b², un carré : il est toujours positif.'],
         ['x² − 5x + 25', 'le double produit vaut 2 × x × 5, pas x × 5.'],
       ],
       check: 'pour x = 1, (1 − 5)² = (−4)² = 16 et 1 − 10 + 25 = 16.',
@@ -63,18 +63,18 @@ const simpleQuestions = [
       steps: [
         [
           'C = (x + 4)(x − 4)',
-          'Les deux facteurs ont les mêmes termes, x et 4, avec des signes opposés\u00A0: c’est (a + b)(a − b), avec a = x et b = 4.',
+          'Les deux facteurs ont les mêmes termes, x et 4, avec des signes opposés : c’est (a + b)(a − b), avec a = x et b = 4.',
         ],
         ['C = x² − 4²', 'On applique a² − b².'],
         ['C = x² − 16', 'On calcule 4² = 16.'],
       ],
       traps: [
-        ['x² + 16', 'le résultat est une différence de deux carrés\u00A0: le signe est moins.'],
+        ['x² + 16', 'le résultat est une différence de deux carrés : le signe est moins.'],
         ['x² − 8x + 16', 'c’est le développement de (x − 4)², pas celui de (x + 4)(x − 4).'],
         ['x² − 8', '4² vaut 4 × 4 = 16, pas 2 × 4 = 8.'],
       ],
       check:
-        'en développant terme à terme, on obtient x² − 4x + 4x − 16. Les termes −4x et +4x s’annulent\u00A0: il reste x² − 16, sans terme en x.',
+        'en développant terme à terme, on obtient x² − 4x + 4x − 16. Les termes −4x et +4x s’annulent : il reste x² − 16, sans terme en x.',
     },
   }),
   qcm({
@@ -85,18 +85,15 @@ const simpleQuestions = [
       steps: [
         [
           'D = x² + 10x + 25',
-          'Trois termes, tous précédés d’un signe plus\u00A0: on pense à a² + 2ab + b².',
+          'Trois termes, tous précédés d’un signe plus : on pense à a² + 2ab + b².',
         ],
-        ['a² = x² et b² = 25', 'On cherche les deux carrés\u00A0: a = x et b = 5, car 5² = 25.'],
-        [
-          '2ab = 2 × x × 5 = 10x',
-          'On vérifie le double produit\u00A0: c’est bien le terme du milieu.',
-        ],
+        ['a² = x² et b² = 25', 'On cherche les deux carrés : a = x et b = 5, car 5² = 25.'],
+        ['2ab = 2 × x × 5 = 10x', 'On vérifie le double produit : c’est bien le terme du milieu.'],
         ['D = (x + 5)²', 'On peut donc écrire le carré d’une somme.'],
       ],
       traps: [
         ['(x + 25)²', 'c’est b² qui vaut 25, donc b = 5.'],
-        ['(x + 5)(x − 5)', 'ce produit vaut x² − 25\u00A0: il n’a pas de terme en x.'],
+        ['(x + 5)(x − 5)', 'ce produit vaut x² − 25 : il n’a pas de terme en x.'],
         ['(x + 10)²', '10x est le double produit 2ab. Comme a = x, on a 2b = 10, donc b = 5.'],
       ],
       check: 'en développant (x + 5)², on retrouve x² + 10x + 25.',
@@ -110,12 +107,12 @@ const simpleQuestions = [
       steps: [
         [
           'E = x² − 6x + 9',
-          'Trois termes, et seul celui du milieu est négatif\u00A0: on pense à a² − 2ab + b².',
+          'Trois termes, et seul celui du milieu est négatif : on pense à a² − 2ab + b².',
         ],
-        ['a² = x² et b² = 9', 'On cherche les deux carrés\u00A0: a = x et b = 3, car 3² = 9.'],
+        ['a² = x² et b² = 9', 'On cherche les deux carrés : a = x et b = 3, car 3² = 9.'],
         [
           '2ab = 2 × x × 3 = 6x',
-          'On vérifie le double produit\u00A0: c’est le terme du milieu, au signe près.',
+          'On vérifie le double produit : c’est le terme du milieu, au signe près.',
         ],
         [
           'E = (x − 3)²',
@@ -124,8 +121,8 @@ const simpleQuestions = [
       ],
       traps: [
         ['(x − 9)²', 'c’est b² qui vaut 9, donc b = 3.'],
-        ['(x + 3)(x − 3)', 'ce produit vaut x² − 9\u00A0: il n’a pas de terme en x.'],
-        ['(x + 3)²', 'ce carré vaut x² + 6x + 9\u00A0: le terme du milieu serait positif.'],
+        ['(x + 3)(x − 3)', 'ce produit vaut x² − 9 : il n’a pas de terme en x.'],
+        ['(x + 3)²', 'ce carré vaut x² + 6x + 9 : le terme du milieu serait positif.'],
       ],
       check: 'en développant (x − 3)², on retrouve x² − 6x + 9.',
     },
@@ -138,9 +135,9 @@ const simpleQuestions = [
       steps: [
         [
           'F = x² − 49',
-          'Deux termes séparés par un signe moins, et chacun est un carré\u00A0: c’est a² − b².',
+          'Deux termes séparés par un signe moins, et chacun est un carré : c’est a² − b².',
         ],
-        ['F = x² − 7²', 'On écrit 49 comme un carré\u00A0: 49 = 7². Donc a = x et b = 7.'],
+        ['F = x² − 7²', 'On écrit 49 comme un carré : 49 = 7². Donc a = x et b = 7.'],
         [
           'F = (x + 7)(x − 7)',
           'On applique (a + b)(a − b). L’ordre des deux facteurs n’a pas d’importance.',
@@ -149,7 +146,7 @@ const simpleQuestions = [
       traps: [
         [
           '(x − 7)²',
-          'ce carré vaut x² − 14x + 49\u00A0: un terme en x en trop, et un signe plus devant 49.',
+          'ce carré vaut x² − 14x + 49 : un terme en x en trop, et un signe plus devant 49.',
         ],
         ['(x − 49)(x + 49)', 'c’est b² qui vaut 49, donc b = 7.'],
         ['(x + 7)²', 'ce carré vaut x² + 14x + 49.'],
@@ -176,13 +173,13 @@ const hardQuestions = [
         ],
         [
           'G = 9x² − 24x + 16',
-          'On calcule\u00A0: (3x)² = 3² × x² = 9x², puis 2 × 3x × 4 = 24x et 4² = 16.',
+          'On calcule : (3x)² = 3² × x² = 9x², puis 2 × 3x × 4 = 24x et 4² = 16.',
         ],
       ],
       traps: [
         [
           '3x² − 24x + 16',
-          'le carré porte sur tout le terme 3x, donc aussi sur le 3\u00A0: (3x)² = 9x².',
+          'le carré porte sur tout le terme 3x, donc aussi sur le 3 : (3x)² = 9x².',
         ],
         ['9x² − 16', 'le double produit 24x est oublié.'],
         ['9x² − 12x + 16', 'le double produit vaut 2 × 3x × 4 = 24x, pas 3x × 4.'],
@@ -206,22 +203,22 @@ const hardQuestions = [
         ],
         [
           'H = (9x² − 12x + 4) − (x² − 25)',
-          'On remplace dans H en gardant les parenthèses\u00A0: le signe moins porte sur tout le second résultat.',
+          'On remplace dans H en gardant les parenthèses : le signe moins porte sur tout le second résultat.',
         ],
         [
           'H = 9x² − 12x + 4 − x² + 25',
-          'On supprime les parenthèses. Derrière un signe moins, chaque signe change\u00A0: −(x² − 25) = −x² + 25.',
+          'On supprime les parenthèses. Derrière un signe moins, chaque signe change : −(x² − 25) = −x² + 25.',
         ],
-        ['H = 8x² − 12x + 29', 'On réduit\u00A0: 9x² − x² = 8x² et 4 + 25 = 29.'],
+        ['H = 8x² − 12x + 29', 'On réduit : 9x² − x² = 8x² et 4 + 25 = 29.'],
       ],
       traps: [
         [
           '8x² − 12x − 21',
-          'le signe de 25 n’a pas changé. C’est l’erreur la plus fréquente\u00A0: −(x² − 25) donne −x² + 25.',
+          'le signe de 25 n’a pas changé. C’est l’erreur la plus fréquente : −(x² − 25) donne −x² + 25.',
         ],
         [
           '10x² − 12x − 21',
-          'la soustraction est devenue une addition\u00A0: x² − 25 a été ajouté au lieu d’être retranché.',
+          'la soustraction est devenue une addition : x² − 25 a été ajouté au lieu d’être retranché.',
         ],
         ['8x² − 6x + 29', 'le double produit vaut 2 × 3x × 2 = 12x, pas 3x × 2.'],
       ],
@@ -234,18 +231,15 @@ const hardQuestions = [
     answer: '(5x + 2)²',
     correction: {
       steps: [
-        ['I = 25x² + 20x + 4', 'Trois termes positifs\u00A0: on pense à a² + 2ab + b².'],
-        ['25x² = (5x)² et 4 = 2²', 'On cherche les deux carrés\u00A0: a = 5x et b = 2.'],
-        [
-          '2ab = 2 × 5x × 2 = 20x',
-          'On vérifie le double produit\u00A0: c’est bien le terme du milieu.',
-        ],
+        ['I = 25x² + 20x + 4', 'Trois termes positifs : on pense à a² + 2ab + b².'],
+        ['25x² = (5x)² et 4 = 2²', 'On cherche les deux carrés : a = 5x et b = 2.'],
+        ['2ab = 2 × 5x × 2 = 20x', 'On vérifie le double produit : c’est bien le terme du milieu.'],
         ['I = (5x + 2)²', 'On écrit le carré d’une somme.'],
       ],
       traps: [
         ['(25x + 2)²', 'c’est a² qui vaut 25x², donc a = 5x.'],
         ['(5x + 4)²', 'c’est b² qui vaut 4, donc b = 2.'],
-        ['(5x + 2)(5x − 2)', 'ce produit vaut 25x² − 4\u00A0: il n’a pas de terme en x.'],
+        ['(5x + 2)(5x − 2)', 'ce produit vaut 25x² − 4 : il n’a pas de terme en x.'],
       ],
       check: 'en développant (5x + 2)², on retrouve 25x² + 20x + 4.',
     },
@@ -258,22 +252,22 @@ const hardQuestions = [
       steps: [
         [
           'J = (x + 3)² − 4²',
-          'On écrit 16 comme un carré\u00A0: 16 = 4². C’est a² − b², où a est toute la parenthèse (x + 3) et b = 4.',
+          'On écrit 16 comme un carré : 16 = 4². C’est a² − b², où a est toute la parenthèse (x + 3) et b = 4.',
         ],
         [
           'J = (x + 3 + 4)(x + 3 − 4)',
-          'On applique (a + b)(a − b)\u00A0: on ajoute 4 à a dans le premier facteur, on le retranche dans le second.',
+          'On applique (a + b)(a − b) : on ajoute 4 à a dans le premier facteur, on le retranche dans le second.',
         ],
-        ['J = (x + 7)(x − 1)', 'On réduit chaque facteur\u00A0: 3 + 4 = 7 et 3 − 4 = −1.'],
+        ['J = (x + 7)(x − 1)', 'On réduit chaque facteur : 3 + 4 = 7 et 3 − 4 = −1.'],
       ],
       traps: [
         [
           '(x + 19)(x − 13)',
-          'c’est b² qui vaut 16, donc b = 4\u00A0: on ajoute et on retranche 4, pas 16.',
+          'c’est b² qui vaut 16, donc b = 4 : on ajoute et on retranche 4, pas 16.',
         ],
         [
           'x² + 6x − 7',
-          'cette expression est bien égale à J, mais c’est une somme\u00A0: elle est développée, pas factorisée.',
+          'cette expression est bien égale à J, mais c’est une somme : elle est développée, pas factorisée.',
         ],
         ['(x − 1)²', 'J est une différence de deux carrés, pas le carré d’une différence.'],
       ],
@@ -283,74 +277,71 @@ const hardQuestions = [
   }),
   qcm({
     prompt: 'Calcule 103² sans calculatrice, à l’aide d’une identité remarquable.',
-    choices: ['10\u202F009', '10\u202F609', '10\u202F600', '10\u202F309'],
-    answer: '10\u202F609',
+    choices: ['10 009', '10 609', '10 600', '10 309'],
+    answer: '10 609',
     correction: {
       steps: [
-        ['103² = (100 + 3)²', 'On écrit 103 à partir d’un nombre rond\u00A0: 100 + 3.'],
+        ['103² = (100 + 3)²', 'On écrit 103 à partir d’un nombre rond : 100 + 3.'],
         ['103² = 100² + 2 × 100 × 3 + 3²', 'C’est le carré d’une somme, avec a = 100 et b = 3.'],
-        ['103² = 10\u202F000 + 600 + 9 = 10\u202F609', 'Chaque terme se calcule de tête.'],
+        ['103² = 10 000 + 600 + 9 = 10 609', 'Chaque terme se calcule de tête.'],
       ],
       traps: [
-        ['10\u202F009', 'c’est 100² + 3²\u00A0: le double produit 600 est oublié.'],
-        ['10\u202F600', 'le carré de 3 est oublié.'],
-        ['10\u202F309', 'le double produit vaut 2 × 100 × 3 = 600, pas 100 × 3.'],
+        ['10 009', 'c’est 100² + 3² : le double produit 600 est oublié.'],
+        ['10 600', 'le carré de 3 est oublié.'],
+        ['10 309', 'le double produit vaut 2 × 100 × 3 = 600, pas 100 × 3.'],
       ],
-      check: 'la calculatrice confirme\u00A0: 103 × 103 = 10\u202F609.',
+      check: 'la calculatrice confirme : 103 × 103 = 10 609.',
     },
   }),
   qcm({
     prompt: 'Calcule 98² sans calculatrice, à l’aide d’une identité remarquable.',
-    choices: ['9\u202F996', '9\u202F804', '9\u202F604', '9\u202F596'],
-    answer: '9\u202F604',
+    choices: ['9 996', '9 804', '9 604', '9 596'],
+    answer: '9 604',
     correction: {
       steps: [
-        ['98² = (100 − 2)²', '98 est proche de 100\u00A0: on l’écrit comme une différence.'],
+        ['98² = (100 − 2)²', '98 est proche de 100 : on l’écrit comme une différence.'],
         [
           '98² = 100² − 2 × 100 × 2 + 2²',
           'C’est le carré d’une différence, avec a = 100 et b = 2.',
         ],
         [
-          '98² = 10\u202F000 − 400 + 4 = 9\u202F604',
+          '98² = 10 000 − 400 + 4 = 9 604',
           'Le double produit se soustrait, le carré de 2 s’ajoute.',
         ],
       ],
       traps: [
-        [
-          '9\u202F996',
-          'c’est 100² − 2². Le carré d’une différence n’est pas la différence des carrés.',
-        ],
-        ['9\u202F804', 'le double produit vaut 2 × 100 × 2 = 400, pas 100 × 2.'],
-        ['9\u202F596', 'le dernier terme, 2², s’ajoute\u00A0: un carré est toujours positif.'],
+        ['9 996', 'c’est 100² − 2². Le carré d’une différence n’est pas la différence des carrés.'],
+        ['9 804', 'le double produit vaut 2 × 100 × 2 = 400, pas 100 × 2.'],
+        ['9 596', 'le dernier terme, 2², s’ajoute : un carré est toujours positif.'],
       ],
-      check: 'la calculatrice confirme\u00A0: 98 × 98 = 9\u202F604.',
+      check: 'la calculatrice confirme : 98 × 98 = 9 604.',
     },
   }),
   qcm({
     prompt: 'Calcule 47 × 53 sans calculatrice, à l’aide d’une identité remarquable.',
-    choices: ['2\u202F491', '2\u202F509', '2\u202F500', '2\u202F494'],
-    answer: '2\u202F491',
+    choices: ['2 491', '2 509', '2 500', '2 494'],
+    answer: '2 491',
     correction: {
       steps: [
         [
           '47 × 53 = (50 − 3)(50 + 3)',
-          '47 et 53 sont à la même distance de 50\u00A0: 3 de moins, 3 de plus.',
+          '47 et 53 sont à la même distance de 50 : 3 de moins, 3 de plus.',
         ],
         [
           '47 × 53 = 50² − 3²',
           'C’est le produit d’une somme par une différence, avec a = 50 et b = 3.',
         ],
-        ['47 × 53 = 2\u202F500 − 9 = 2\u202F491', 'Une seule soustraction suffit.'],
+        ['47 × 53 = 2 500 − 9 = 2 491', 'Une seule soustraction suffit.'],
       ],
       traps: [
         [
-          '2\u202F509',
-          'le résultat est une différence de deux carrés\u00A0: on retranche 3², on ne l’ajoute pas.',
+          '2 509',
+          'le résultat est une différence de deux carrés : on retranche 3², on ne l’ajoute pas.',
         ],
-        ['2\u202F500', 'le carré de 3 est oublié.'],
-        ['2\u202F494', '3² vaut 3 × 3 = 9, pas 2 × 3 = 6.'],
+        ['2 500', 'le carré de 3 est oublié.'],
+        ['2 494', '3² vaut 3 × 3 = 9, pas 2 × 3 = 6.'],
       ],
-      check: 'la calculatrice confirme\u00A0: 47 × 53 = 2\u202F491.',
+      check: 'la calculatrice confirme : 47 × 53 = 2 491.',
     },
   }),
   qcm({
@@ -372,16 +363,13 @@ const hardQuestions = [
           'x + 3 = 0 ou x − 7 = 0',
           'Un produit est nul si, et seulement si, l’un de ses facteurs est nul.',
         ],
-        [
-          'x = −3 ou x = 7',
-          'On résout chaque équation. L’équation a deux solutions\u00A0: −3 et 7.',
-        ],
+        ['x = −3 ou x = 7', 'On résout chaque équation. L’équation a deux solutions : −3 et 7.'],
       ],
       traps: [
-        ['x = 7', 'il manque une solution. Deux nombres ont pour carré 25\u00A0: 5 et −5.'],
+        ['x = 7', 'il manque une solution. Deux nombres ont pour carré 25 : 5 et −5.'],
         [
           'x = 3 ou x = −7',
-          'les signes sont inversés\u00A0: x + 3 = 0 donne x = −3, et x − 7 = 0 donne x = 7.',
+          'les signes sont inversés : x + 3 = 0 donne x = −3, et x − 7 = 0 donne x = 7.',
         ],
         ['x = −5 ou x = 5', 'ce sont les valeurs de x − 2, pas celles de x.'],
       ],

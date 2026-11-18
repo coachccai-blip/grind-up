@@ -31,6 +31,9 @@ describe('typographie des exercices', () => {
     expect(typography('10 000 + 600 = 10 600 et 1 000 000')).toBe(
       '10\u202F000 + 600 = 10\u202F600 et 1\u202F000\u202F000',
     )
+    expect(typography('augmenter de t % ; un taux en %')).toBe(
+      'augmenter de t\u00A0%\u00A0; un taux en\u00A0%',
+    )
     // Une liste de valeurs n'est pas un grand nombre.
     expect(typography('Notes : 8 ; 12 ; 15')).toBe('Notes\u00A0: 8\u00A0; 12\u00A0; 15')
   })

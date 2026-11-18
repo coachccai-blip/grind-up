@@ -24,8 +24,9 @@ export function typography(text: string): string {
       .replace(/ (?=[:;!?](?:\s|$|\*))/g, NBSP)
       .replace(/« /g, `«${NBSP}`)
       .replace(/ »/g, `${NBSP}»`)
-      // Un nombre et son unité ne se séparent pas.
+      // Un nombre et son unité ne se séparent pas ; le signe « % » ne se sépare de rien.
       .replace(new RegExp(`(\\d) (?=(?:${UNITS})(?![\\p{L}\\p{N}]))`, 'gu'), `$1${NBSP}`)
+      .replace(/ (?=%)/g, NBSP)
       // Séparateur de milliers : une espace fine insécable.
       .replace(/(\d) (?=\d{3}(?!\d))/g, `$1${NARROW_NBSP}`)
       // Une parenthèse courte d'un calcul reste sur une seule ligne : « (x − 4) » ne se coupe pas.
