@@ -113,11 +113,59 @@ export const exact = (question: Omit<ExactQuestion, 'kind'>): ExactQuestion => (
   ...question,
 })
 
+/** Unités qu'un énoncé peut demander (« en cm », « en euros »), et la façon dont un élève les écrit. */
+const ASKED_UNITS: readonly (readonly [asked: string, written: readonly string[]])[] = [
+  ['km/h', ['km/h']],
+  ['m/s', ['m/s']],
+  ['cm²', ['cm²', 'cm2']],
+  ['cm³', ['cm³', 'cm3']],
+  ['m²', ['m²', 'm2']],
+  ['m³', ['m³', 'm3']],
+  ['cm', ['cm']],
+  ['mm', ['mm']],
+  ['dm', ['dm']],
+  ['km', ['km']],
+  ['m', ['m']],
+  ['kg', ['kg']],
+  ['g', ['g']],
+  ['litres', ['L', 'litres']],
+  ['L', ['L']],
+  ['heures', ['h', 'heures']],
+  ['h', ['h']],
+  ['minutes', ['min', 'minutes']],
+  ['min', ['min']],
+  ['secondes', ['s', 'secondes']],
+  ['euros', ['€', 'euros']],
+  ['€', ['€']],
+  ['%', ['%']],
+  ['degrés', ['°', 'degrés']],
+  ['°', ['°']],
+]
+
+const MAX_ANSWERS = 5
+
+/**
+ * Les réponses acceptées d'une question à saisir. L'élève doit écrire le nombre
+ * seul ; s'il ajoute l'unité que demande l'énoncé (« en cm »), sa réponse reste
+ * juste : « 5 » et « 5 cm » sont acceptées toutes les deux.
+ */
+function acceptedAnswers(prompt: string, answers: readonly string[]): string[] {
+  const asked = [...prompt.matchAll(/\ben ([\p{L}%°€/²³]+)/gu)]
+    .map((match) => ASKED_UNITS.find(([unit]) => unit === match[1]))
+    .filter((unit) => unit !== undefined)
+    .at(-1)
+  const numbers = answers.filter((answer) => /^[−-]?\d+(?:[,.]\d+)?$/.test(answer))
+  const withUnits = (asked?.[1] ?? []).flatMap((unit) =>
+    numbers.map((answer) => `${answer} ${unit}`),
+  )
+  return [...answers, ...withUnits].slice(0, MAX_ANSWERS)
+}
+
 function toItem(question: Question): QuestItemInput {
   if (question.kind === 'exact') {
     return {
       prompt: typography(question.prompt),
-      answers: [...question.answers],
+      answers: acceptedAnswers(question.prompt, question.answers),
       choices: [],
       correct: [],
       explanation: correction(question.correction),

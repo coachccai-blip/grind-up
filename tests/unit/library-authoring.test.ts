@@ -149,6 +149,29 @@ describe('outils de rédaction', () => {
     const exercise = defineExercise({ ...source, questions: [typed] })
     expect(exercise.format).toBe('exact')
     expect(exercise.items[0]).toMatchObject({ answers: ['4'], choices: [], correct: [] })
+    // L'unité que demande l'énoncé peut accompagner le nombre : la réponse reste juste.
+    const answersTo = (prompt: string, answers: string[]) =>
+      defineExercise({
+        ...source,
+        questions: [exact({ prompt, answers, correction: { steps: [] } })],
+      }).items[0]?.answers
+    expect(answersTo('Calcule BC, en cm, arrondi au dixième.', ['7,2'])).toEqual(['7,2', '7,2 cm'])
+    expect(answersTo('Un train roule à 90 km/h. Calcule la durée, en minutes.', ['40'])).toEqual([
+      '40',
+      '40 min',
+      '40 minutes',
+    ])
+    expect(answersTo('Quel est le prix, en euros ?', ['45', '45,00'])).toEqual([
+      '45',
+      '45,00',
+      '45 €',
+      '45,00 €',
+      '45 euros',
+    ])
+    expect(answersTo('Calcule l’angle, en degrés.', ['53'])).toEqual(['53', '53 °', '53 degrés'])
+    expect(
+      answersTo('Est-il rectangle, en comptant en cm ? Réponds par oui ou par non.', ['oui']),
+    ).toEqual(['oui'])
     expect(exercise.instructions).toContain('seulement le nombre demandé')
     expect(() => defineExercise({ ...source, questions: [typed, ...source.questions] })).toThrow(
       /pas les deux/,
