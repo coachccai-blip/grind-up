@@ -1,0 +1,46 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.label {
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Le libellé du champ de fichier a l'allure d'un bouton secondaire. */
+.choose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-target);
+  padding: 10px var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--color-card);
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+  color: var(--color-accent);
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.actions:has(input:focus-visible) .choose {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.error {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--color-urgent);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}

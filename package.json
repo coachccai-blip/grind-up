@@ -1,6 +1,6 @@
 {
   "name": "grind-up",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "Grind up — plateforme de quêtes gamifiée pour élèves",

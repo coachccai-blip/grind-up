@@ -1,23 +1,26 @@
+import { lazy, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router'
-import { AdminLayout } from '../features/admin/AdminLayout'
-import {
-  BotsPage,
-  OverviewPage,
-  QuestsAdminPage,
-  SettingsPage,
-  ValidationsPage,
-} from '../features/admin/AdminPages'
-import { StudentPage } from '../features/admin/StudentPage'
-import { StudentsPage } from '../features/admin/StudentsPage'
 import { AuthPage } from '../features/auth/AuthPage'
 import { NewPasswordPage } from '../features/auth/NewPasswordPage'
 import { WelcomePage } from '../features/auth/WelcomePage'
-import { DeployCheckPage } from '../features/deploy-check/DeployCheckPage'
 import { ProfilePage } from '../features/student/ProfilePage'
 import { StudentLayout } from '../features/student/StudentLayout'
-import { DashboardPage, LeaderboardPage, QuestsPage } from '../features/student/StudentPages'
+import { MyQuestsPage } from '../features/student/MyQuestsPage'
+import { QuestPage } from '../features/student/QuestPage'
+import { DashboardPage, LeaderboardPage } from '../features/student/StudentPages'
 import { AnonymousOnly, RequireUser, SessionGate } from './guards'
 import { NotFoundPage } from './NotFoundPage'
+
+// L'espace admin et le test de déploiement sont chargés à la demande : un élève
+// ne télécharge que ce que montre son propre espace.
+const AdminApp = lazy(() => import('../features/admin/AdminApp'))
+const DeployCheckPage = lazy(() =>
+  import('../features/deploy-check/DeployCheckPage').then((module) => ({
+    default: module.DeployCheckPage,
+  })),
+)
+
+const loading = <p className="page-loading">Chargement…</p>
 
 /**
  * Toutes les pages du site. L'espace élève est à la racine, l'espace admin sous
@@ -25,7 +28,14 @@ import { NotFoundPage } from './NotFoundPage'
  */
 export const router = createBrowserRouter([
   // Test de déploiement : public, pour vérifier une mise en ligne sans compte.
-  { path: '/sante', element: <DeployCheckPage /> },
+  {
+    path: '/sante',
+    element: (
+      <Suspense fallback={loading}>
+        <DeployCheckPage />
+      </Suspense>
+    ),
+  },
   {
     element: <SessionGate />,
     children: [
@@ -48,7 +58,8 @@ export const router = createBrowserRouter([
             element: <StudentLayout />,
             children: [
               { path: '/', element: <DashboardPage /> },
-              { path: '/quetes', element: <QuestsPage /> },
+              { path: '/quetes', element: <MyQuestsPage /> },
+              { path: '/quetes/:questId', element: <QuestPage /> },
               { path: '/leaderboard', element: <LeaderboardPage /> },
               { path: '/profil', element: <ProfilePage /> },
             ],
@@ -59,17 +70,12 @@ export const router = createBrowserRouter([
         element: <RequireUser role="admin" />,
         children: [
           {
-            path: '/admin',
-            element: <AdminLayout />,
-            children: [
-              { index: true, element: <OverviewPage /> },
-              { path: 'eleves', element: <StudentsPage /> },
-              { path: 'eleves/:id', element: <StudentPage /> },
-              { path: 'quetes', element: <QuestsAdminPage /> },
-              { path: 'validations', element: <ValidationsPage /> },
-              { path: 'bots', element: <BotsPage /> },
-              { path: 'parametres', element: <SettingsPage /> },
-            ],
+            path: '/admin/*',
+            element: (
+              <Suspense fallback={loading}>
+                <AdminApp />
+              </Suspense>
+            ),
           },
         ],
       },

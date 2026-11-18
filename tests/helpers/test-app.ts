@@ -27,9 +27,16 @@ export const MINUTE = 60 * 1000
 export const HOUR = 60 * MINUTE
 export const DAY = 24 * HOUR
 
-export function createTestApp(configOverrides: Partial<AppConfig> = {}): TestApp {
-  const store = new MemoryBlobStore()
-  const clock = { now: new Date('2026-11-17T10:00:00Z') }
+/**
+ * `shared` permet de créer une seconde application sur le même stockage et la même
+ * horloge : deux instances de la fonction serveur, comme Netlify en lance en parallèle.
+ */
+export function createTestApp(
+  configOverrides: Partial<AppConfig> = {},
+  shared?: Pick<TestApp, 'store' | 'clock'>,
+): TestApp {
+  const store = shared?.store ?? new MemoryBlobStore()
+  const clock = shared?.clock ?? { now: new Date('2026-11-17T10:00:00Z') }
   const config: AppConfig = {
     ...loadConfig({}),
     scrypt: { cost: 2 ** 10, blockSize: 8, parallelization: 1 },
@@ -136,6 +143,10 @@ export class TestClient {
 
   post<Body = unknown>(path: string, body: unknown = {}) {
     return this.request<Body>('POST', path, body)
+  }
+
+  put<Body = unknown>(path: string, body: unknown) {
+    return this.request<Body>('PUT', path, body)
   }
 
   patch<Body = unknown>(path: string, body: unknown) {

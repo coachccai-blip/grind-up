@@ -1,0 +1,46 @@
+.chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  max-width: 100%;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* Neutre : le blanc bleuté de la page, cerné d'un trait discret pour se lire sur une carte. */
+.neutral {
+  background: var(--color-page);
+  box-shadow: inset 0 0 0 1px var(--color-divider);
+}
+
+.success {
+  background: var(--color-success);
+}
+
+.warning {
+  background: var(--color-warning);
+}
+
+.urgent {
+  background: var(--color-urgent);
+}
+
+.maths {
+  background: var(--color-maths);
+}
+
+.memorisation {
+  background: var(--color-memorisation);
+}
+
+.sport {
+  background: var(--color-sport);
+}
+
+.other {
+  background: var(--color-other);
+}

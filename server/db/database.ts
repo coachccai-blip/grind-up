@@ -69,6 +69,16 @@ function configure(file: SqliteFile): void {
   file.run('PRAGMA foreign_keys = ON')
 }
 
+/** Annule la transaction en cours. Renvoie faux si le fichier n'a pas pu être remis en état. */
+function rollback(file: SqliteFile): boolean {
+  try {
+    file.run('ROLLBACK')
+    return true
+  } catch {
+    return false
+  }
+}
+
 function isThenable(value: unknown): boolean {
   return typeof (value as { then?: unknown } | null)?.then === 'function'
 }
@@ -110,6 +120,7 @@ export class SqliteBlobDatabase {
    *
    * `change` doit être synchrone et ne dépendre que de la base et de ses arguments :
    * en cas d'écriture simultanée, elle est rejouée sur la version la plus récente.
+   * Si elle lève une erreur, rien n'est enregistré : la transaction est annulée.
    */
   write<Result>(change: (tx: SqlWriter) => Result): Promise<Result> {
     return this.enqueue(() => this.runWrite(change))
@@ -195,6 +206,7 @@ export class SqliteBlobDatabase {
       let result: Result
       let bytes: Uint8Array
       let backupDay: string | null
+      let committed = false
       try {
         const tx = new SqlWriter(file)
         tx.exec('BEGIN')
@@ -205,12 +217,14 @@ export class SqliteBlobDatabase {
           throw new TypeError('La fonction passée à write() doit être synchrone.')
         }
         tx.exec('COMMIT')
+        committed = true
         bytes = file.export()
         // export() rouvre le fichier en mémoire : on rétablit ses réglages.
         configure(file)
       } catch (error) {
-        // La copie en mémoire ne correspond plus au fichier enregistré.
-        this.forget()
+        // Changement refusé : la transaction est annulée et la copie en mémoire redevient
+        // celle du stockage. Si l'annulation échoue, on oublie la copie pour la relire.
+        if (committed || !rollback(file)) this.forget()
         throw error
       }
 

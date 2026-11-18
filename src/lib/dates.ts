@@ -28,6 +28,17 @@ export function formatDate(iso: string): string {
   return dateFormat.format(new Date(iso))
 }
 
+const dayMonthFormat = new Intl.DateTimeFormat('fr-FR', {
+  timeZone: APP_TIME_ZONE,
+  day: 'numeric',
+  month: 'long',
+})
+
+/** « 17 novembre » */
+export function formatDayMonth(iso: string): string {
+  return dayMonthFormat.format(new Date(iso))
+}
+
 /** « 17 novembre à 11:00 » */
 export function formatDateTime(iso: string): string {
   return dateTimeFormat.format(new Date(iso))

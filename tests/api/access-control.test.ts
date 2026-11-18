@@ -19,6 +19,67 @@ function adminRoutes(app: ReturnType<typeof createTestApp>['app']) {
   return [...new Map(routes.map((route) => [`${route.method} ${route.path}`, route])).values()]
 }
 
+/** Routes réservées aux élèves : leurs quêtes. Même principe, lu dans l'application. */
+function studentRoutes(app: ReturnType<typeof createTestApp>['app']) {
+  const routes = app.routes
+    .filter((route) => route.method !== 'ALL' && route.path.startsWith('/api/quests'))
+    .map((route) => ({
+      method: route.method,
+      path: route.path.replace(/:\w+/g, '00000000-0000-4000-8000-000000000000'),
+    }))
+  return [...new Map(routes.map((route) => [`${route.method} ${route.path}`, route])).values()]
+}
+
+describe('quêtes des élèves', () => {
+  it('compte bien des routes à protéger', () => {
+    const { app } = createTestApp()
+
+    expect(studentRoutes(app).length).toBeGreaterThanOrEqual(4)
+  })
+
+  it('sont fermées à un visiteur non connecté et à un admin, sur toutes leurs routes', async () => {
+    const { app, client } = createTestApp()
+    const admin = client()
+    await admin.signUpAdmin()
+
+    for (const route of studentRoutes(app)) {
+      const label = `${route.method} ${route.path}`
+      const asVisitor = await client().request<ApiErrorBody>(
+        route.method,
+        route.path,
+        bodyFor(route.method),
+      )
+      const asAdmin = await admin.request<ApiErrorBody>(
+        route.method,
+        route.path,
+        bodyFor(route.method),
+      )
+      expect(asVisitor.status, label).toBe(401)
+      expect(asAdmin.status, label).toBe(403)
+    }
+  })
+
+  it('restent fermées tant qu’un mot de passe temporaire n’a pas été remplacé', async () => {
+    const { client } = createTestApp()
+    const admin = client()
+    const student = client()
+    await admin.signUpAdmin()
+    const lea = await student.signUpStudent('Léa')
+    const temporary = await admin.post<{ temporaryPassword: string }>(
+      `/api/admin/students/${lea.id}/temporary-password`,
+    )
+    await student.post('/api/auth/login', {
+      login: 'Léa',
+      password: temporary.body.temporaryPassword,
+    })
+
+    const response = await student.get<ApiErrorBody>('/api/quests')
+
+    expect(response.status).toBe(403)
+    expect(response.body.error.code).toBe('password_change_required')
+  })
+})
+
 describe('espace admin', () => {
   it('compte bien des routes à protéger', () => {
     const { app } = createTestApp()

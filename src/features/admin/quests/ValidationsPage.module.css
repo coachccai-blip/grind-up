@@ -1,0 +1,66 @@
+.count {
+  color: var(--color-text-secondary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pseudo {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.when {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+.quest {
+  overflow-wrap: anywhere;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+/* La réponse de l'élève, sur le blanc bleuté pour la distinguer du reste de la carte. */
+.answer {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-page);
+}
+
+.answerLabel {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.answerText {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
