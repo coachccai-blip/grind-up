@@ -12,6 +12,7 @@ import {
   type StudentQuestResponse,
   type StudentQuestsResponse,
 } from '../../shared/schemas/quests.js'
+import { listLibrary } from '../../server/library/index.js'
 import { MemoryBlobStore } from '../helpers/memory-blob-store.js'
 import { createTestApp, type TestApp, type TestClient } from '../helpers/test-app.js'
 
@@ -463,4 +464,73 @@ describe('bibliothèque d’exercices', () => {
     expect(done.body.quest.explanations?.[quest.items[0]!.id]).toBe(exercise.items[0]?.explanation)
     expect(done.body.quest.corrections?.[quest.items[0]!.id]).toEqual(['x² + 6x + 9'])
   })
+})
+
+describe('chaque exercice de la bibliothèque', () => {
+  it.each(listLibrary())(
+    '« $title » devient une quête que ses bonnes réponses valident',
+    async ({ id }) => {
+      const { admin, lea, leaId } = await setup()
+      const { exercise } = (await admin.get<LibraryExerciseResponse>(`/api/admin/library/${id}`))
+        .body
+
+      const quest = await createQuest(admin, {
+        title: exercise.title,
+        lesson: exercise.lesson,
+        example: exercise.example,
+        instructions: exercise.instructions,
+        category: exercise.category,
+        format: exercise.format,
+        difficulty: exercise.difficulty,
+        rewardXp: 100,
+        items: exercise.items,
+        assignees: [leaId],
+        publish: true,
+      })
+      // L'élève lit le rappel et l'exemple, puis répond juste partout : dans un QCM, le bon
+      // choix ; sinon la réponse attendue, écrite comme le ferait un élève (avec un point).
+      const mine = await lea.get<StudentQuestResponse>(`/api/quests/${quest.id}`)
+      const answers = Object.fromEntries(
+        quest.items.map((item) => [
+          item.id,
+          exercise.format === 'qcm' ? item.correct : ` ${item.answers[0]!.replace(',', '.')} `,
+        ]),
+      )
+      const done = await attempt(lea, quest.id, answers)
+
+      expect(mine.body.quest).toMatchObject({ lesson: exercise.lesson, example: exercise.example })
+      expect(mine.body.quest.items).toHaveLength(exercise.itemCount)
+      expect(done.body.quest.lastAttempt?.score).toBe(100)
+      // Sans faute du premier coup : la récompense et le bonus de 10 %.
+      expect(done.body.quest).toMatchObject({ status: 'validated', xpAwarded: 110 })
+      expect(Object.keys(done.body.quest.explanations ?? {})).toHaveLength(exercise.itemCount)
+    },
+  )
+
+  it.each(listLibrary().filter((exercise) => exercise.format === 'exact'))(
+    '« $title » accepte aussi une réponse écrite avec son unité',
+    async ({ id }) => {
+      const { admin, lea, leaId } = await setup()
+      const { exercise } = (await admin.get<LibraryExerciseResponse>(`/api/admin/library/${id}`))
+        .body
+      const quest = await createQuest(admin, {
+        title: exercise.title,
+        category: exercise.category,
+        format: exercise.format,
+        difficulty: exercise.difficulty,
+        rewardXp: 100,
+        items: exercise.items,
+        assignees: [leaId],
+        publish: true,
+      })
+
+      // La dernière réponse acceptée est la plus longue : le nombre suivi de son unité, s'il y en a une.
+      const answers = Object.fromEntries(
+        quest.items.map((item) => [item.id, item.answers.at(-1)!.toUpperCase()]),
+      )
+      const done = await attempt(lea, quest.id, answers)
+
+      expect(done.body.quest.lastAttempt?.score).toBe(100)
+    },
+  )
 })
