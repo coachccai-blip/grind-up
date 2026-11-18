@@ -138,6 +138,10 @@ test.describe('accessibilité et mise en page', () => {
     const tag = uniquePseudo('a11y')
     const exact = await publishQuest(admin.page, {
       title: `Calcul ${tag}`,
+      lesson:
+        'Multiplier, c’est ajouter plusieurs fois le même nombre.\n- 6 × 7 = 42\n- 9 × 9 = 81',
+      example:
+        '**Énoncé\u00A0:** Calcule 6 × 8.\n\n**6 × 8 = 48**\nOn connaît 6 × 7 = 42\u00A0: on ajoute 6.',
       instructions: 'Réponds **sans calculatrice**.\n- une réponse par question',
       deadlineAt: inHours(2),
       items: [
@@ -195,7 +199,8 @@ test.describe('accessibilité et mise en page', () => {
 
     // Réponse exacte : le formulaire, puis une tentative manquée et ses corrections.
     await page.goto(`/quetes/${exact.id}`)
-    await audit(page, 'Quête à réponse exacte')
+    await expect(page.getByRole('heading', { name: 'Exemple expliqué' })).toBeVisible()
+    await audit(page, 'Quête à réponse exacte, avec rappel du cours et exemple')
     await page.getByLabel(/6 × 7/).fill('41')
     await page.getByLabel(/9 × 9/).fill('81')
     await page.getByRole('button', { name: 'Valider mes réponses' }).click()
@@ -328,6 +333,9 @@ test.describe('accessibilité et mise en page', () => {
     await page.getByRole('button', { name: 'Annuler', exact: true }).click()
     await page.goto('/admin/quetes/nouvelle')
     await audit(page, 'Nouvelle quête, réponse exacte')
+    await page.getByText('Rappel du cours et exemple expliqué', { exact: true }).click()
+    await expect(page.getByLabel('Exemple expliqué')).toBeVisible()
+    await audit(page, 'Nouvelle quête, rappel du cours et exemple dépliés')
     await page.getByRole('radio', { name: /^QCM/ }).check()
     await audit(page, 'Nouvelle quête, QCM')
     await page.getByText('Correction détaillée', { exact: true }).click()
@@ -345,8 +353,12 @@ test.describe('accessibilité et mise en page', () => {
 
     // Bibliothèque : la liste des exercices, puis une quête pré-remplie par l'un d'eux.
     await page.goto('/admin/quetes/bibliotheque')
-    await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible()
+    await expect(page.getByRole('heading', { level: 3 }).first()).toBeVisible()
     await audit(page, 'Bibliothèque')
+    await page.getByLabel('Rechercher un exercice').fill('aucun exercice de ce nom')
+    await expect(page.getByText('Aucun exercice ne correspond à cette recherche.')).toBeVisible()
+    await audit(page, 'Bibliothèque, recherche sans résultat')
+    await page.getByLabel('Rechercher un exercice').fill('')
     await page.getByRole('link', { name: /Utiliser cet exercice.*cas difficiles/ }).click()
     await expect(page.getByRole('heading', { name: 'Question 8' })).toBeVisible()
     await audit(page, 'Nouvelle quête reprise de la bibliothèque')

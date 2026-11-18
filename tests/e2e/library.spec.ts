@@ -56,24 +56,42 @@ test('parcours complet d’un exercice de la bibliothèque : repris dans une qu�
   await admin.getByRole('link', { name: 'Bibliothèque', exact: true }).click()
   await expect(admin.getByRole('heading', { level: 1, name: 'Bibliothèque' })).toBeVisible()
   await expect(admin).toHaveTitle('Bibliothèque · Grind up')
+  // Les exercices sont rangés par thème du programme.
+  await expect(admin.getByRole('heading', { level: 2, name: 'Calcul littéral' })).toBeVisible()
+  await expect(admin.getByRole('heading', { level: 2, name: 'Géométrie plane' })).toBeVisible()
   const card = admin.getByRole('listitem').filter({ hasText: 'cas simples' })
-  await expect(card.getByRole('heading', { level: 2 })).toHaveText(
+  await expect(card.getByRole('heading', { level: 3 })).toHaveText(
     'Identités remarquables : cas simples',
   )
   await expect(card.getByText('QCM · 6 questions')).toBeVisible()
   await expect(card.getByText('3e', { exact: true })).toBeVisible()
-  await expect(
-    admin.getByRole('heading', { level: 2, name: 'Identités remarquables : cas difficiles' }),
-  ).toBeVisible()
+  await expect(card.getByText('Facile', { exact: true })).toBeVisible()
   await expectNoHorizontalScroll(admin)
+
+  // Un thème ou quelques lettres suffisent à retrouver un exercice, accents ou non.
+  await admin.getByLabel('Thème').selectOption({ label: 'Géométrie plane' })
+  await expect(card).toHaveCount(0)
+  await expect(admin.getByRole('heading', { level: 3, name: /Pythagore/ })).toBeVisible()
+  await admin.getByLabel('Thème').selectOption({ label: 'Tous les thèmes' })
+  await admin.getByLabel('Rechercher un exercice').fill('identites remarquables')
+  await expect(admin.getByText(/^2 sur \d+ exercices$/)).toBeVisible()
+  await expect(admin.getByRole('heading', { level: 3 })).toHaveCount(2)
+  await expect(admin.getByRole('heading', { level: 2, name: 'Géométrie plane' })).toHaveCount(0)
+  await admin.getByLabel('Rechercher un exercice').fill('zzz')
+  await expect(admin.getByText('Aucun exercice ne correspond à cette recherche.')).toBeVisible()
+  await admin.getByLabel('Rechercher un exercice').fill('')
   await admin
     .getByRole('link', { name: 'Utiliser cet exercice : Identités remarquables : cas simples' })
     .click()
 
-  // 2. Une nouvelle quête s'ouvre, déjà remplie : contenu, corrections, difficulté, récompense.
+  // 2. Une nouvelle quête s'ouvre, déjà remplie : rappel du cours, exemple expliqué, questions,
+  //    corrections, difficulté, récompense.
   await expect(admin.getByRole('heading', { level: 1, name: 'Nouvelle quête' })).toBeVisible()
   await expect(admin.getByText(/Cette quête reprend l’exercice/)).toBeVisible()
   await expect(admin.getByLabel('Titre')).toHaveValue(/^Identités remarquables\s: cas simples$/)
+  await expect(admin.getByLabel('Rappel du cours')).toHaveValue(/double produit/)
+  await expect(admin.getByLabel('Exemple expliqué')).toHaveValue(/Énoncé/)
+  await expect(admin.getByLabel('Consigne')).toHaveValue(/une seule est juste par question/)
   await expect(admin.getByRole('radio', { name: /^QCM/ })).toBeChecked()
   await expect(admin.getByRole('radio', { name: 'Maths', exact: true })).toBeChecked()
   await expect(admin.getByRole('radio', { name: /Facile/ })).toBeChecked()
@@ -95,17 +113,27 @@ test('parcours complet d’un exercice de la bibliothèque : repris dans une qu�
   await expect(admin.getByText('Quête publiée.')).toBeVisible()
   await expect(admin.getByRole('heading', { level: 1, name: title })).toBeVisible()
 
-  // La fiche de la quête montre chaque question, sa bonne réponse et sa correction.
+  // La fiche de la quête montre le rappel, l'exemple, chaque question, sa bonne réponse et sa correction.
+  await expect(admin.getByRole('heading', { level: 2, name: 'Rappel du cours' })).toBeVisible()
+  await expect(admin.getByRole('heading', { level: 2, name: 'Exemple expliqué' })).toBeVisible()
   await expect(corrections(admin)).toHaveCount(6)
   await corrections(admin).first().click()
   await expect(admin.getByText('On reconnaît le carré d’une somme')).toBeVisible()
   await expect(admin.getByRole('listitem').filter({ hasText: pseudo })).toContainText('À faire')
 
-  // 3. L'élève reçoit la quête. Avant d'avoir répondu, aucune correction n'est à sa portée.
+  // 3. L'élève reçoit la quête : d'abord le rappel du cours, puis l'exemple expliqué, puis les
+  //    questions. Avant d'avoir répondu, aucune correction n'est à sa portée.
   await openStudentScreen(page, 'Mes quêtes')
   await page.getByRole('link', { name: new RegExp(title) }).click()
   await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible()
   await expect(page.getByText('50\u00A0XP')).toBeVisible()
+  await expect(page.getByRole('heading', { level: 2 })).toHaveText([
+    'Rappel du cours',
+    'Exemple expliqué',
+    'Consigne',
+  ])
+  await expect(page.getByText('Le terme 2ab s’appelle le double produit.')).toBeVisible()
+  await expect(page.getByText('Factorise Q = x² − 16x + 64.')).toBeVisible()
   await expect(page.getByRole('radio')).toHaveCount(24)
   await expect(corrections(page)).toHaveCount(0)
   await expect(page.getByText('Les pièges')).toHaveCount(0)

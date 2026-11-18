@@ -5,7 +5,14 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
-  globalIgnores(['dist', '.netlify', 'coverage', 'playwright-report', 'test-results']),
+  globalIgnores([
+    'dist',
+    '.netlify',
+    'coverage',
+    'playwright-report',
+    'test-results',
+    '.claude/worktrees',
+  ]),
   js.configs.recommended,
   tseslint.configs.recommended,
   {

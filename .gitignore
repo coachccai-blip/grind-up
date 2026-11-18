@@ -13,6 +13,9 @@ test-results/
 .env
 .env.*
 
+# Copies de travail temporaires des assistants de développement
+.claude/worktrees/
+
 # Divers
 .DS_Store
 *.log

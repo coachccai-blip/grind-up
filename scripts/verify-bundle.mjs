@@ -312,11 +312,24 @@ async function runScenario(handler) {
     exerciseItems.length > 0 && exerciseItems.every((item) => item.explanation.length > 0),
     `${exerciseItems.length} questions`,
   )
-  const { title, instructions, category, format, difficulty } = exercise.json?.exercise ?? {}
+  check(
+    'Un exercice commence par un rappel du cours et un exemple expliqué',
+    (exercise.json?.exercise?.lesson ?? '').length > 0 &&
+      (exercise.json?.exercise?.example ?? '').includes('Énoncé'),
+  )
+  check(
+    'La bibliothèque couvre plusieurs thèmes du programme',
+    (library.json?.themes?.length ?? 0) >= 2,
+    `${library.json?.themes?.length} thèmes, ${library.json?.exercises?.length} exercices`,
+  )
+  const { title, lesson, example, instructions, category, format, difficulty } =
+    exercise.json?.exercise ?? {}
   const fromLibrary = await call(handler, 'POST', '/api/admin/quests', {
     cookie: admin.cookie,
     body: {
       title,
+      lesson,
+      example,
       instructions,
       category,
       format,
@@ -333,8 +346,9 @@ async function runScenario(handler) {
     cookie: student.cookie,
   })
   check(
-    "L'élève reçoit la quête sans ses corrections",
+    "L'élève reçoit la quête avec son rappel du cours, sans ses corrections",
     unsolved.status === 200 &&
+      unsolved.json?.quest?.lesson === lesson &&
       unsolved.json?.quest?.explanations === null &&
       !unsolved.text.includes('Les pièges'),
     `statut ${unsolved.status}`,
