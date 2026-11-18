@@ -170,32 +170,32 @@ function barresEvolution(): Drawing {
 // Pourcentages : des parts d'un tout
 
 function demiPension(): Drawing {
+  // Le nombre cherché s'écrit au-dessus des 60 %, pas au-dessus des cases blanches.
   const base = stripFigure({
     groups: [
-      { parts: 6, fill: PASTEL.peche, label: '60\u00A0%' },
+      { parts: 6, fill: PASTEL.peche },
       { parts: 4, fill: WHITE },
     ],
     total: '450 élèves',
   })
-  return withParts(
-    { height: 136, parts: base.parts },
-    note([160, 124], 'Chaque case : 10\u00A0% des élèves'),
-    text([300, 20], '? élèves', { color: ACCENT, weight: 700, anchor: 'end' }),
+  // La bande et sa flèche finissent à 18 + 92 ; la note se pose juste dessous.
+  return drawing(
+    140,
+    shifted(base, 0, 18),
+    ...askedLabel(20 + 6 * 14, 20, '60\u00A0%', '? élèves'),
+    note([160, 126], 'Chaque case : 10\u00A0% des élèves'),
   )
 }
 
 function chorale(): Drawing {
   const base = stripFigure({
     groups: [
-      { parts: 8, fill: PASTEL.menthe, label: '8 choristes' },
+      { parts: 8, fill: PASTEL.menthe },
       { parts: 17, fill: WHITE },
     ],
     total: '25 élèves',
   })
-  return withParts(
-    { height: base.height + 6, parts: base.parts },
-    text([300, 20], '? %', { color: ACCENT, weight: 700, anchor: 'end' }),
-  )
+  return drawing(120, shifted(base, 0, 18), ...askedLabel(20, 20, '8 choristes', '? %'))
 }
 
 // ---------------------------------------------------------------------------
@@ -435,26 +435,40 @@ function vacances(): Drawing {
 // Ratios, partages, échelles
 
 /** Bande d'un partage, avec la part cherchée marquée « ? » au milieu de son groupe. */
+/**
+ * Une étiquette dont la fin est cherchée : « Jade : ? », le « ? » dans la
+ * couleur de l'accent, le tout centré sur `x`.
+ */
+function askedLabel(x: number, y: number, prefix: string, asked: string = UNKNOWN): Part[] {
+  const head = `${prefix}\u00A0: `
+  const headWidth = textWidth(head, FONT_SIZE, 700)
+  const width = headWidth + 4 + textWidth(asked, FONT_SIZE, 700)
+  // Centrée sur x, mais jamais coupée au bord de la figure.
+  const start = Math.min(Math.max(x - width / 2, 16), WIDTH - 16 - width)
+  return [
+    text([start, y], head, { weight: 700, anchor: 'start' }),
+    text([start + headWidth + 4, y], asked, { weight: 700, color: ACCENT, anchor: 'start' }),
+  ]
+}
+
 function partage(
   groups: readonly { parts: number; fill: string; label: string; asked?: boolean }[],
   total?: string,
   caption?: string,
 ): Drawing {
-  const base = stripFigure({ groups, total })
+  // La part cherchée s'annonce dans son étiquette (« Jade : ? ») et non dans
+  // une case : un « ? » dans une case se lirait comme la valeur d'une part.
+  const base = stripFigure({
+    groups: groups.map((group) => (group.asked ? { ...group, label: '' } : group)),
+    total,
+  })
   const count = groups.reduce((sum, group) => sum + group.parts, 0)
   const partWidth = 280 / count
   const marks: Part[] = []
   let index = 0
   for (const group of groups) {
     if (group.asked) {
-      marks.push(
-        text([20 + (index + group.parts / 2) * partWidth, 34 + 22], UNKNOWN, {
-          size: 22,
-          color: ACCENT,
-          weight: 700,
-          halo: false,
-        }),
-      )
+      marks.push(...askedLabel(20 + (index + group.parts / 2) * partWidth, 34 - 14, group.label))
     }
     index += group.parts
   }

@@ -578,7 +578,12 @@ export function brace(a: Point, b: Point, label: string, options: BraceOptions =
   ])
 }
 
-/** Cote : un trait parallèle à [ab], fermé par deux petits traits, et la longueur au milieu. */
+/**
+ * Cote : un trait parallèle à [ab], fermé par deux petits traits, et la longueur
+ * au milieu. Le trait s'interrompt sous l'étiquette (deux flèches et un vide de
+ * la taille du texte, même pour une cote oblique) ; si la cote est trop courte
+ * pour ce vide, l'étiquette se place à côté du trait, vers l'extérieur.
+ */
 export function dimension(
   a: Point,
   b: Point,
@@ -590,8 +595,25 @@ export function dimension(
   const shift = scale(normal, offset)
   const start = add(a, shift)
   const end = add(b, shift)
+  const mid = middle(start, end)
+  const u = unit(sub(end, start))
+  const weight = labelColor === ACCENT ? 700 : 600
+  const halfWidth = textWidth(label, FONT_SIZE, weight) / 2
+  const halfHeight = textHeight(FONT_SIZE) / 2
+  // La demi-longueur de la boîte du texte mesurée le long du trait, et un peu d'air.
+  const halfGap = label ? Math.abs(u[0]) * halfWidth + Math.abs(u[1]) * halfHeight + 5 : 0
+  const span = distance(start, end)
+  const style = { color, width: 1.5, head: 7 }
+  const beside = label !== '' && span / 2 - halfGap < 12
+  const line = (() => {
+    if (!label || beside) return arrow(start, end, { ...style, both: true })
+    return join([
+      arrow(sub(mid, scale(u, halfGap)), start, style),
+      arrow(add(mid, scale(u, halfGap)), end, style),
+    ])
+  })()
   return join([
-    arrow(start, end, { color, width: 1.5, head: 7, both: true }),
+    line,
     segment(add(a, scale(normal, offset - 5)), add(a, scale(normal, offset + 5)), {
       color,
       width: 1.5,
@@ -600,7 +622,10 @@ export function dimension(
       color,
       width: 1.5,
     }),
-    text(middle(start, end), label, { color: labelColor }),
+    label &&
+      (beside
+        ? labelAway(mid, normal, label, 4, { color: labelColor, weight })
+        : text(mid, label, { color: labelColor, weight })),
   ])
 }
 

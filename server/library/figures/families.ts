@@ -33,11 +33,13 @@ import {
   polygon,
   rect,
   rightAngle,
+  scale,
   angleMark,
   sector,
   segment,
   sub,
   text,
+  textHeight,
   textWidth,
   unit,
   WIDTH,
@@ -234,7 +236,8 @@ export function tableFigure(options: TableFigureOptions): Drawing {
     const x = left + tableWidth + 6
     const a: Point = [x, rowY(from)]
     const b: Point = [x, rowY(to)]
-    const bend = (to > from ? -1 : 1) * 14
+    // La flèche bombe vers la droite, hors du tableau, quel que soit son sens.
+    const bend = (to > from ? 1 : -1) * 14
     parts.push(
       curvedArrow(a, b, bend, { color: ACCENT, width: 1.75 }),
       text(add(curvedArrowTop(a, b, bend), [6, 0]), factor.label, {
@@ -305,15 +308,33 @@ export function treeFigure(options: TreeFigureOptions): Drawing {
 
   const edges: Part[] = []
   const labels: Part[] = []
-  const place = (node: TreeNode, level: number, firstSlot: number): Point => {
-    const count = leavesOf(node)
-    const at = position(level, firstSlot + (count - 1) / 2)
+  /**
+   * Place un nœud et ses descendants ; rend sa position dans la largeur, en
+   * parts. Un nœud se place à mi-chemin de son premier et de son dernier
+   * enfant : ses branches s'ouvrent alors symétriquement, même quand un enfant
+   * est une feuille et l'autre un sous-arbre (2 et 30 sous 60).
+   */
+  const place = (node: TreeNode, level: number, firstSlot: number): number => {
+    const children = node.children ?? []
     let slot = firstSlot
-    for (const child of node.children ?? []) {
-      const childAt = place(child, level + 1, slot)
+    const childSlots = children.map((child) => {
+      const childSlot = place(child, level + 1, slot)
       slot += leavesOf(child)
-      const start = level === 0 && hideRoot ? at : lerp(at, childAt, 0.2)
-      const end = lerp(at, childAt, 0.8)
+      return childSlot
+    })
+    const ownSlot = children.length ? (childSlots[0]! + childSlots.at(-1)!) / 2 : firstSlot
+    const at = position(level, ownSlot)
+    children.forEach((child, index) => {
+      const childAt = position(level + 1, childSlots[index]!)
+      // Les branches s'arrêtent à la même distance de chaque étiquette, quelle
+      // que soit leur longueur : elles partent toutes bien du nœud.
+      const u = unit(sub(childAt, at))
+      const clearance = (label: string) =>
+        Math.abs(u[0]) * (textWidth(label, FONT_SIZE, 700) / 2) +
+        Math.abs(u[1]) * (textHeight(FONT_SIZE) / 2) +
+        5
+      const start = level === 0 && hideRoot ? at : add(at, scale(u, clearance(node.label)))
+      const end = sub(childAt, scale(u, clearance(child.label)))
       edges.push(segment(start, end, { color: GREY, width: 1.75 }))
       if (child.edge) {
         labels.push(
@@ -324,13 +345,13 @@ export function treeFigure(options: TreeFigureOptions): Drawing {
           }),
         )
       }
-    }
+    })
     if (!(level === 0 && hideRoot)) {
       labels.push(
         text(at, node.label, { color: node.highlight ? ACCENT : colorOf(node.label), weight: 700 }),
       )
     }
-    return at
+    return ownSlot
   }
   place(root, 0, 0)
   return drawing(height, ...edges, ...labels)
@@ -376,8 +397,12 @@ export function stripFigure(options: StripFigureOptions): Drawing {
   let height = top + barHeight + 16
   if (total) {
     const y = top + barHeight + 12
+    // La flèche s'interrompt sous l'étiquette, pour ne pas la barrer.
+    const halfGap = textWidth(total, FONT_SIZE, 700) / 2 + 6
+    const arrowStyle = { color: GREY, width: 1.5, head: 7 }
     parts.push(
-      arrow([left, y], [left + width, y], { both: true, color: GREY, width: 1.5, head: 7 }),
+      arrow([WIDTH / 2 - halfGap, y], [left, y], arrowStyle),
+      arrow([WIDTH / 2 + halfGap, y], [left + width, y], arrowStyle),
       text([WIDTH / 2, y], total, { weight: 700 }),
     )
     height = y + 20

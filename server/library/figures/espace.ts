@@ -206,12 +206,12 @@ function box(a: Point, width: number, depth: Point, height: number): Box {
   }
 }
 
-function drawBox({ points: p }: Box, names = true): Part[] {
+function drawBox({ points: p }: Box, names = true, faces = true): Part[] {
   const center: Point = [(p.A[0] + p.G[0]) / 2, (p.A[1] + p.G[1]) / 2]
   return [
-    polygon([p.A, p.B, p.F, p.E], { fill: PASTEL.lilas, width: 0 }),
-    polygon([p.A, p.E, p.H, p.D], { fill: PASTEL.ciel, width: 0 }),
-    polygon([p.E, p.F, p.G, p.H], { fill: PASTEL.menthe, width: 0 }),
+    faces && polygon([p.A, p.B, p.F, p.E], { fill: PASTEL.lilas, width: 0 }),
+    faces && polygon([p.A, p.E, p.H, p.D], { fill: PASTEL.ciel, width: 0 }),
+    faces && polygon([p.E, p.F, p.G, p.H], { fill: PASTEL.menthe, width: 0 }),
     dashed(p.D, p.C, { width: 1.5 }),
     dashed(p.C, p.B, { width: 1.5 }),
     dashed(p.C, p.G, { width: 1.5 }),
@@ -220,7 +220,8 @@ function drawBox({ points: p }: Box, names = true): Part[] {
     segment(p.E, p.H),
     ...(names
       ? (Object.entries(p) as [string, Point][]).map(([name, point]) =>
-          pointName(point, name, { awayFrom: center }),
+          // E, en haut à l'avant, s'écrirait sur l'arête [EH] : on l'écrit à sa gauche.
+          pointName(point, name, name === 'E' ? { angle: 195 } : { awayFrom: center }),
         )
       : []),
   ]
@@ -334,8 +335,12 @@ function ballWithSize(label: string, question: string, diameter = false): Drawin
     ...ball(center, radius),
     segment(start, [center[0] + radius, center[1]], { color: ACCENT }),
     dot(center, { radius: 3 }),
+    // Un diamètre s'étiquette en son milieu, sous le trait, et le centre au-dessus :
+    // la longueur se lit alors sur tout le segment, pas sur un rayon.
     text([center[0] - 10, center[1] - 14], 'O', { weight: 700 }),
-    text([center[0] + radius / 2, center[1] - 14], label),
+    diameter
+      ? text([center[0], center[1] + 14], label)
+      : text([center[0] + radius / 2, center[1] - 14], label),
     asked([14, 26], question),
   )
 }
@@ -625,24 +630,32 @@ function coneCut(): Drawing {
   )
 }
 
-/** Pavé droit ABCDEFGH, coupé par un plan parallèle à la face ABCD (dessiné derrière). */
+/**
+ * Pavé droit ABCDEFGH, coupé par un plan parallèle à la face ABCD. Le pavé est
+ * dessiné en fil de fer, sans faces pleines : le plan se voit tout entier, à
+ * travers lui, sans que soit tracé le contour de la section (la réponse).
+ */
 function paveCut(): Drawing {
   const width = 120
   const depth: Point = [-48, -30]
-  const b = box([130, 156], width, depth, 50)
+  const b = box([134, 160], width, depth, 56)
   const p = b.points
-  // Le plan, à mi-hauteur, déborde du pavé de tous côtés.
+  // Le plan, à mi-hauteur, déborde nettement du pavé de tous côtés.
   const corner = (u: number, v: number): Point => [
     p.A[0] + u * width + v * depth[0],
-    p.A[1] - 25 + v * depth[1],
+    p.A[1] - 28 + v * depth[1],
   ]
   return drawing(
-    194,
-    horizontalPlane([corner(-0.4, -0.6), corner(1.3, -0.6), corner(1.3, 1.5), corner(-0.4, 1.5)]),
-    ...drawBox(b),
+    196,
+    polygon([corner(-0.3, -0.65), corner(1.25, -0.65), corner(1.25, 1.15), corner(-0.3, 1.15)], {
+      fill: PASTEL.citron,
+      color: GREY,
+      width: 1.5,
+    }),
+    ...drawBox(b, true, false),
     lengthLabel(p.A, p.B, cm(8), { side: 'right', distance: 20 }),
-    text([88, 158], cm(5)),
-    text([52, 101], cm(3)),
+    text([100, 168], cm(5)),
+    text([p.H[0] - 8, p.H[1] + 8], cm(3), { anchor: 'end' }),
   )
 }
 

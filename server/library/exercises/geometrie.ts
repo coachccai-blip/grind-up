@@ -1361,6 +1361,10 @@ const agrandissementsEtTransformations = defineExercise({
       '- les volumes sont multipliés par k³ ;',
       '- les angles sont conservés.',
     ].join('\n'),
+    figure(
+      'agrandissement-aire-k2',
+      'Un rectangle de 3 cm sur 2 cm et son agrandissement de rapport 2, de 6 cm sur 4 cm : son aire passe de 6 cm² à 24 cm², elle est multipliée par 4.',
+    ),
     'Deux **triangles semblables** ont leurs angles égaux deux à deux. Leurs côtés sont alors proportionnels : l’un est un agrandissement ou une réduction de l’autre.',
     'Une **transformation** associe à chaque point M une image M′ :',
     [
@@ -1370,6 +1374,14 @@ const agrandissementsEtTransformations = defineExercise({
       '- **rotation** : tous les points tournent autour d’un centre, du même angle et dans le même sens ;',
       '- **homothétie** de centre O et de rapport k positif : M′ est sur la demi-droite [OM) et OM′ = k × OM.',
     ].join('\n'),
+    figure(
+      'transformations-symetries-translation',
+      'Trois vignettes : un triangle et son image par une symétrie d’axe (d), par une symétrie de centre O, puis par une translation, suivant une flèche.',
+    ),
+    figure(
+      'transformations-rotation-homothetie',
+      'Deux vignettes : un triangle et son image par une rotation de centre O, puis par une homothétie de centre O et de rapport 2, qui double ses longueurs.',
+    ),
     'Les quatre premières conservent les longueurs, les angles et les aires. L’homothétie est un agrandissement (k > 1) ou une réduction (0 < k < 1) : elle conserve les angles, mais multiplie les longueurs par k et les aires par k².',
   ),
   example: [

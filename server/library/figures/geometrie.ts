@@ -316,7 +316,7 @@ function configuration(
     content &&
     dimension(a, b, content, {
       outside: big,
-      offset: 32,
+      offset: 40,
       labelColor: colorOf(content),
     })
   if (options.nested) {

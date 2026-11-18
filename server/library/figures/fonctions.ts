@@ -126,7 +126,7 @@ function machine({ input, output, name, rule, vocabulary, caption }: MachineOpti
     const labelY = y + boxHeight + 18
     parts.push(
       text([40, labelY], 'antécédent', { size: 14, weight: 700, color: GREY }),
-      text([WIDTH - 40, labelY], 'image', { size: 14, weight: 700, color: ACCENT }),
+      text([WIDTH - 40, labelY], 'image', { size: 14, weight: 700, color: GREY }),
     )
     height = labelY + 16
   }

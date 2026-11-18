@@ -479,8 +479,8 @@ function trianglesSemblables(): Drawing {
     origin,
     add(origin, [6 * unit, 0]),
   ]
-  const [A, B, C] = triangle([46, 176], 10)
-  const [D, E, F] = triangle([152, 176], 23)
+  const [A, B, C] = triangle([50, 176], 10)
+  const [D, E, F] = triangle([174, 176], 21)
   const small = polygonFigure({
     height: 214,
     vertices: [
