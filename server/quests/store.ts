@@ -23,6 +23,8 @@ export interface QuestRow extends SqlRow {
   id: string
   title: string
   instructions: string
+  lesson: string
+  example: string
   image_key: string | null
   category: QuestCategory
   format: QuestFormat
@@ -163,14 +165,16 @@ export function insertQuest(
   const at = options.now.toISOString()
   tx.run(
     `INSERT INTO quests (
-       id, title, instructions, category, format, difficulty, reward_xp, deadline_at,
-       manual_validation, pass_threshold, max_attempts, state, draft_assignees, author_id,
-       created_at, updated_at, published_at
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       id, title, instructions, lesson, example, category, format, difficulty, reward_xp,
+       deadline_at, manual_validation, pass_threshold, max_attempts, state, draft_assignees,
+       author_id, created_at, updated_at, published_at
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       id,
       quest.title,
       quest.instructions,
+      quest.lesson,
+      quest.example,
       quest.category,
       quest.format,
       quest.difficulty,
@@ -201,7 +205,8 @@ export function replaceQuest(
   const at = options.now.toISOString()
   tx.run(
     `UPDATE quests SET
-       title = ?, instructions = ?, category = ?, format = ?, difficulty = ?, reward_xp = ?,
+       title = ?, instructions = ?, lesson = ?, example = ?, category = ?, format = ?,
+       difficulty = ?, reward_xp = ?,
        deadline_at = ?, manual_validation = ?, pass_threshold = ?, max_attempts = ?, state = ?,
        draft_assignees = ?, updated_at = ?,
        published_at = CASE WHEN ? = 'published' THEN COALESCE(published_at, ?) ELSE published_at END
@@ -209,6 +214,8 @@ export function replaceQuest(
     [
       quest.title,
       quest.instructions,
+      quest.lesson,
+      quest.example,
       quest.category,
       quest.format,
       quest.difficulty,
@@ -232,12 +239,22 @@ export function replaceQuest(
 export function updateOpenFields(
   tx: SqlWriter,
   id: string,
-  fields: Pick<QuestInput, 'title' | 'instructions' | 'deadlineAt'>,
+  fields: Pick<QuestInput, 'title' | 'instructions' | 'lesson' | 'example' | 'deadlineAt'>,
   now: Date,
 ): void {
   tx.run(
-    'UPDATE quests SET title = ?, instructions = ?, deadline_at = ?, updated_at = ? WHERE id = ?',
-    [fields.title, fields.instructions, fields.deadlineAt, now.toISOString(), id],
+    `UPDATE quests SET title = ?, instructions = ?, lesson = ?, example = ?, deadline_at = ?,
+       updated_at = ?
+     WHERE id = ?`,
+    [
+      fields.title,
+      fields.instructions,
+      fields.lesson,
+      fields.example,
+      fields.deadlineAt,
+      now.toISOString(),
+      id,
+    ],
   )
 }
 
@@ -261,6 +278,8 @@ export function toQuestInput(row: QuestRow, items: readonly QuestItem[]): QuestI
   return {
     title: row.title,
     instructions: row.instructions,
+    lesson: row.lesson,
+    example: row.example,
     category: row.category,
     format: row.format,
     difficulty: row.difficulty,

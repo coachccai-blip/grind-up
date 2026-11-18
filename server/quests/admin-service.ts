@@ -76,6 +76,8 @@ export function readAdminQuest(tx: SqlReader, id: string, now: Date): AdminQuest
   return {
     ...toAdminQuestSummary(quest, progressByQuest(tx).get(id)),
     instructions: quest.instructions,
+    lesson: quest.lesson,
+    example: quest.example,
     manualValidation: quest.manual_validation === 1,
     passThreshold: quest.pass_threshold,
     maxAttempts: quest.max_attempts,
@@ -113,7 +115,7 @@ export function createQuest(
   return id
 }
 
-/** Champs figés dès qu'un élève a soumis : tout sauf le titre, la consigne et la deadline. */
+/** Champs figés dès qu'un élève a soumis : tout sauf le titre, la consigne, le rappel du cours, l'exemple et la deadline. */
 function frozenPart(quest: QuestInput): string {
   return JSON.stringify([
     quest.category,
@@ -152,7 +154,7 @@ export function updateQuest(tx: SqlWriter, id: string, request: SaveQuestRequest
     if (frozenPart(before) !== frozenPart(quest)) {
       throw conflict(
         'quest_locked',
-        'Un élève a déjà répondu à cette quête\u00A0: seuls le titre, la consigne et la deadline peuvent encore changer.',
+        'Un élève a déjà répondu à cette quête\u00A0: seuls le titre, le rappel du cours, l’exemple, la consigne et la deadline peuvent encore changer.',
       )
     }
     updateOpenFields(tx, id, quest, now)

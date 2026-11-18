@@ -111,6 +111,18 @@ export function QuestPage() {
         </Notice>
       )}
 
+      {quest.lesson.trim() !== '' && (
+        <Card className={styles.instructions}>
+          <h2>Rappel du cours</h2>
+          <RichText text={quest.lesson} />
+        </Card>
+      )}
+      {quest.example.trim() !== '' && (
+        <Card className={styles.instructions}>
+          <h2>Exemple expliqué</h2>
+          <RichText text={quest.example} />
+        </Card>
+      )}
       {(quest.instructions.trim() !== '' || quest.imageUrl) && (
         <Card className={styles.instructions}>
           <h2>Consigne</h2>

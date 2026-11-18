@@ -1,29 +1,19 @@
-import type { LibraryExercise } from '../../../shared/schemas/library.js'
-import { qcmQuestion } from '../correction.js'
+import { defineExercise, paragraphs, qcm } from '../authoring.js'
 
 /**
- * Identités remarquables, classe de 3e : un exercice en deux quêtes, les cas
- * simples puis les cas difficiles. Chaque mauvais choix correspond à une erreur
- * courante, que la correction nomme.
- *
- * Écriture des calculs : le carré « ² », le signe moins « − » et le signe de
- * multiplication « × », jamais la lettre x. Un test recalcule chaque énoncé,
- * chaque bonne réponse et chaque ligne de correction.
+ * Identités remarquables : un exercice en deux quêtes, les cas simples puis les
+ * cas difficiles. Chaque mauvais choix correspond à une erreur courante, que la
+ * correction nomme.
  */
 
-const REMINDER = [
-  '- (a + b)² = a² + 2ab + b²',
-  '- (a − b)² = a² − 2ab + b²',
-  '- (a + b)(a − b) = a² − b²',
+const IDENTITIES = [
+  '- (a + b)² = a² + 2ab + b² : le carré d’une somme',
+  '- (a − b)² = a² − 2ab + b² : le carré d’une différence',
+  '- (a + b)(a − b) = a² − b² : le produit d’une somme par une différence',
 ].join('\n')
 
-const HOW_TO_ANSWER = [
-  'Fais chaque calcul au brouillon, puis choisis ta réponse\u00A0: une seule est juste par question.',
-  'Une fois la quête validée, tu pourras lire la correction détaillée de chaque question.',
-].join('\n\n')
-
-const simpleItems = [
-  qcmQuestion({
+const simpleQuestions = [
+  qcm({
     prompt: 'Développe et réduis A = (x + 3)².',
     choices: ['x² + 9', 'x² + 6x + 9', 'x² + 3x + 9', 'x² + 6x + 6'],
     answer: 'x² + 6x + 9',
@@ -44,7 +34,7 @@ const simpleItems = [
       check: 'pour x = 1, (1 + 3)² = 16 et 1 + 6 + 9 = 16.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Développe et réduis B = (x − 5)².',
     choices: ['x² − 25', 'x² − 10x − 25', 'x² − 5x + 25', 'x² − 10x + 25'],
     answer: 'x² − 10x + 25',
@@ -65,7 +55,7 @@ const simpleItems = [
       check: 'pour x = 1, (1 − 5)² = (−4)² = 16 et 1 − 10 + 25 = 16.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Développe et réduis C = (x + 4)(x − 4).',
     choices: ['x² − 16', 'x² + 16', 'x² − 8x + 16', 'x² − 8'],
     answer: 'x² − 16',
@@ -87,7 +77,7 @@ const simpleItems = [
         'en développant terme à terme, on obtient x² − 4x + 4x − 16. Les termes −4x et +4x s’annulent\u00A0: il reste x² − 16, sans terme en x.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Factorise D = x² + 10x + 25.',
     choices: ['(x + 25)²', '(x + 5)(x − 5)', '(x + 5)²', '(x + 10)²'],
     answer: '(x + 5)²',
@@ -112,7 +102,7 @@ const simpleItems = [
       check: 'en développant (x + 5)², on retrouve x² + 10x + 25.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Factorise E = x² − 6x + 9.',
     choices: ['(x − 3)²', '(x − 9)²', '(x + 3)(x − 3)', '(x + 3)²'],
     answer: '(x − 3)²',
@@ -140,7 +130,7 @@ const simpleItems = [
       check: 'en développant (x − 3)², on retrouve x² − 6x + 9.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Factorise F = x² − 49.',
     choices: ['(x − 7)²', '(x − 49)(x + 49)', '(x + 7)(x − 7)', '(x + 7)²'],
     answer: '(x + 7)(x − 7)',
@@ -169,8 +159,8 @@ const simpleItems = [
   }),
 ]
 
-const hardItems = [
-  qcmQuestion({
+const hardQuestions = [
+  qcm({
     prompt: 'Développe et réduis G = (3x − 4)².',
     choices: ['3x² − 24x + 16', '9x² − 16', '9x² − 24x + 16', '9x² − 12x + 16'],
     answer: '9x² − 24x + 16',
@@ -200,7 +190,7 @@ const hardItems = [
       check: 'pour x = 2, (6 − 4)² = 4 et 36 − 48 + 16 = 4.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Développe et réduis H = (3x − 2)² − (x + 5)(x − 5).',
     choices: ['8x² − 12x − 21', '8x² − 12x + 29', '10x² − 12x − 21', '8x² − 6x + 29'],
     answer: '8x² − 12x + 29',
@@ -238,7 +228,7 @@ const hardItems = [
       check: 'pour x = 1, H = 1² − 6 × (−4) = 1 + 24 = 25, et 8 − 12 + 29 = 25.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Factorise I = 25x² + 20x + 4.',
     choices: ['(25x + 2)²', '(5x + 4)²', '(5x + 2)(5x − 2)', '(5x + 2)²'],
     answer: '(5x + 2)²',
@@ -260,7 +250,7 @@ const hardItems = [
       check: 'en développant (5x + 2)², on retrouve 25x² + 20x + 4.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Factorise J = (x + 3)² − 16.',
     choices: ['(x + 19)(x − 13)', 'x² + 6x − 7', '(x − 1)²', '(x + 7)(x − 1)'],
     answer: '(x + 7)(x − 1)',
@@ -291,7 +281,7 @@ const hardItems = [
         '(x + 7)(x − 1) = x² − x + 7x − 7 = x² + 6x − 7, et (x + 3)² − 16 = x² + 6x + 9 − 16 = x² + 6x − 7.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Calcule 103² sans calculatrice, à l’aide d’une identité remarquable.',
     choices: ['10\u202F009', '10\u202F609', '10\u202F600', '10\u202F309'],
     answer: '10\u202F609',
@@ -309,7 +299,7 @@ const hardItems = [
       check: 'la calculatrice confirme\u00A0: 103 × 103 = 10\u202F609.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Calcule 98² sans calculatrice, à l’aide d’une identité remarquable.',
     choices: ['9\u202F996', '9\u202F804', '9\u202F604', '9\u202F596'],
     answer: '9\u202F604',
@@ -336,7 +326,7 @@ const hardItems = [
       check: 'la calculatrice confirme\u00A0: 98 × 98 = 9\u202F604.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Calcule 47 × 53 sans calculatrice, à l’aide d’une identité remarquable.',
     choices: ['2\u202F491', '2\u202F509', '2\u202F500', '2\u202F494'],
     answer: '2\u202F491',
@@ -363,7 +353,7 @@ const hardItems = [
       check: 'la calculatrice confirme\u00A0: 47 × 53 = 2\u202F491.',
     },
   }),
-  qcmQuestion({
+  qcm({
     prompt: 'Résous l’équation (x − 2)² − 25 = 0.',
     choices: ['x = 7', 'x = 3 ou x = −7', 'x = −5 ou x = 5', 'x = −3 ou x = 7'],
     answer: 'x = −3 ou x = 7',
@@ -401,41 +391,109 @@ const hardItems = [
   }),
 ]
 
-export const identitesRemarquables: readonly Omit<LibraryExercise, 'itemCount'>[] = [
-  {
+export const identitesRemarquables = [
+  defineExercise({
     id: 'identites-remarquables-cas-simples',
-    title: 'Identités remarquables\u00A0: cas simples',
-    level: '3e',
-    description:
-      'Six applications directes des trois identités\u00A0: développer un carré ou un produit, puis factoriser. Chaque question a sa correction détaillée, étape par étape.',
-    category: 'maths',
-    format: 'qcm',
+    title: 'Identités remarquables : cas simples',
+    theme: 'calcul-litteral',
     difficulty: 'easy',
-    instructions: [
-      'Six calculs pour appliquer directement les trois identités remarquables\u00A0:',
-      REMINDER,
-      HOW_TO_ANSWER,
-    ].join('\n\n'),
-    items: simpleItems,
-  },
-  {
-    id: 'identites-remarquables-cas-difficiles',
-    title: 'Identités remarquables\u00A0: cas difficiles',
-    level: '3e',
     description:
-      'Huit calculs où les identités se combinent ou se cachent\u00A0: coefficients, expression à réduire, parenthèse au carré, calcul mental, équation produit. Chaque question a sa correction détaillée.',
-    category: 'maths',
-    format: 'qcm',
+      'Six applications directes des trois identités : développer un carré ou un produit, puis factoriser. Chaque mauvais choix correspond à une erreur courante.',
+    lesson: paragraphs(
+      'Une identité remarquable est une égalité vraie pour tous les nombres a et b. Elle fait gagner du temps : on passe d’une écriture à l’autre sans tout recalculer.',
+      IDENTITIES,
+      '**Développer**, c’est aller de gauche à droite : un produit devient une somme. **Factoriser**, c’est le chemin inverse. Le terme 2ab s’appelle le double produit.',
+    ),
+    example: [
+      {
+        statement: 'Développe et réduis P = (x + 6)².',
+        steps: [
+          [
+            'P = (x + 6)²',
+            'On repère la forme : c’est le carré d’une somme, (a + b)². Ici a = x et b = 6.',
+          ],
+          [
+            'P = x² + 2 × x × 6 + 6²',
+            'On écrit a² + 2ab + b² en remplaçant a par x et b par 6. Le terme du milieu est le double produit.',
+          ],
+          ['P = x² + 12x + 36', 'On calcule chaque terme : 2 × x × 6 = 12x et 6² = 36.'],
+        ],
+        conclusion: 'P = x² + 12x + 36. On vérifie avec x = 1 : (1 + 6)² = 49 et 1 + 12 + 36 = 49.',
+      },
+      {
+        statement: 'Factorise Q = x² − 16x + 64.',
+        steps: [
+          [
+            'Q = x² − 16x + 64',
+            'Trois termes, et seul celui du milieu est négatif : on pense à a² − 2ab + b².',
+          ],
+          ['a² = x² et b² = 64', 'On cherche les deux carrés : a = x et b = 8, car 8² = 64.'],
+          [
+            '2ab = 2 × x × 8 = 16x',
+            'On vérifie le double produit avant de conclure : c’est bien le terme du milieu, au signe près.',
+          ],
+          [
+            'Q = (x − 8)²',
+            'Les trois termes sont ceux de l’identité : on écrit le carré d’une différence.',
+          ],
+        ],
+        conclusion: 'Q = (x − 8)². En développant (x − 8)², on retrouve bien x² − 16x + 64.',
+      },
+    ],
+    questions: simpleQuestions,
+  }),
+  defineExercise({
+    id: 'identites-remarquables-cas-difficiles',
+    title: 'Identités remarquables : cas difficiles',
+    theme: 'calcul-litteral',
     difficulty: 'hard',
-    instructions: [
-      'Huit calculs où les identités remarquables se combinent ou se cachent dans une expression.',
+    description:
+      'Huit calculs où les identités se combinent ou se cachent : coefficients, expression à réduire, parenthèse au carré, calcul mental, équation produit.',
+    lesson: paragraphs(
+      'Les trois identités remarquables restent les mêmes :',
+      IDENTITIES,
+      'Ce qui change, c’est que a et b ne sont plus de simples lettres : a peut valoir 3x, ou toute une parenthèse. La méthode, elle, ne change pas.',
       [
-        'Deux réflexes\u00A0:',
-        '- mets des parenthèses autour de tout terme composé, comme 3x ou (x + 3)\u00A0;',
-        '- vérifie ton résultat en remplaçant x par un nombre simple.',
+        '1. Repère la forme : carré d’une somme, carré d’une différence, ou différence de deux carrés.',
+        '2. Écris ce que valent a et b.',
+        '3. Applique l’identité en gardant des parenthèses autour de a et de b.',
+        '4. Calcule, puis vérifie avec une valeur simple de x.',
       ].join('\n'),
-      HOW_TO_ANSWER,
-    ].join('\n\n'),
-    items: hardItems,
-  },
+    ),
+    example: [
+      {
+        statement: 'Développe et réduis P = (2x + 5)².',
+        steps: [
+          ['P = (2x + 5)²', 'C’est le carré d’une somme, avec a = 2x et b = 5.'],
+          [
+            'P = (2x)² + 2 × 2x × 5 + 5²',
+            'On applique a² + 2ab + b² en gardant 2x entre parenthèses : le carré porte sur le 2 et sur le x.',
+          ],
+          [
+            'P = 4x² + 20x + 25',
+            'On calcule : (2x)² = 2² × x² = 4x², puis 2 × 2x × 5 = 20x et 5² = 25.',
+          ],
+        ],
+        conclusion:
+          'P = 4x² + 20x + 25. On vérifie avec x = 1 : (2 + 5)² = 49 et 4 + 20 + 25 = 49.',
+      },
+      {
+        statement: 'Factorise Q = (x − 1)² − 9.',
+        steps: [
+          [
+            'Q = (x − 1)² − 3²',
+            'On écrit 9 comme un carré. On reconnaît a² − b², où a est toute la parenthèse (x − 1) et b = 3.',
+          ],
+          [
+            'Q = (x − 1 + 3)(x − 1 − 3)',
+            'On applique (a + b)(a − b) : on ajoute 3 dans le premier facteur, on le retranche dans le second.',
+          ],
+          ['Q = (x + 2)(x − 4)', 'On réduit chaque facteur : −1 + 3 = 2 et −1 − 3 = −4.'],
+        ],
+        conclusion:
+          'Q = (x + 2)(x − 4). On vérifie avec x = 4 : (4 − 1)² − 9 = 0 et (4 + 2)(4 − 4) = 0.',
+      },
+    ],
+    questions: hardQuestions,
+  }),
 ]

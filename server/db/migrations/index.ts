@@ -6,6 +6,7 @@ import { migration0004 } from './0004_create_badges.js'
 import { migration0005 } from './0005_create_bots.js'
 import { migration0006 } from './0006_add_game_settings.js'
 import { migration0007 } from './0007_add_item_explanations.js'
+import { migration0008 } from './0008_add_quest_lessons.js'
 
 /** Toutes les migrations, dans leur ordre d'application. Ajouter les nouvelles à la fin. */
 export const migrations: readonly Migration[] = [
@@ -16,4 +17,5 @@ export const migrations: readonly Migration[] = [
   migration0005,
   migration0006,
   migration0007,
+  migration0008,
 ]

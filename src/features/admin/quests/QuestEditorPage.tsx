@@ -246,9 +246,9 @@ function QuestEditor({ quest, exercise, settings }: QuestEditorProps) {
 
       {exercise && (
         <Notice tone="info">
-          Cette quête reprend l’exercice «&nbsp;{exercise.title}&nbsp;» de la bibliothèque, avec la
-          correction détaillée de chaque question. Tout reste modifiable. Choisissez les élèves en
-          bas de la page, puis publiez la quête.
+          Cette quête reprend l’exercice «&nbsp;{exercise.title}&nbsp;» de la bibliothèque&nbsp;:
+          rappel du cours, exemple expliqué, questions et correction détaillée de chacune. Tout
+          reste modifiable. Choisissez les élèves en bas de la page, puis publiez la quête.
         </Notice>
       )}
 
@@ -257,8 +257,8 @@ function QuestEditor({ quest, exercise, settings }: QuestEditorProps) {
       )}
       {locked && !isArchived && (
         <Notice tone="info">
-          Un élève a déjà répondu à cette quête&nbsp;: seuls le titre, la consigne et la deadline
-          peuvent encore changer.
+          Un élève a déjà répondu à cette quête&nbsp;: seuls le titre, le rappel du cours,
+          l’exemple, la consigne et la deadline peuvent encore changer.
         </Notice>
       )}
 
@@ -293,6 +293,12 @@ function QuestEditor({ quest, exercise, settings }: QuestEditorProps) {
           onChange={(event) => set({ title: event.target.value })}
           hint={`${form.title.length} sur ${QUEST_TITLE_MAX} caractères. Les emojis sont acceptés.`}
           error={fieldErrors.title}
+        />
+        <LessonFields
+          lesson={form.lesson}
+          example={form.example}
+          onChange={set}
+          errors={fieldErrors}
         />
         <TextArea
           label="Consigne"
@@ -467,6 +473,49 @@ function QuestEditor({ quest, exercise, settings }: QuestEditorProps) {
         </div>
       )}
     </form>
+  )
+}
+
+interface LessonFieldsProps {
+  lesson: string
+  example: string
+  onChange: (changes: Pick<Partial<QuestForm>, 'lesson' | 'example'>) => void
+  errors: Record<string, string>
+}
+
+const rowsFor = (text: string) => Math.min(14, Math.max(4, text.split('\n').length + 1))
+
+/**
+ * Rappel du cours et exemple expliqué : ce que l'élève lit avant la consigne.
+ * Facultatifs, donc repliés tant qu'ils sont vides.
+ */
+function LessonFields({ lesson, example, onChange, errors }: LessonFieldsProps) {
+  // L'état de départ ne change plus ensuite : effacer le texte ne replie pas la zone en pleine saisie.
+  const [startsOpen] = useState(lesson !== '' || example !== '')
+  return (
+    <details className={styles.preview} open={startsOpen}>
+      <summary>Rappel du cours et exemple expliqué</summary>
+      <div className={styles.lesson}>
+        <TextArea
+          label="Rappel du cours"
+          rows={rowsFor(lesson)}
+          maxLength={RICH_TEXT_MAX_LENGTH}
+          value={lesson}
+          onChange={(event) => onChange({ lesson: event.target.value })}
+          hint="Facultatif. Les définitions et les formules utiles, que l’élève lit avant la consigne."
+          error={errors.lesson}
+        />
+        <TextArea
+          label="Exemple expliqué"
+          rows={rowsFor(example)}
+          maxLength={RICH_TEXT_MAX_LENGTH}
+          value={example}
+          onChange={(event) => onChange({ example: event.target.value })}
+          hint="Facultatif. Une question du même genre, résolue pas à pas. Même mise en forme que la consigne."
+          error={errors.example}
+        />
+      </div>
+    </details>
   )
 }
 

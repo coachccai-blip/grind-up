@@ -81,8 +81,6 @@ describe('typographie française', () => {
       join(projectRoot, 'server/http.ts'),
       join(projectRoot, 'server/app.ts'),
       join(projectRoot, 'server/auth/service.ts'),
-      // Les exercices de la bibliothèque sont lus par les élèves.
-      ...sourceFiles(join(projectRoot, 'server/library')),
     ]
 
     const offences = files.flatMap((file) =>

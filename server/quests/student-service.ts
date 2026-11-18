@@ -271,6 +271,8 @@ export function readMyQuest(
   return {
     ...toSummary(quest, assignment, attempts.length, now, readRewardRules(tx)),
     instructions: quest.instructions,
+    lesson: quest.lesson,
+    example: quest.example,
     imageUrl: imageUrl(quest, 'student'),
     manualValidation: quest.manual_validation === 1,
     passThreshold: quest.pass_threshold,

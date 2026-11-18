@@ -35,6 +35,9 @@ export interface FormItem {
 
 export interface QuestForm {
   title: string
+  /** Rappel du cours et exemple expliqué, facultatifs, lus par l'élève avant la consigne. */
+  lesson: string
+  example: string
   instructions: string
   category: QuestCategory
   format: QuestFormat
@@ -81,6 +84,8 @@ export function emptyForm(settings: GameSettings): QuestForm {
   const difficulty: QuestDifficulty = 'medium'
   return {
     title: '',
+    lesson: '',
+    example: '',
     instructions: '',
     category,
     format,
@@ -105,6 +110,8 @@ export function formFromExercise(exercise: LibraryExercise, settings: GameSettin
   return {
     ...emptyForm(settings),
     title: exercise.title,
+    lesson: exercise.lesson,
+    example: exercise.example,
     instructions: exercise.instructions,
     category: exercise.category,
     format: exercise.format,
@@ -127,6 +134,8 @@ export function formFromQuest(quest: AdminQuestDetail, settings: GameSettings): 
   const auto = isAutoCorrected(quest.format)
   return {
     title: quest.title,
+    lesson: quest.lesson,
+    example: quest.example,
     instructions: quest.instructions,
     category: quest.category,
     format: quest.format,
@@ -156,6 +165,8 @@ export function toRequest(form: QuestForm, publish: boolean): SaveQuestRequest {
   const deadline = form.deadlineLocal === '' ? null : parisLocalToInstant(form.deadlineLocal)
   return {
     title: form.title,
+    lesson: form.lesson,
+    example: form.example,
     instructions: form.instructions,
     category: form.category,
     format: form.format,

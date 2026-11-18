@@ -3,13 +3,21 @@ import type { QuestItemInput } from './quests.js'
 
 /**
  * Bibliothèque d'exercices prêts à l'emploi, réservée à l'admin. Un exercice est
- * le contenu d'une quête, corrections détaillées comprises : l'admin le reprend
- * dans une nouvelle quête, qu'il peut modifier avant de la donner à ses élèves.
+ * le contenu d'une quête : rappel du cours, exemple expliqué, consigne, questions
+ * et correction détaillée de chacune. L'admin le reprend dans une nouvelle quête,
+ * qu'il peut modifier avant de la donner à ses élèves.
  */
+export interface LibraryTheme {
+  id: string
+  label: string
+}
+
 export interface LibraryExerciseSummary {
   /** Identifiant lisible, qui figure dans l'adresse de l'écran. */
   id: string
   title: string
+  /** Identifiant du thème du programme auquel l'exercice appartient. */
+  theme: string
   /** Classe visée, telle qu'elle s'affiche : « 3e ». */
   level: string
   /** Ce que l'exercice fait travailler, en une ou deux phrases. */
@@ -22,11 +30,15 @@ export interface LibraryExerciseSummary {
 
 /** Un exercice complet, réponses attendues et corrections comprises. */
 export interface LibraryExercise extends LibraryExerciseSummary {
+  lesson: string
+  example: string
   instructions: string
   items: QuestItemInput[]
 }
 
 export interface LibraryResponse {
+  /** Les thèmes, dans l'ordre du programme. */
+  themes: LibraryTheme[]
   exercises: LibraryExerciseSummary[]
 }
 

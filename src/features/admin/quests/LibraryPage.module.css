@@ -1,12 +1,29 @@
 .intro {
-  max-width: 62ch;
+  max-width: 68ch;
   color: var(--color-text-secondary);
+}
+
+/* Téléphone : le thème, puis la recherche ; minmax(0, …) laisse les champs rétrécir sans déborder. */
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.count {
+  color: var(--color-text-secondary);
+}
+
+.theme {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 .exercise {
@@ -15,7 +32,7 @@
   gap: var(--space-3);
 }
 
-.exercise h2 {
+.exercise h3 {
   overflow-wrap: anywhere;
 }
 
@@ -36,6 +53,10 @@
 }
 
 @media (min-width: 640px) {
+  .filters {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
   .use {
     align-self: flex-start;
   }

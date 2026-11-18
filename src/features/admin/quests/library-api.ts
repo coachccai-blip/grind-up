@@ -11,8 +11,7 @@ const libraryKey = ['admin', 'library'] as const
 export function useLibrary() {
   return useQuery({
     queryKey: libraryKey,
-    queryFn: async ({ signal }) =>
-      (await api<LibraryResponse>('/api/admin/library', { signal })).exercises,
+    queryFn: ({ signal }) => api<LibraryResponse>('/api/admin/library', { signal }),
     staleTime: Infinity,
   })
 }

@@ -98,6 +98,10 @@ export const questInputSchema = z.object({
     .min(1, 'Donnez un titre à la quête.')
     .max(QUEST_TITLE_MAX, TOO_LONG(QUEST_TITLE_MAX)),
   instructions: z.string().max(RICH_TEXT_MAX_LENGTH, TOO_LONG(RICH_TEXT_MAX_LENGTH)).default(''),
+  /** Bref rappel du cours, facultatif : l'élève le lit avant la consigne. */
+  lesson: z.string().max(RICH_TEXT_MAX_LENGTH, TOO_LONG(RICH_TEXT_MAX_LENGTH)).default(''),
+  /** Exemple expliqué de la méthode, facultatif : l'élève le lit après le rappel du cours. */
+  example: z.string().max(RICH_TEXT_MAX_LENGTH, TOO_LONG(RICH_TEXT_MAX_LENGTH)).default(''),
   category: z.enum(QUEST_CATEGORY_IDS),
   format: z.enum(QUEST_FORMAT_IDS),
   difficulty: z.enum(QUEST_DIFFICULTY_IDS),
@@ -207,6 +211,8 @@ export function normalizeQuestInput(input: QuestInput): QuestInput {
   const auto = isAutoCorrected(input.format)
   return {
     ...input,
+    lesson: input.lesson.trim(),
+    example: input.example.trim(),
     items: auto ? items : [],
     manualValidation: input.format === 'declarative' ? input.manualValidation : !auto,
     passThreshold: auto ? input.passThreshold : DEFAULT_PASS_THRESHOLD,
@@ -398,6 +404,8 @@ export interface AdminQuestItem extends QuestItemInput {
 /** Une quête complète, réponses attendues comprises : réservée à l'admin. */
 export interface AdminQuestDetail extends AdminQuestSummary {
   instructions: string
+  lesson: string
+  example: string
   manualValidation: boolean
   passThreshold: number
   maxAttempts: number
@@ -505,6 +513,9 @@ export interface AttemptResult {
 
 export interface StudentQuestDetail extends StudentQuestSummary {
   instructions: string
+  /** Rappel du cours et exemple expliqué : ils préparent la quête, sans aucune réponse attendue. */
+  lesson: string
+  example: string
   /** Adresse de l'image de la consigne, ou null. Elle change quand l'image change. */
   imageUrl: string | null
   manualValidation: boolean

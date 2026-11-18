@@ -271,6 +271,10 @@ describe('correction détaillée d’une question', () => {
 
     const items = await open(migrations).read((tx) => listItems(tx, 'q1'))
 
+    const upgraded = await open(migrations).read((tx) =>
+      tx.get<{ lesson: string; example: string }>('SELECT lesson, example FROM quests'),
+    )
+    expect(upgraded).toEqual({ lesson: '', example: '' })
     expect(items).toEqual([
       {
         id: 'i1',
@@ -282,6 +286,75 @@ describe('correction détaillée d’une question', () => {
         explanation: '',
       },
     ])
+  })
+})
+
+describe('rappel du cours et exemple expliqué', () => {
+  const LESSON = 'Le carré d’un nombre est ce nombre multiplié par lui-même.'
+  const EXAMPLE =
+    '**Énoncé\u00A0:** Calcule 5².\n\n**5² = 5 × 5 = 25**\nOn multiplie 5 par lui-même.'
+
+  it('s’enregistrent avec la quête ; l’élève les lit dès qu’il l’ouvre', async () => {
+    const { admin, lea } = await setup()
+
+    const quest = await createQuest(
+      admin,
+      mathsQuest({ lesson: `  ${LESSON}\n`, example: EXAMPLE }),
+    )
+    const mine = await lea.get<StudentQuestResponse>(`/api/quests/${quest.id}`)
+
+    // Les espaces autour du texte sont retirés.
+    expect(quest).toMatchObject({ lesson: LESSON, example: EXAMPLE })
+    expect(mine.body.quest).toMatchObject({ lesson: LESSON, example: EXAMPLE, status: 'todo' })
+  })
+
+  it('sont vides pour une quête qui n’en a pas', async () => {
+    const { admin, lea } = await setup()
+
+    const quest = await createQuest(admin, mathsQuest())
+    const mine = await lea.get<StudentQuestResponse>(`/api/quests/${quest.id}`)
+
+    expect(quest).toMatchObject({ lesson: '', example: '' })
+    expect(mine.body.quest).toMatchObject({ lesson: '', example: '' })
+  })
+
+  it('restent modifiables après la première réponse d’un élève, comme la consigne', async () => {
+    const { admin, lea } = await setup()
+    const quest = await createQuest(admin, mathsQuest({ lesson: LESSON, example: EXAMPLE }))
+    await attempt(lea, quest.id, {})
+
+    const edited = await admin.put<AdminQuestResponse>(
+      `/api/admin/quests/${quest.id}`,
+      mathsQuest({ lesson: 'Un rappel plus clair.', example: '' }),
+    )
+
+    expect(edited.status).toBe(200)
+    expect(edited.body.quest).toMatchObject({
+      lesson: 'Un rappel plus clair.',
+      example: '',
+      locked: true,
+    })
+  })
+
+  it('suivent la quête quand elle est dupliquée', async () => {
+    const { admin } = await setup()
+    const quest = await createQuest(admin, mathsQuest({ lesson: LESSON, example: EXAMPLE }))
+
+    const copy = await admin.post<AdminQuestResponse>(`/api/admin/quests/${quest.id}/duplicate`)
+
+    expect(copy.body.quest).toMatchObject({ lesson: LESSON, example: EXAMPLE, state: 'draft' })
+  })
+
+  it('refusent un texte trop long, en désignant le champ', async () => {
+    const { admin } = await setup()
+
+    const refused = await admin.post<ApiErrorBody>(
+      '/api/admin/quests',
+      mathsQuest({ lesson: 'x'.repeat(5001) }),
+    )
+
+    expect(refused.status).toBe(400)
+    expect(refused.body.error.fields).toEqual({ lesson: '5000 caractères au maximum.' })
   })
 })
 
@@ -304,20 +377,25 @@ describe('bibliothèque d’exercices', () => {
 
     const library = await admin.get<LibraryResponse>('/api/admin/library')
 
-    expect(library.body.exercises.map((exercise) => exercise.id)).toEqual([
-      SIMPLE,
-      'identites-remarquables-cas-difficiles',
-    ])
-    expect(library.body.exercises[0]).toEqual({
+    const ids = library.body.exercises.map((exercise) => exercise.id)
+    expect(ids).toContain(SIMPLE)
+    expect(ids).toContain('identites-remarquables-cas-difficiles')
+    expect(library.body.exercises.find((exercise) => exercise.id === SIMPLE)).toEqual({
       id: SIMPLE,
       title: 'Identités remarquables\u00A0: cas simples',
+      theme: 'calcul-litteral',
       level: '3e',
-      description: expect.stringContaining('correction détaillée') as string,
+      description: expect.any(String) as string,
       category: 'maths',
       format: 'qcm',
       difficulty: 'easy',
       itemCount: 6,
     })
+    // Les thèmes arrivent dans l'ordre du programme, chacun avec au moins un exercice.
+    expect(library.body.themes).toContainEqual({ id: 'calcul-litteral', label: 'Calcul littéral' })
+    for (const theme of library.body.themes) {
+      expect(library.body.exercises.some((exercise) => exercise.theme === theme.id)).toBe(true)
+    }
   })
 
   it('donne un exercice complet, et répond 404 pour un exercice inconnu', async () => {
@@ -333,6 +411,8 @@ describe('bibliothèque d’exercices', () => {
       correct: [1],
     })
     expect(found.body.exercise.items[0]?.explanation).toContain('**Les pièges**')
+    expect(found.body.exercise.lesson).toContain('double produit')
+    expect(found.body.exercise.example).toContain('**Énoncé\u00A0:**')
     expect(missing.status).toBe(404)
     expect(missing.body.error.message).toBe('Cet exercice est introuvable.')
   })
@@ -345,6 +425,8 @@ describe('bibliothèque d’exercices', () => {
     // Ce que fait l'écran : l'exercice pré-remplit une nouvelle quête, donnée à Léa seulement.
     const quest = await createQuest(admin, {
       title: exercise.title,
+      lesson: exercise.lesson,
+      example: exercise.example,
       instructions: exercise.instructions,
       category: exercise.category,
       format: exercise.format,
@@ -360,7 +442,10 @@ describe('bibliothèque d’exercices', () => {
     expect(quest.assignments.map((assignment) => assignment.student.pseudo)).toEqual(['Léa'])
     expect(others.body.quests).toEqual([])
     expect((await tom.get(`/api/quests/${quest.id}`)).status).toBe(404)
-    // Avant de répondre : les choix, mais ni les bonnes positions ni les corrections.
+    // Avant de répondre : le rappel du cours et l'exemple, les choix, mais ni les bonnes
+    // positions ni les corrections.
+    expect(mine.body.quest.lesson).toBe(exercise.lesson)
+    expect(mine.body.quest.example).toBe(exercise.example)
     expect(mine.body.quest.items).toHaveLength(6)
     expect(mine.body.quest.explanations).toBeNull()
     expect(JSON.stringify(mine.body)).not.toContain('Les pièges')
