@@ -113,3 +113,22 @@ export function instantToParisLocal(instant: Date): string {
   const clock = parisClock(instant)
   return `${clock.year}-${two(clock.month)}-${two(clock.day)}T${two(clock.hour)}:${two(clock.minute)}`
 }
+
+/** Minuit, heure de Paris, du jour calendaire « AAAA-MM-JJ ». */
+export function parisMidnight(day: string): Date {
+  const instant = parisLocalToInstant(`${day}T00:00`)
+  if (!instant) throw new Error(`Jour invalide\u00A0: ${day}`)
+  return instant
+}
+
+/** Lundi (AAAA-MM-JJ) de la semaine d'un jour calendaire : les semaines vont du lundi au dimanche. */
+export function mondayOf(day: string): string {
+  const date = new Date(`${day}T00:00:00Z`)
+  const sinceMonday = (date.getUTCDay() + 6) % 7
+  return new Date(date.getTime() - sinceMonday * DAY_MS).toISOString().slice(0, 10)
+}
+
+/** Premier jour (AAAA-MM-JJ) du mois d'un jour calendaire. */
+export function firstOfMonth(day: string): string {
+  return `${day.slice(0, 7)}-01`
+}

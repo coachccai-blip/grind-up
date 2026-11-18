@@ -64,12 +64,6 @@ function ComingSoon({
   )
 }
 
-export const BotsPage = () => (
-  <ComingSoon title="Bots" emoji="🤖">
-    Vous créerez ici des bots pour donner du rythme au classement.
-  </ComingSoon>
-)
-
 export const SettingsPage = () => (
   <ComingSoon title="Paramètres" emoji="⚙️">
     Vous réglerez ici le barème d’XP, les bonus et l’export des données.

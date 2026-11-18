@@ -6,6 +6,8 @@ import { Avatar } from '../../ui/Avatar'
 import { Card } from '../../ui/Card'
 import { Emoji } from '../../ui/Emoji'
 import { EmptyState } from '../../ui/EmptyState'
+import { Leaderboard } from '../leaderboard/Leaderboard'
+import { useLeaderboard } from '../leaderboard/leaderboard-api'
 import { Notice } from '../../ui/Notice'
 import { XpBar } from '../progress/XpBar'
 import { XpJournal } from '../progress/XpJournal'
@@ -21,6 +23,9 @@ const DASHBOARD_QUESTS = 5
 
 const days = (count: number) => `${count}\u00A0jour${count > 1 ? 's' : ''}`
 
+/** « 1er », « 2e », « 3e »… */
+const ordinal = (rank: number) => (rank === 1 ? '1er' : `${rank}e`)
+
 /**
  * Tableau de bord : niveau, barre d'XP, série, quêtes à faire (la deadline la
  * plus proche d'abord) et dernières récompenses.
@@ -29,8 +34,10 @@ export function DashboardPage() {
   const user = useCurrentUser()
   const quests = useMyQuests()
   const progress = useProgress()
+  const board = useLeaderboard('week', 'missions')
   const todo = (quests.data ?? []).filter((quest) => tabOfStatus(quest.status) === 'todo')
   const stats = progress.data
+  const mine = board.data?.find((entry) => entry.isYou)
 
   return (
     <>
@@ -80,6 +87,18 @@ export function DashboardPage() {
                 {stats.missions > 1 ? 'quêtes validées' : 'quête validée'}
               </p>
             </Card>
+            <Card className={styles.tile}>
+              <h2 className={styles.tileTitle}>
+                <Emoji symbol="🏆" />
+                <span>Rang</span>
+              </h2>
+              <p className={styles.figure}>{mine?.rank ? ordinal(mine.rank) : '–'}</p>
+              <p className={styles.caption}>
+                {mine?.rank
+                  ? `sur ${board.data?.length ?? 0} cette semaine`
+                  : 'pas encore classé cette semaine'}
+              </p>
+            </Card>
           </div>
         </>
       )}
@@ -125,14 +144,12 @@ export function DashboardPage() {
   )
 }
 
-/** Écran de l'élève qui se remplira à l'étape suivante. */
+/** Leaderboard : le classement des élèves par missions accomplies, puis par XP. */
 export function LeaderboardPage() {
   return (
     <>
       <h1>Leaderboard</h1>
-      <EmptyState emoji="🏆" title="Le classement arrive bientôt">
-        <p>Tu y verras tes missions accomplies et ton rang parmi les autres élèves.</p>
-      </EmptyState>
+      <Leaderboard />
     </>
   )
 }

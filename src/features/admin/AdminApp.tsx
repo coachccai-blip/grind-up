@@ -1,7 +1,9 @@
 import { Route, Routes } from 'react-router'
 import { NotFoundPage } from '../../app/NotFoundPage'
 import { AdminLayout } from './AdminLayout'
-import { BotsPage, OverviewPage, SettingsPage } from './AdminPages'
+import { OverviewPage, SettingsPage } from './AdminPages'
+import { BotEditorPage } from './bots/BotEditorPage'
+import { BotsPage } from './bots/BotsPage'
 import { QuestDetailPage } from './quests/QuestDetailPage'
 import { QuestEditorPage } from './quests/QuestEditorPage'
 import { QuestsPage } from './quests/QuestsPage'
@@ -26,6 +28,8 @@ export default function AdminApp() {
         <Route path="quetes/:id/modifier" element={<QuestEditorPage />} />
         <Route path="validations" element={<ValidationsPage />} />
         <Route path="bots" element={<BotsPage />} />
+        <Route path="bots/nouveau" element={<BotEditorPage />} />
+        <Route path="bots/:id" element={<BotEditorPage />} />
         <Route path="parametres" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />

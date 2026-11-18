@@ -201,8 +201,9 @@ export function badgeStatsOf(tx: SqlReader, userId: string, now: Date): BadgeSta
     bestStreak: streakOf(tx, userId, now).best,
     earlyBonuses: bonusCount('early'),
     flawlessBonuses: bonusCount('flawless'),
-    // Le badge Podium arrive avec le leaderboard, à l'étape 5.
-    podiumWeeks: 0,
+    // Le Podium est attribué par le leaderboard, à la fin d'une semaine : ici, on sait
+    // seulement s'il a déjà été obtenu.
+    podiumWeeks: earnedCodes(tx, userId).has('podium') ? 1 : 0,
   }
 }
 
