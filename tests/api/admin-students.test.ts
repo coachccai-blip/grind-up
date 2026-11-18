@@ -35,6 +35,9 @@ describe('liste des élèves', () => {
       isActive: true,
       createdAt: '2026-11-17T10:00:00.000Z',
       lastActiveAt: '2026-11-17T10:00:00.000Z',
+      xp: 0,
+      level: 1,
+      missions: 0,
     })
     expect(response.body.students[1]?.id).toBe(tom.id)
   })

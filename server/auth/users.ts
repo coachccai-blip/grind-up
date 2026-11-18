@@ -1,5 +1,6 @@
 import { randomInt, randomUUID } from 'node:crypto'
 import { AVATARS } from '../../shared/rules/avatars.js'
+import { levelFromXp } from '../../shared/rules/levels.js'
 import { pseudoKey } from '../../shared/rules/pseudo.js'
 import {
   formatPublicId,
@@ -105,7 +106,10 @@ export function toSessionUser(row: UserRow): SessionUser {
   }
 }
 
-export function toAdminStudent(row: UserRow): AdminStudent {
+export function toAdminStudent(
+  row: UserRow,
+  totals: { xp: number; missions: number } = { xp: 0, missions: 0 },
+): AdminStudent {
   return {
     id: row.id,
     pseudo: row.pseudo,
@@ -114,6 +118,9 @@ export function toAdminStudent(row: UserRow): AdminStudent {
     isActive: row.is_active === 1,
     createdAt: row.created_at,
     lastActiveAt: row.last_active_at,
+    xp: totals.xp,
+    level: levelFromXp(totals.xp),
+    missions: totals.missions,
   }
 }
 

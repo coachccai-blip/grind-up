@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { computeReward, type BonusKind, type RewardBreakdown } from '../../shared/rules/rewards.js'
 import type { SqlReader, SqlWriter } from '../db/sqlite.js'
+import { awardBadges } from '../progress/service.js'
 import type { AssignmentRow, QuestRow } from './store.js'
 
 /**
@@ -71,7 +72,41 @@ export function creditValidation(tx: SqlWriter, facts: ValidationFacts): RewardB
   addLine(reward.base, 'quest', reward.late ? 'late' : null, 1)
   for (const bonus of reward.bonuses) addLine(bonus.amount, 'bonus', bonus.kind, 0)
 
+  // Les badges gagnés par cette validation sont attribués avec elle.
+  awardBadges(tx, assignment.student_id, now)
   return reward
+}
+
+/**
+ * Annule la validation d'une quête (section 10 du brief) : une ligne d'XP
+ * négative annule le gain, l'assignation repasse à « Refusée » et la mission
+ * n'est plus comptée. Le journal garde la trace des deux lignes.
+ */
+export function cancelValidation(
+  tx: SqlWriter,
+  assignment: AssignmentRow,
+  comment: string | null,
+  now: Date,
+): void {
+  const credited =
+    tx.get<{ total: number }>(
+      `SELECT COALESCE(SUM(amount), 0) AS total FROM xp_entries
+       WHERE assignment_id = ? AND created_at = ? AND reason IN ('quest', 'bonus')`,
+      [assignment.id, assignment.validated_at],
+    )?.total ?? 0
+
+  tx.run(
+    `INSERT INTO xp_entries (id, user_id, amount, reason, detail, assignment_id, mission_delta, created_at)
+     VALUES (?, ?, ?, 'quest', 'cancelled', ?, -1, ?)`,
+    [randomUUID(), assignment.student_id, -credited, assignment.id, now.toISOString()],
+  )
+  tx.run(
+    `UPDATE assignments
+     SET status = 'rejected', validated_at = NULL, xp_awarded = NULL, celebrated_at = NULL,
+         admin_comment = ?
+     WHERE id = ?`,
+    [comment, assignment.id],
+  )
 }
 
 /** Détail de l'XP créditée à la validation d'une assignation, relu dans le journal. */

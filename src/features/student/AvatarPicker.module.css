@@ -1,0 +1,35 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+/* Chaque avatar est une zone tactile de 52 px ; celui qui est choisi est cerné du bleu soutenu. */
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.selected {
+  box-shadow: 0 0 0 3px var(--color-accent);
+}
+
+.option:has(input:focus-visible) {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+}

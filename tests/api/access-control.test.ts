@@ -19,10 +19,14 @@ function adminRoutes(app: ReturnType<typeof createTestApp>['app']) {
   return [...new Map(routes.map((route) => [`${route.method} ${route.path}`, route])).values()]
 }
 
-/** Routes réservées aux élèves : leurs quêtes. Même principe, lu dans l'application. */
+/** Routes réservées aux élèves : leurs quêtes et leur progression. Même principe. */
 function studentRoutes(app: ReturnType<typeof createTestApp>['app']) {
   const routes = app.routes
-    .filter((route) => route.method !== 'ALL' && route.path.startsWith('/api/quests'))
+    .filter(
+      (route) =>
+        route.method !== 'ALL' &&
+        (route.path.startsWith('/api/quests') || route.path.startsWith('/api/progress')),
+    )
     .map((route) => ({
       method: route.method,
       path: route.path.replace(/:\w+/g, '00000000-0000-4000-8000-000000000000'),
@@ -30,11 +34,13 @@ function studentRoutes(app: ReturnType<typeof createTestApp>['app']) {
   return [...new Map(routes.map((route) => [`${route.method} ${route.path}`, route])).values()]
 }
 
-describe('quêtes des élèves', () => {
+describe('quêtes et progression des élèves', () => {
   it('compte bien des routes à protéger', () => {
     const { app } = createTestApp()
 
-    expect(studentRoutes(app).length).toBeGreaterThanOrEqual(4)
+    const paths = studentRoutes(app).map((route) => route.path)
+    expect(paths.length).toBeGreaterThanOrEqual(8)
+    expect(paths.some((path) => path.startsWith('/api/progress'))).toBe(true)
   })
 
   it('sont fermées à un visiteur non connecté et à un admin, sur toutes leurs routes', async () => {

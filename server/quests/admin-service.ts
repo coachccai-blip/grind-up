@@ -15,7 +15,7 @@ import {
 } from '../../shared/schemas/quests.js'
 import type { SqlReader, SqlWriter } from '../db/sqlite.js'
 import { ApiError, notFound } from '../http.js'
-import { creditValidation } from './credit.js'
+import { cancelValidation, creditValidation } from './credit.js'
 import { imageUrl } from './images.js'
 import {
   assignQuest,
@@ -393,5 +393,20 @@ export function grantAttempts(
     count,
     assignmentId,
   ])
+  return readBack(tx, assignmentId, quest, now)
+}
+
+/** Annule une validation : l'XP est retirée, l'élève peut recommencer. */
+export function cancelSubmissionValidation(
+  tx: SqlWriter,
+  assignmentId: string,
+  comment: string,
+  now: Date,
+): AdminAssignment {
+  const { assignment, quest } = requireAssignment(tx, assignmentId)
+  if (assignment.status !== 'validated') {
+    throw conflict('not_validated', 'Cette quête n’est pas validée.')
+  }
+  cancelValidation(tx, assignment, comment === '' ? null : comment, now)
   return readBack(tx, assignmentId, quest, now)
 }

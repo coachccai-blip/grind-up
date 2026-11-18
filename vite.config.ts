@@ -47,5 +47,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    // Le fichier principal pèse environ 510 Ko (156 Ko une fois compressé pour le transfert) :
+    // React, le routeur et la validation des saisies. L'espace admin est déjà chargé à part.
+    chunkSizeWarningLimit: 600,
   },
 })

@@ -479,9 +479,19 @@ test.describe('navigation et thème', () => {
     await signUpStudent(page, uniquePseudo('Lina'))
     await page.getByRole('link', { name: 'Profil' }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Profil' })).toBeVisible()
+    // La galerie d'avatars dépliée : chaque avatar est une zone tactile.
+    await page.getByText('Changer d’avatar').click()
+    await expect(page.getByRole('radio', { name: 'Renard' })).toBeAttached()
 
     const tooSmall = await page.evaluate(() =>
-      [...document.querySelectorAll('a, button, input, summary')]
+      [...document.querySelectorAll('a, button, input, select, textarea, summary')]
+        .filter((element) => element.checkVisibility())
+        // Une case ou un bouton radio se touche par tout son libellé.
+        .map((element) =>
+          element.matches('input[type="radio"], input[type="checkbox"]')
+            ? (element.closest('label') ?? element)
+            : element,
+        )
         .map((element) => ({ element, box: element.getBoundingClientRect() }))
         .filter(({ box }) => box.width > 0 && box.height > 0 && box.height < 44)
         .map(({ element, box }) => `${element.tagName} « ${element.textContent} » ${box.height}px`),

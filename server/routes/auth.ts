@@ -10,6 +10,8 @@ import { changePassword, logIn, signUp, type AuthDependencies } from '../auth/se
 import { toSessionUser } from '../auth/users.js'
 import type { AppEnv } from '../context.js'
 import { parseBody } from '../http.js'
+import { avatarRequestSchema } from '../../shared/schemas/progress.js'
+import { findUserById } from '../auth/users.js'
 
 /** Inscription, connexion, session en cours et changement de mot de passe. */
 export const authRoutes = new Hono<AppEnv>()
@@ -56,3 +58,14 @@ authRoutes.post(
     return c.json<SessionResponse>({ user: toSessionUser(updated) })
   },
 )
+
+// Choix d'un avatar dans la galerie fournie.
+authRoutes.patch('/account/avatar', requireUser(), async (c) => {
+  const { avatar } = await parseBody(c, avatarRequestSchema)
+  const user = signedInUser(c)
+  const updated = await c.var.storage.database.write((tx) => {
+    tx.run('UPDATE users SET avatar = ? WHERE id = ?', [avatar, user.id])
+    return findUserById(tx, user.id)!
+  })
+  return c.json<SessionResponse>({ user: toSessionUser(updated) })
+})

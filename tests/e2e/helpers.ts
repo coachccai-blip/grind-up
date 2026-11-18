@@ -101,3 +101,18 @@ export function watchForProblems(page: Page): string[] {
   page.on('pageerror', (error) => problems.push(error.message))
   return problems
 }
+
+/**
+ * Après une validation, une annonce fête la quête validée : XP gagnée, passage de
+ * niveau, nouveaux badges. Vérifie ce qu'elle dit, puis la referme.
+ */
+export async function acknowledgeCelebration(
+  page: Page,
+  expected: (string | RegExp)[] = [],
+): Promise<void> {
+  const announcement = page.getByRole('dialog')
+  await expect(announcement).toBeVisible()
+  for (const text of expected) await expect(announcement.getByText(text).first()).toBeVisible()
+  await announcement.getByRole('button', { name: 'Continuer' }).click()
+  await expect(announcement).toBeHidden()
+}
