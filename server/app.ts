@@ -1,58 +1,91 @@
-import { Hono } from 'hono'
-import type { BlobStore } from './db/blob-store.js'
-import type { SqliteBlobDatabase } from './db/database.js'
-import { runHealthCheck } from './health.js'
+import { Hono, type Context } from 'hono'
+import { authenticate, requireRole, sameOriginOnly } from './auth/middleware.js'
+import { loadConfig, type AppConfig } from './config.js'
+import type { AppEnv, Storage } from './context.js'
+import { WriteConflictError } from './db/database.js'
+import { ApiError, notFound } from './http.js'
+import { adminStudentRoutes } from './routes/admin-students.js'
+import { authRoutes } from './routes/auth.js'
+import { healthRoutes } from './routes/health.js'
 
-/** Informations fournies par Netlify à chaque requête. */
-export interface RequestEnvironment {
-  /** Adresse IP du visiteur. */
-  ip?: string
-  /** Contexte de déploiement : production, deploy-preview, branch-deploy ou dev. */
-  deployContext?: string
-}
-
-/** Stockage et base à utiliser pour un contexte de déploiement. */
-export interface Storage {
-  store: BlobStore
-  database: SqliteBlobDatabase
-}
+export type { RequestEnvironment, Storage } from './context.js'
 
 export interface AppDependencies {
   storage: (deployContext: string | undefined) => Storage
+  config?: AppConfig
   now?: () => Date
 }
 
-/** Toutes les routes de l'API, servies sous /api/. */
+/**
+ * En-têtes de toute réponse de l'API. Les réglages de netlify.toml ne valent que
+ * pour les fichiers statiques : la fonction pose les siens.
+ */
+function setApiHeaders(c: Context<AppEnv>): void {
+  // Une réponse de l'API n'est jamais mise en cache, ni par le navigateur ni par Netlify.
+  c.header('Cache-Control', 'no-store')
+  c.header('X-Content-Type-Options', 'nosniff')
+  c.header('X-Robots-Tag', 'noindex, nofollow')
+}
+
+/**
+ * Toutes les routes de l'API, servies sous /api/.
+ *
+ * Les droits tiennent à l'endroit où une route est montée : tout ce qui est
+ * sous /admin exige un admin, y compris les routes ajoutées plus tard.
+ */
 export function createApp(dependencies: AppDependencies) {
-  const app = new Hono<{ Bindings: RequestEnvironment }>().basePath('/api')
+  const config = dependencies.config ?? loadConfig()
+  const now = dependencies.now ?? (() => new Date())
+  const app = new Hono<AppEnv>().basePath('/api')
 
-  // Les réponses de l'API ne doivent jamais être mises en cache.
   app.use('*', async (c, next) => {
+    c.set('storage', dependencies.storage(c.env?.deployContext))
+    c.set('config', config)
+    c.set('now', now)
+    c.set('user', null)
     await next()
-    c.header('Cache-Control', 'no-store')
+    setApiHeaders(c)
   })
+  app.use('*', sameOriginOnly)
 
-  app.get('/sante', async (c) => {
-    const deployContext = c.env?.deployContext
-    const report = await runHealthCheck({
-      ...dependencies.storage(deployContext),
-      deployContext,
-      now: dependencies.now,
-    })
-    return c.json(report, report.ok ? 200 : 503)
-  })
+  // Le test de déploiement reste public et ne dépend pas des sessions.
+  app.route('/', healthRoutes)
 
-  app.notFound((c) =>
-    c.json({ error: { code: 'not_found', message: "Cette adresse n'existe pas." } }, 404),
-  )
+  app.use('*', authenticate)
+  app.route('/', authRoutes)
+
+  const admin = new Hono<AppEnv>()
+  admin.use('*', requireRole('admin'))
+  admin.route('/students', adminStudentRoutes)
+  app.route('/admin', admin)
+
+  app.notFound((c) => c.json(notFound().toBody(), 404))
 
   app.onError((error, c) => {
+    setApiHeaders(c)
+    if (error instanceof ApiError) {
+      if (error.details.retryAfterSeconds !== undefined) {
+        c.header('Retry-After', String(error.details.retryAfterSeconds))
+      }
+      return c.json(error.toBody(), error.status)
+    }
+    if (error instanceof WriteConflictError) {
+      return c.json(
+        {
+          error: {
+            code: 'busy',
+            message: 'Le serveur est très sollicité. Merci de réessayer dans un instant.',
+          },
+        },
+        503,
+      )
+    }
     console.error('[grind-up] Erreur non gérée', error)
     return c.json(
       {
         error: {
           code: 'internal_error',
-          message: 'Une erreur est survenue. Réessayez dans un instant.',
+          message: 'Une erreur est survenue. Merci de réessayer dans un instant.',
         },
       },
       500,

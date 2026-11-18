@@ -17,6 +17,6 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["server", "shared", "netlify", "tests", "vite.config.ts", "vitest.config.ts"],
+  "include": ["server", "shared", "netlify", "tests", "dev", "vite.config.ts", "vitest.config.ts"],
   "exclude": ["tests/e2e"]
 }

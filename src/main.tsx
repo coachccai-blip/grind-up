@@ -1,4 +1,5 @@
 // Les styles globaux d'abord : ceux des écrans, chargés ensuite, peuvent les préciser.
+import '@fontsource-variable/nunito/wght.css'
 import './styles/tokens.css'
 import './styles/base.css'
 

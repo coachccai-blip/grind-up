@@ -30,6 +30,11 @@ function recordPing(tx: SqlWriter, at: Date): number {
   return readPings(tx).total
 }
 
+/** Vrai si l'écriture portant ce numéro figure dans la base. */
+function hasPing(tx: SqlReader, id: number): boolean {
+  return tx.get('SELECT id FROM health_pings WHERE id = ?', [id]) !== undefined
+}
+
 function readPings(tx: SqlReader): PingState {
   const row = tx.get<{ total: number | null; kept: number; last_pinged_at: string | null }>(
     'SELECT max(id) AS total, count(*) AS kept, max(pinged_at) AS last_pinged_at FROM health_pings',
@@ -96,10 +101,10 @@ async function runConditionalWriteProbe(
     const accepted = outcomes.filter((outcome) => outcome.written).length
     if (accepted > 1) {
       throw new Error(
-        `${accepted} écritures simultanées sur ${RACE_SIZE} ont été acceptées : une seule au plus aurait dû passer.`,
+        `${accepted} écritures simultanées sur ${RACE_SIZE} ont été acceptées\u00A0: une seule au plus aurait dû passer.`,
       )
     }
-    summary += ` ; ${accepted} écriture acceptée sur ${RACE_SIZE} lancées en même temps`
+    summary += `\u00A0; ${accepted} écriture acceptée sur ${RACE_SIZE} lancées en même temps`
   } else {
     summary += ' (écritures simultanées non testées en local)'
   }
@@ -108,7 +113,7 @@ async function runConditionalWriteProbe(
 }
 
 function describeError(error: unknown): string {
-  const text = error instanceof Error ? `${error.name} : ${error.message}` : String(error)
+  const text = error instanceof Error ? `${error.name}\u00A0: ${error.message}` : String(error)
   return text.length > 600 ? `${text.slice(0, 600)}…` : text
 }
 
@@ -117,6 +122,8 @@ export interface HealthCheckOptions {
   store: BlobStore
   /** Contexte de déploiement annoncé par Netlify (production, dev…), s'il est connu. */
   deployContext: string | undefined
+  /** Vrai en local : l'émulateur de Netlify ne garantit pas les écritures simultanées. */
+  local: boolean
   now?: () => Date
 }
 
@@ -126,7 +133,7 @@ export interface HealthCheckOptions {
  * refuse les écritures concurrentes, et que la copie quotidienne existe.
  */
 export async function runHealthCheck(options: HealthCheckOptions): Promise<HealthReport> {
-  const { database, store, deployContext } = options
+  const { database, store, deployContext, local } = options
   const now = options.now ?? (() => new Date())
   const checks: HealthCheck[] = []
 
@@ -162,21 +169,27 @@ export async function runHealthCheck(options: HealthCheckOptions): Promise<Healt
     await check('database_read', 'Relecture depuis le stockage', async () => {
       // On oublie la copie en mémoire pour relire réellement le fichier enregistré.
       await database.reload()
-      const state = await database.read(readPings)
-      if (state.total !== written) {
+      const { state, found } = await database.read((tx) => ({
+        state: readPings(tx),
+        found: hasPing(tx, written),
+      }))
+      // D'autres vérifications ont pu écrire entre-temps : on cherche sa propre écriture, pas
+      // un total exact. Elle n'a pu disparaître que si la table a été purgée depuis.
+      const purgedSince = state.total - written >= PINGS_KEPT
+      if (!found && !purgedSince) {
         throw new Error(
-          `Relecture incohérente : ${state.total} écritures lues, ${written} attendues.`,
+          `Relecture incohérente\u00A0: l’écriture n° ${written} est absente du stockage (dernière écriture lue\u00A0: n° ${state.total}).`,
         )
       }
       return (
         `${state.kept} ligne(s) relue(s), dernière écriture à ${state.lastPingedAt} (UTC). ` +
-        `Stockage : ${database.describeStorage()}`
+        `Stockage\u00A0: ${database.describeStorage()}`
       )
     })
   }
 
   await check('conditional_write', 'Protection contre les écritures concurrentes', () =>
-    probeConditionalWrites(store, deployContext !== 'dev'),
+    probeConditionalWrites(store, !local),
   )
 
   if (writeSucceeded) {
@@ -184,7 +197,7 @@ export async function runHealthCheck(options: HealthCheckOptions): Promise<Healt
       const copies = await database.listBackups()
       const latest = copies.at(-1)
       if (!latest) throw new Error('Aucune copie quotidienne trouvée dans le stockage.')
-      return `${copies.length} copie(s) conservée(s), la plus récente : ${latest}`
+      return `${copies.length} copie(s) conservée(s), la plus récente\u00A0: ${latest}`
     })
   }
 
@@ -192,8 +205,8 @@ export async function runHealthCheck(options: HealthCheckOptions): Promise<Healt
   return {
     ok,
     message: ok
-      ? 'Tout fonctionne : la fonction lit et écrit dans la base.'
-      : 'Le test a échoué : voir le détail des vérifications.',
+      ? 'Tout fonctionne\u00A0: la fonction lit et écrit dans la base.'
+      : 'Le test a échoué\u00A0: voir le détail des vérifications.',
     version: APP_VERSION,
     checkedAt: now().toISOString(),
     checks,

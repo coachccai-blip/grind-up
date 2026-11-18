@@ -141,7 +141,7 @@ export class NetlifyBlobStore implements BlobStore {
 
     const etag = result.etag || (await this.etagFromListing(store, key))
     if (!etag) {
-      throw new Error(`Le stockage n'a pas renvoyé d'étiquette après l'écriture de « ${key} ».`)
+      throw new Error(`Le stockage n’a pas renvoyé d’étiquette après l’écriture de « ${key} ».`)
     }
     return { written: true, etag }
   }

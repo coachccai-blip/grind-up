@@ -32,12 +32,32 @@ function createTestApp(store = new MemoryBlobStore()) {
   return { app, store }
 }
 
-async function getHealth(app: ReturnType<typeof createApp>, deployContext = 'production') {
-  const response = await app.request('/api/sante', {}, { deployContext })
+async function getHealth(
+  app: ReturnType<typeof createApp>,
+  deployContext = 'production',
+  local = false,
+) {
+  const response = await app.request('/api/sante', {}, { deployContext, local })
   return { response, report: (await response.json()) as HealthReport }
 }
 
 describe('GET /api/sante', () => {
+  it('reste juste quand plusieurs vérifications tournent en même temps', async () => {
+    const { app } = createTestApp()
+
+    const results = await Promise.all([
+      getHealth(app),
+      getHealth(app),
+      getHealth(app),
+      getHealth(app),
+    ])
+
+    for (const { report } of results) {
+      expect(report.checks.filter((check) => !check.ok)).toEqual([])
+      expect(report.ok).toBe(true)
+    }
+  })
+
   it('confirme que la fonction écrit dans la base et relit ce qui est écrit', async () => {
     const { app } = createTestApp()
 
@@ -46,7 +66,7 @@ describe('GET /api/sante', () => {
     expect(response.status).toBe(200)
     expect(response.headers.get('cache-control')).toBe('no-store')
     expect(report.ok).toBe(true)
-    expect(report.message).toBe('Tout fonctionne : la fonction lit et écrit dans la base.')
+    expect(report.message).toBe('Tout fonctionne\u00A0: la fonction lit et écrit dans la base.')
     expect(report.version).toBe(APP_VERSION)
     expect(report.checks.map((check) => [check.id, check.ok])).toEqual([
       ['function', true],
@@ -64,7 +84,7 @@ describe('GET /api/sante', () => {
     const { report } = await getHealth(app)
 
     expect(report.checks[3]?.detail).toBe(
-      'Version dépassée refusée, fichier existant protégé ; 1 écriture acceptée sur 4 lancées en même temps',
+      'Version dépassée refusée, fichier existant protégé\u00A0; 1 écriture acceptée sur 4 lancées en même temps',
     )
     // Le fichier d'essai ne reste pas dans le stockage.
     expect(store.keys()).toEqual(['backups/main/2026-11-17.sqlite', 'db/main.sqlite'])
@@ -73,7 +93,7 @@ describe('GET /api/sante', () => {
   it('ne teste pas les écritures simultanées en local, où Netlify ne les garantit pas', async () => {
     const { app } = createTestApp()
 
-    const { report } = await getHealth(app, 'dev')
+    const { report } = await getHealth(app, 'dev', true)
 
     expect(report.checks[3]).toMatchObject({
       ok: true,
@@ -142,7 +162,7 @@ describe('GET /api/sante', () => {
 
     expect(response.status).toBe(503)
     expect(report.ok).toBe(false)
-    expect(report.message).toBe('Le test a échoué : voir le détail des vérifications.')
+    expect(report.message).toBe('Le test a échoué\u00A0: voir le détail des vérifications.')
     expect(report.checks.map((check) => [check.id, check.ok])).toEqual([
       ['function', true],
       ['database_write', false],
@@ -160,7 +180,7 @@ describe('API', () => {
 
     expect(response.status).toBe(404)
     expect(await response.json()).toEqual({
-      error: { code: 'not_found', message: "Cette adresse n'existe pas." },
+      error: { code: 'not_found', message: 'Cette adresse n’existe pas.' },
     })
   })
 })

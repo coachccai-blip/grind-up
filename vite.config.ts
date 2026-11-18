@@ -1,35 +1,51 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig, type PluginOption } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
+import { localNetlify } from './dev/local-netlify.js'
 
 /**
- * En développement, reproduit Netlify dans le serveur de Vite : fonctions sous /api/,
- * stockage Netlify Blobs local, règles de netlify.toml.
- *
- * Le module n'est chargé que pour `npm run dev` : c'est un outil de développement,
- * que Netlify n'installe pas quand il construit le site. Il se désactive de lui-même
- * quand le site est lancé par `netlify dev`, qui fait déjà ce travail.
+ * Politique de sécurité du contenu, inscrite dans la page construite : le
+ * navigateur n'exécute que les scripts du site et ne contacte que le site. Elle
+ * n'est pas posée en développement, où Vite injecte ses propres scripts.
  */
-async function netlifyEmulation(): Promise<PluginOption> {
-  // Nom passé par une variable : à la construction, Vite n'a pas à trouver ce module.
-  const moduleName = '@netlify/vite-plugin'
-  const { default: netlify } = (await import(moduleName)) as typeof import('@netlify/vite-plugin')
-  return netlify({
-    // Fonctionnalités de Netlify que ce projet n'utilise pas.
-    edgeFunctions: { enabled: false },
-    database: { enabled: false },
-    images: { enabled: false },
-  })
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "img-src 'self' data: blob:",
+  "font-src 'self'",
+  "connect-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ')
+
+function contentSecurityPolicy(): Plugin {
+  return {
+    name: 'grind-up:content-security-policy',
+    apply: 'build',
+    transformIndexHtml: () => [
+      {
+        tag: 'meta',
+        attrs: { 'http-equiv': 'Content-Security-Policy', content: CONTENT_SECURITY_POLICY },
+        injectTo: 'head-prepend',
+      },
+    ],
+  }
 }
 
 // Interface : application monopage compilée en fichiers statiques dans dist/.
-export default defineConfig(async ({ command }) => ({
-  plugins: [react(), command === 'serve' ? await netlifyEmulation() : null],
+export default defineConfig({
+  plugins: [react(), contentSecurityPolicy(), localNetlify()],
   server: {
     // Port fixe : `netlify dev` s'y connecte (voir netlify.toml).
     port: 5173,
     strictPort: true,
   },
+  preview: {
+    port: 4173,
+    strictPort: true,
+  },
   build: {
     outDir: 'dist',
   },
-}))
+})

@@ -1,0 +1,54 @@
+.avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.small {
+  width: 32px;
+  height: 32px;
+  font-size: 1.125rem;
+}
+
+.medium {
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+}
+
+.large {
+  width: 72px;
+  height: 72px;
+  font-size: 2.5rem;
+}
+
+.lavender {
+  background: var(--color-maths);
+}
+
+.mint {
+  background: var(--color-memorisation);
+}
+
+.peach {
+  background: var(--color-sport);
+}
+
+.yellow {
+  background: var(--color-other);
+}
+
+.sky {
+  background: var(--color-sky-from);
+}
+
+.green {
+  background: var(--color-success);
+}
+
+.pink {
+  background: var(--color-urgent);
+}

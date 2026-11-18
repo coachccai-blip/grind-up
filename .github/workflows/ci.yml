@@ -45,6 +45,10 @@ jobs:
           npm install --omit=dev --no-audit --no-fund
           npm run build
           test -f dist/index.html
+      - name: Fonction empaquetée par l'outil de Netlify, puis exécutée telle quelle
+        run: |
+          (cd "$RUNNER_TEMP/depuis-le-zip" && npx --yes netlify-cli@27.20.0 build --offline)
+          node scripts/verify-bundle.mjs "$RUNNER_TEMP/depuis-le-zip"
 
   navigateur:
     name: Parcours dans le navigateur

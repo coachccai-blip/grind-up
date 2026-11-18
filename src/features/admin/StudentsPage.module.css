@@ -1,0 +1,66 @@
+.count {
+  color: var(--color-text-secondary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Téléphone : une carte par élève. */
+.row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    'avatar pseudo status'
+    'avatar identifier identifier'
+    'avatar activity activity';
+  align-items: center;
+  column-gap: var(--space-3);
+  row-gap: 2px;
+  min-height: var(--touch-target);
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.avatar {
+  display: flex;
+  grid-area: avatar;
+}
+
+.pseudo {
+  grid-area: pseudo;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.identifier {
+  grid-area: identifier;
+}
+
+.status {
+  display: flex;
+  grid-area: status;
+  justify-content: flex-end;
+}
+
+.activity {
+  grid-area: activity;
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+/* Ordinateur : les mêmes informations sur une seule ligne. */
+@media (min-width: 1024px) {
+  .row {
+    grid-template-columns: auto minmax(160px, 1.2fr) 140px minmax(200px, 1fr) 150px;
+    grid-template-areas: 'avatar pseudo identifier activity status';
+    padding: var(--space-3) var(--space-4);
+  }
+}
