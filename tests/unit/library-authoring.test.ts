@@ -31,6 +31,7 @@ describe('typographie des exercices', () => {
     expect(typography('10 000 + 600 = 10 600 et 1 000 000')).toBe(
       '10\u202F000 + 600 = 10\u202F600 et 1\u202F000\u202F000',
     )
+    expect(typography('V = 75π cm³, soit 236 cm³')).toBe('V = 75π\u00A0cm³, soit 236\u00A0cm³')
     expect(typography('augmenter de t % ; un taux en %')).toBe(
       'augmenter de t\u00A0%\u00A0; un taux en\u00A0%',
     )

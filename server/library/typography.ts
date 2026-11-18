@@ -25,7 +25,7 @@ export function typography(text: string): string {
       .replace(/« /g, `«${NBSP}`)
       .replace(/ »/g, `${NBSP}»`)
       // Un nombre et son unité ne se séparent pas ; le signe « % » ne se sépare de rien.
-      .replace(new RegExp(`(\\d) (?=(?:${UNITS})(?![\\p{L}\\p{N}]))`, 'gu'), `$1${NBSP}`)
+      .replace(new RegExp(`([\\dπ]) (?=(?:${UNITS})(?![\\p{L}\\p{N}]))`, 'gu'), `$1${NBSP}`)
       .replace(/ (?=%)/g, NBSP)
       // Séparateur de milliers : une espace fine insécable.
       .replace(/(\d) (?=\d{3}(?!\d))/g, `$1${NARROW_NBSP}`)
