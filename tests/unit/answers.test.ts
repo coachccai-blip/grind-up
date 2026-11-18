@@ -29,6 +29,24 @@ describe('comparaison des réponses', () => {
     expect(isAnswerAccepted('\u22124', ['-4'])).toBe(true)
   })
 
+  it('reconnaît un même nombre à côté de son unité ou de son inconnue', () => {
+    expect(isAnswerAccepted('85,00 €', ['85 €'])).toBe(true)
+    expect(isAnswerAccepted('2,30 h', ['2,3 h'])).toBe(true)
+    expect(isAnswerAccepted('+25 %', ['25 %'])).toBe(true)
+    expect(isAnswerAccepted('x = 6,50', ['x = 6,5'])).toBe(true)
+    expect(isAnswerAccepted('07 cm', ['7 cm'])).toBe(true)
+    expect(isAnswerAccepted('-5,0 °C', ['\u22125 °C'])).toBe(true)
+    expect(isAnswerAccepted('85,01 €', ['85 €'])).toBe(false)
+    expect(isAnswerAccepted('8,5 €', ['85 €'])).toBe(false)
+    expect(isAnswerAccepted('85 cm', ['85 €'])).toBe(false)
+  })
+
+  it('ne prend pas une date ou un numéro de version pour un nombre décimal', () => {
+    expect(isAnswerAccepted('12.1.2020', ['12.10.2020'])).toBe(false)
+    expect(isAnswerAccepted('12.10.2020', ['12.10.2020'])).toBe(true)
+    expect(answerKey('version 1.10.3')).toBe('version1.10.3')
+  })
+
   it('distingue des nombres différents', () => {
     expect(isAnswerAccepted('3,51', ['3.5'])).toBe(false)
     expect(isAnswerAccepted('-4', ['4'])).toBe(false)

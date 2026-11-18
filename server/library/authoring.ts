@@ -139,6 +139,7 @@ const ASKED_UNITS: readonly (readonly [asked: string, written: readonly string[]
   ['€', ['€']],
   ['%', ['%']],
   ['degrés', ['°', 'degrés']],
+  ['°C', ['°C', '°']],
   ['°', ['°']],
 ]
 

@@ -173,6 +173,11 @@ describe('outils de rédaction', () => {
       '45 euros',
     ])
     expect(answersTo('Calcule l’angle, en degrés.', ['53'])).toEqual(['53', '53 °', '53 degrés'])
+    expect(answersTo('Calcule la température moyenne, en °C.', ['15'])).toEqual([
+      '15',
+      '15 °C',
+      '15 °',
+    ])
     // Ce que l'on compte, ou l'inconnue de l'énoncé, peuvent aussi accompagner le nombre.
     expect(answersTo('Pour combien de séances les deux tarifs sont-ils égaux ?', ['12'])).toEqual([
       '12',

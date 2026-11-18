@@ -149,7 +149,7 @@ const statistiques = defineExercise({
     exact({
       prompt:
         'Une équipe de football a joué 20 matchs cette saison. Elle a marqué 0 but dans 4 matchs, 1 but dans 7 matchs, 2 buts dans 6 matchs et 3 buts dans 3 matchs. Calcule le nombre moyen de buts marqués par match.',
-      answers: ['1,4'],
+      answers: ['1,4', '1,4 but', '1,4 buts'],
       correction: {
         steps: [
           [
@@ -173,8 +173,8 @@ const statistiques = defineExercise({
     }),
     exact({
       prompt:
-        'Hugo a obtenu les notes 9 ; 13 ; 10 ; 12 à ses quatre premiers contrôles de maths, qui ont tous le même coefficient. Quelle note doit-il obtenir au cinquième contrôle pour avoir exactement 12 de moyenne ?',
-      answers: ['16'],
+        'Ce trimestre, Hugo a cinq contrôles de maths, tous de même coefficient. Il a obtenu 9 ; 13 ; 10 ; 12 aux quatre premiers. Quelle note doit-il obtenir au cinquième pour avoir exactement 12 de moyenne ?',
+      answers: ['16', '16/20'],
       correction: {
         steps: [
           [
@@ -207,7 +207,7 @@ const probabilites = defineExercise({
     'Quand toutes les issues ont la même chance de se produire, on parle d’**équiprobabilité**. La probabilité d’un événement est alors :',
     '**nombre d’issues favorables ÷ nombre d’issues possibles**',
     [
-      '- Une probabilité est un nombre compris entre 0 et 1. Ici, donne-la en fraction irréductible.',
+      '- Une probabilité est un nombre compris entre 0 et 1. Dans ce QCM, elle est écrite en fraction irréductible : simplifie ton résultat avant de choisir.',
       '- Un événement **impossible** a pour probabilité 0. Un événement **certain** a pour probabilité 1.',
       '- L’**événement contraire** de A, noté « non A », se réalise quand A ne se réalise pas : p(non A) = 1 − p(A).',
     ].join('\n'),
@@ -313,7 +313,8 @@ const probabilites = defineExercise({
             'le nombre de boules bleues, 6, est le nombre d’issues favorables : il se place au numérateur, pas au dénominateur.',
           ],
         ],
-        check: '3/10 = 0,3. Ce nombre est bien compris entre 0 et 1.',
+        check:
+          '14 boules ne sont pas bleues : la probabilité de l’événement contraire est 14/20 = 7/10, et 3/10 + 7/10 = 1.',
       },
     }),
     qcm({
@@ -469,7 +470,7 @@ const deuxEpreuves = defineExercise({
       '- dans un **tableau à double entrée** : une ligne par résultat de la première épreuve, une colonne par résultat de la seconde. Chaque case est une issue.',
     ].join('\n'),
     'Les nombres d’issues se **multiplient** : deux lancers d’une pièce donnent 2 × 2 = 4 issues, deux lancers d’un dé en donnent 6 × 6 = 36. Quand toutes les issues ont la même probabilité, on divise le nombre d’issues favorables par le nombre d’issues possibles.',
-    '**Tirages dans une urne.** Avec remise, l’urne est la même aux deux tirages. Sans remise, elle contient une boule de moins au second tirage.',
+    '**Tirages dans une urne.** Chaque boule a la même chance d’être tirée : pour compter les issues, on distingue les boules d’une même couleur, par exemple en les numérotant. Avec remise, l’urne est la même aux deux tirages. Sans remise, elle contient une boule de moins au second tirage.',
     '**« Au moins une fois ».** Il est souvent plus simple de calculer la probabilité de l’événement contraire, « aucune fois », puis de la soustraire de 1.',
   ),
   example: [
@@ -498,11 +499,11 @@ const deuxEpreuves = defineExercise({
       steps: [
         [
           '4 × 3 = 12',
-          'On imagine l’arbre. Premier tirage : 4 jetons possibles, donc 4 branches. Le jeton tiré n’est pas remis : il n’en reste que 3 pour le second tirage, donc 3 branches au bout de chacune. L’arbre a 12 chemins, tous de même probabilité.',
+          'On donne un nom à chaque jeton : R1, R2 et R3 pour les rouges, N pour le noir. Puis on imagine l’arbre. Premier tirage : 4 jetons possibles, donc 4 branches. Le jeton tiré n’est pas remis : il n’en reste que 3 pour le second tirage, donc 3 branches au bout de chacune. L’arbre a 12 chemins, tous de même probabilité.',
         ],
         [
           '3 × 2 = 6',
-          'Chemins favorables : 3 choix pour le premier jeton rouge. Il ne reste alors que 2 jetons rouges pour le second.',
+          'Chemins favorables : 3 choix pour le premier jeton rouge (R1, R2 ou R3). Il ne reste alors que 2 jetons rouges pour le second.',
         ],
         [
           '6/12 = 1/2',
@@ -545,7 +546,8 @@ const deuxEpreuves = defineExercise({
             'on a additionné 1/2 et 1/2. Une probabilité de 1 voudrait dire qu’on obtient deux fois pile à coup sûr.',
           ],
         ],
-        check: 'en multipliant les probabilités des deux lancers, on retrouve 1/2 × 1/2 = 1/4.',
+        check:
+          'la moitié des 4 issues commence par pile, et la moitié de celles-ci se termine par pile. La moitié de la moitié, c’est 1/2 × 1/2 = 1/4.',
       },
     }),
     qcm({
@@ -635,7 +637,7 @@ const deuxEpreuves = defineExercise({
           ],
           [
             '2 × 2 = 4',
-            'Issues favorables : 2 choix pour la première boule rouge, et encore 2 choix pour la seconde, puisque l’urne n’a pas changé.',
+            'Issues favorables : on nomme R1 et R2 les deux boules rouges. Il y a 2 choix pour la première boule rouge, et encore 2 choix pour la seconde, puisque l’urne n’a pas changé : (R1 ; R1), (R1 ; R2), (R2 ; R1) et (R2 ; R2).',
           ],
           [
             '4 ÷ 25 = 4/25',
@@ -656,7 +658,8 @@ const deuxEpreuves = defineExercise({
             'les quatre résultats rouge-rouge, rouge-bleue, bleue-rouge et bleue-bleue n’ont pas la même probabilité, car l’urne contient plus de boules bleues que de boules rouges.',
           ],
         ],
-        check: 'en multipliant les probabilités des deux tirages, on retrouve 2/5 × 2/5 = 4/25.',
+        check:
+          '2/5 des 25 issues commencent par une boule rouge, soit 10 issues. Parmi elles, 2/5 se terminent par une boule rouge, soit 4 issues. On retrouve 2/5 × 2/5 = 4/25.',
       },
     }),
     qcm({
@@ -668,11 +671,11 @@ const deuxEpreuves = defineExercise({
         steps: [
           [
             '5 × 4 = 20',
-            'On imagine l’arbre des tirages : 5 branches pour la première boule, puis, au bout de chacune, 4 branches seulement pour la seconde, car la boule tirée n’est pas remise. L’arbre a 20 chemins, tous de même probabilité.',
+            'On donne un nom à chaque boule : R1, R2, R3 pour les rouges, V1 et V2 pour les vertes. On imagine l’arbre des tirages : 5 branches pour la première boule, puis, au bout de chacune, 4 branches seulement pour la seconde, car la boule tirée n’est pas remise. L’arbre a 20 chemins, tous de même probabilité.',
           ],
           [
             '3 × 2 = 6',
-            'Chemins « rouge puis verte » : 3 choix pour la boule rouge, puis 2 choix pour la boule verte.',
+            'Chemins « rouge puis verte » : 3 choix pour la boule rouge (R1, R2 ou R3), puis 2 choix pour la boule verte (V1 ou V2).',
           ],
           [
             '2 × 3 = 6',

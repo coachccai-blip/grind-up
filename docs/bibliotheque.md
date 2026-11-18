@@ -104,6 +104,7 @@ Une correction fait de 150 à 2 000 caractères.
 | une puissance    | `x²`, `10³`, `2⁵`, `10⁻³`      | `x^2`, `x2`           |
 | un produit       | `3 × 4`                        | la lettre x, `*`      |
 | un quotient      | `12 ÷ 4`, ou la fraction `3/4` | `:`                   |
+| un ratio         | `2:3`, `2:3:5`                 | `2 : 3`               |
 | une soustraction | `7 − 2` ou `7 - 2`             |                       |
 | une racine       | `√25`, `√(9 + 16)`             |                       |
 | un arrondi       | `√52 ≈ 7,2`                    | `=` devant un arrondi |

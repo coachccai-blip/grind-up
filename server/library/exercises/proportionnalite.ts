@@ -5,10 +5,6 @@ import { defineExercise, exact, paragraphs, qcm } from '../authoring.js'
  * vitesses, puis les ratios, les partages et les échelles. Les deux premiers
  * exercices demandent un nombre, le troisième est un QCM dont chaque mauvais
  * choix est une erreur courante.
- *
- * Devant « % », « h » et « min », l'espace insécable est écrite sous sa forme
- * échappée : le test de typographie du dépôt relit ces unités dans toutes les
- * chaînes du serveur, avant que la typographie des exercices soit appliquée.
  */
 
 const pourcentages = defineExercise({
@@ -397,13 +393,13 @@ const ratios = defineExercise({
   lesson: paragraphs(
     'Deux grandeurs sont **proportionnelles** quand on passe de l’une à l’autre en multipliant toujours par le même nombre, le **coefficient de proportionnalité**.',
     '**Produit en croix.** Dans un tableau de proportionnalité, la valeur manquante s’obtient en multipliant les deux nombres de la diagonale complète, puis en divisant par le troisième nombre. Exemple : 4 m de tissu coûtent 10 €. Pour le prix de 6 m, on calcule 10 × 6 ÷ 4 = 15 : ils coûtent 15 €.',
-    '**Ratio.** Deux quantités sont dans le ratio 2:3 quand la première compte 2 parts chaque fois que la seconde en compte 3, toutes les parts étant égales. Pour partager une quantité dans un ratio donné :',
+    '**Ratio.** Deux quantités sont dans le ratio 2:3 (on lit « 2 pour 3 ») quand la première compte 2 parts chaque fois que la seconde en compte 3, toutes les parts étant égales. Avec trois quantités, on écrit de même 2:3:5. Pour partager une quantité dans un ratio donné :',
     [
       '1. compte le nombre total de parts ;',
       '2. calcule la valeur d’une part ;',
       '3. multiplie-la par le nombre de parts de chacun.',
     ].join('\n'),
-    '**Échelle.** Sur une carte, les longueurs sont proportionnelles aux longueurs réelles. À l’échelle 1/25 000, 1 cm sur la carte représente 25 000 cm en réalité, soit 250 m.',
+    '**Échelle.** Sur une carte, les longueurs sont proportionnelles aux longueurs réelles. À l’échelle 1/50 000, 1 cm sur la carte représente 50 000 cm en réalité, soit 500 m.',
   ),
   example: [
     {
@@ -462,7 +458,7 @@ const ratios = defineExercise({
         traps: [
           [
             '9,50 €',
-            'on a ajouté 2 € parce qu’il y a 2 kg de plus. Dans un tableau de proportionnalité, on multiplie : on n’ajoute pas.',
+            'on a ajouté 2 € parce qu’il y a 2 kg de plus. Or 2 kg de plus coûtent 2 × 2,50 = 5, soit 5 € de plus, et non 2 € : on passe de la masse au prix en multipliant, pas en ajoutant.',
           ],
           [
             '4,50 €',
@@ -559,7 +555,7 @@ const ratios = defineExercise({
         traps: [
           [
             '18 €',
-            'on a divisé 90 par 5, le nombre de parts de Chloé. On divise par le nombre total de parts, 10.',
+            'on a divisé 90 par 5, le nombre de parts de Chloé. On divise par le nombre total de parts, 10. C’est aussi la somme que reçoit Ali, qui n’a que 2 parts.',
           ],
           [
             '30 €',
